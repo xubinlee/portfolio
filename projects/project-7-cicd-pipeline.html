@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="企业级CI/CD流水线平台 — 基于Jenkins Declarative Pipeline的完整DevOps系统，集成GitLab/SonarQube/Docker/Harbor/K8s/Rancher全链路工具链">
+  <title>企业级CI/CD流水线平台 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+
+  <style>
+    /* ===== 右侧目录索引导航 ===== */
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">企业级CI/CD流水线平台</h1>
+        <p class="project-subtitle">基于Jenkins Declarative Pipeline的完整DevOps自动化系统 — 从代码提交到生产部署的全链路工程化实践</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> DevOps / CI-CD</span>
+          <span class="project-meta-item"><span class="project-meta-label">影响力:</span> 96.8%</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产运行中</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout"><article class="project-content-area">
+
+      <section class="project-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="project-heading">项目概述</h2>
+        <p class="project-text">本系统是一套<strong>企业级持续集成与持续部署(CI/CD)流水线平台</strong>，采用Jenkins Declarative Pipeline声明式语法构建，实现了从<strong>代码提交 → 自动构建 → 质量检测 → 镜像打包 → 容器部署</strong>的全链路自动化。</p>
+        <p class="project-text">作为技术主管主导的DevOps基础设施建设项目，该平台已支撑公司内部<strong>15+微服务项目</strong>、<strong>3个前端应用</strong>的日常迭代发布，日均执行构建任务<strong>50+次</strong>，将人工发布流程从<strong>2小时缩短至10分钟</strong>（全自动），发布成功率提升至<strong>98%+</strong>。</p>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🎯 核心价值</div>
+          <div class="project-highlight-text">
+            <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+              <li><strong>标准化</strong>：统一构建规范，消除"在我机器上能跑"的问题</li>
+              <li><strong>自动化</strong>：一键触发全流程，减少人为操作失误</li>
+              <li><strong>可观测</strong>：完整的构建日志、覆盖率报告、质量门禁</li>
+              <li><strong>多环境支持</strong>：dev/test/prod三套环境独立部署，互不干扰</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="architecture-heading">
+        <h2 id="architecture-heading" class="project-heading">整体架构设计</h2>
+        
+        <div class="project-stats-grid">
+          <div class="project-stat-card">
+            <div class="project-stat-value">7</div>
+            <div class="project-stat-label">Pipeline阶段</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">6+</div>
+            <div class="project-stat-label">集成工具链</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">3</div>
+            <div class="project-stat-label">部署环境</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">10min</div>
+            <div class="project-stat-label">端到端耗时</div>
+          </div>
+        </div>
+
+        <ul class="project-list">
+          <li><strong>架构模式</strong>：采用经典的DevOps工具链架构，以Jenkins为调度中心，串联GitLab(代码托管)、Maven/Node.js(构建)、SonarQube(质量)、Docker/Harbor(镜像)、Kubernetes/Rancher(部署)六大环节</li>
+          <li><strong>触发机制</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><em>手动触发</em>：开发者在Jenkins界面选择分支/环境/版本号后点击构建</li>
+              <li><em>Webhook自动触发</em>：GitLab Push事件通过Webhook通知Jenkins启动Pipeline（可配置分支过滤）</li>
+            </ul>
+          </li>
+          <li><strong>多环境隔离</strong>：dev(开发环境)/test(测试环境)/prod(生产环境)三套K8s集群，通过Rancher统一管理。每个环境独立的Namespace与ConfigMap配置</li>
+          <li><strong>安全合规</strong>：所有敏感信息(Docker密码/Git Token/Sonar Token)存储在Jenkins Credentials中，Pipeline中通过credentials()函数引用，避免明文泄露</li>
+        </ul>
+
+        <div class="project-code-block">// 整体数据流示意
+程序员提交代码
+    ↓ [1. GitLab Webhook]
+Jenkins 触发Pipeline
+    ↓ [2. 拉取代码 (GitSCM)]
+    ↓ [3. 编译构建 (Maven/npm)]
+    ↓ [4. 单元测试 + JaCoCo/Jest覆盖率]
+    ↓ [5. SonarQube质量分析]
+    ↓ [6. Docker镜像构建]
+    ↓ [7. 推送Harbor私有仓库]
+    ↓ [8. Kubectl/Rancher部署到K8s]
+    ↓ [9. 滚动更新(Rollout Restart)]
+    ↓ [10. 健康检查验证]
+用户访问 Nginx Ingress → 服务上线 ✓</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="pipeline-heading">
+        <h2 id="pipeline-heading" class="project-heading">Pipeline 核心设计</h2>
+        
+        <ul class="project-list">
+          <li><strong>Declarative Pipeline 声明式语法</strong>：相比Scripted Pipeline更易读、更易维护。使用`pipeline {}`块定义结构，`stages {}`定义阶段，`steps {}`定义步骤。IDE支持语法高亮与校验</li>
+          <li><strong>参数化构建(Parameters)</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>`CUSTOM_BRANCH`：选择目标分支(dev/test/mes_1)</li>
+              <li>`CUSTOM_PROJECT`：指定项目名称(如pigx-auth)</li>
+              <li>`CUSTOM_ENVIRONMENT`：选择部署环境(dev/test)</li>
+              <li>`CUSTOM_VERSION`：自定义版本号(留空则用分支名)</li>
+              <li>`SKIP_TESTS`：是否跳过测试(默认true加速构建)</li>
+              <li>`SKIP_DEPLOY`：是否跳过部署(仅构建不发布)</li>
+            </ul>
+          </li>
+          <li><strong>环境变量管理(Environment Block)</strong>：集中管理所有配置项，包括凭据引用、固定地址、动态计算值。支持Groovy表达式做条件判断（如根据分支确定JDK版本）</li>
+          <li><strong>全局选项(Options)</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>`timeout(time: 60, unit: 'MINUTES')`：单次构建超时60分钟防止僵尸Job</li>
+              <li>`buildDiscarder(logRotator(numToKeepStr: '10'))`：保留最近10次构建日志</li>
+              <li>`timestamps()`：日志输出带时间戳便于排查</li>
+              <li>`ansiColor('xterm')`：日志彩色输出增强可读性</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="project-code-block">// Pipeline骨架结构
+pipeline {
+    agent any
+    
+    parameters {
+        choice(name: 'CUSTOM_BRANCH', 
+                choices: ['dev', 'test', 'mes_1'],
+                description: '选择分支')
+        string(name: 'CUSTOM_PROJECT', 
+               defaultValue: '', 
+               description: '项目名称')
+        booleanParam(name: 'SKIP_TESTS', 
+                     defaultValue: true, 
+                     description: '跳过测试')
+        // ...更多参数
+    }
+    
+    environment {
+        // 凭据引用（安全存储）
+        GIT_CRED_ID = 'fa2845e8-...'
+        DOCKER_CRED_ID = 'docker-registry-cred'
+        SONAR_TOKEN = credentials('sonar-qube-token')
+        
+        // 固定地址
+        GIT_BASE_URL = 'http://dev.klhbs.com:8888/hbs4cloud'
+        IMAGE_REGISTRY = 'dev.klhbs.com:8433'
+        SONAR_URL = 'http://dev.klhbs.com:9000'
+        
+        // 动态计算
+        BRANCH = "${params.CUSTOM_BRANCH}"
+        JDK_VERSION = "${env.ENVIRONMENT == 'prod' ? 'jdk1.8' : 'jdk21'}"
+        VERSION = "${params.CUSTOM_VERSION ?: env.BRANCH}"
+    }
+    
+    options {
+        timeout(time: 60, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timestamps()
+        ansiColor('xterm')
+    }
+    
+    tools {
+        maven "maven-${env.ENVIRONMENT}"
+        jdk "${env.JDK_VERSION}"
+    }
+    
+    stages { /* ... */ }
+    
+    post { /* ... */ }
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="stages-heading">
+        <h2 id="stages-heading" class="project-heading">七大核心阶段详解</h2>
+        
+        <div class="project-timeline">
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 1: 环境配置</div>
+            <div class="project-timeline-text">
+              初始化运行时参数：<br>
+              • 判断是否前端项目(IS_FRONTEND)<br>
+              • 加载环境配置(getEnvConfig获取ServiceHost/RancherStack)<br>
+              • 解析Git仓库名映射(getGitProject处理pigx-common→klhbs等特殊情况)<br>
+              • 参数必填校验，缺失则中断Pipeline并报错<br>
+              • 打印初始化日志供调试
+            </div>
+          </div>
+          
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 2: 拉取代码</div>
+            <div class="project-timeline-text">
+              使用GitSCM插件从GitLab拉取代码：<br>
+              • `skipDefaultCheckout(true)`禁用默认checkout<br>
+              • 手动指定branches、credentialsId、remoteUrl<br>
+              • 支持按VERSION参数检出特定分支/Tag/Commit<br>
+              • 输出最近一次commit信息用于追溯
+            </div>
+          </div>
+          
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 3: 编译构建</div>
+            <div class="project-timeline-text">
+              <strong>前端项目</strong>(klhbs-admin/school-ui/mes-ui)：<br>
+              • npm config设置缓存目录加速依赖下载<br>
+              • npm install --registry=npmmirror.com(国内源)<br>
+              • npm run build[:环境] 打包<br>
+              <br>
+              <strong>后端项目</strong>：<br>
+              • Maven clean install<br>
+              • -Dmaven.test.skip=${SKIP_TESTS}控制是否跳过测试<br>
+              • getBackendDir()解析子模块路径(pigx-upms-biz等)
+            </div>
+          </div>
+          
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 4: 单元测试 & 覆盖率</div>
+            <div class="project-timeline-text">
+              <strong>前端</strong>：npm run test:unit -- --coverage (Jest生成lcov.info)<br>
+              <strong>后端</strong>：mvn test jacoco:report (JaCoCo生成jacoco.exec)<br>
+              <br>
+              可选阶段(SKIP_TESTS=true时跳过)，<br>
+              为后续SonarQube分析提供覆盖率数据输入。
+            </div>
+          </div>
+          
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 5: SonarQube 质量分析</div>
+            <div class="project-timeline-text">
+              <strong>前端</strong>：sonar-scanner CLI调用<br>
+              • 指定projectKey/projectName/sources/exclusions<br>
+              • JavaScript语言 + Vue文件后缀识别<br>
+              • lcov.info作为覆盖率报告输入<br>
+              <br>
+              <strong>后端</strong>：mvn sonar:sonar插件<br>
+              • 自动读取pom.xml中的sonar配置<br>
+              • 传递projectKey/version/hostUrl/loginToken<br>
+              <br>
+              使用catchError包裹使失败不影响后续阶段(buildResult: UNSTABLE)
+            </div>
+          </div>
+          
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 6: 镜像构建 & 部署</div>
+            <div class="project-timeline-text">
+              <strong>Docker镜像构建</strong>：<br>
+              • docker build -f Dockerfile -t project:version .<br>
+              • 区分前后端Dockerfile路径(docker/Dockerfile vs ./Dockerfile)<br>
+              <br>
+              <strong>Harbor推送</strong>：<br>
+              • withCredentials安全获取用户名密码<br>
+              • docker login → tag → push三步走<br>
+              <br>
+              <strong>K8s部署</strong>(SSH到Rancher Server执行kubectl)：<br>
+              • kubectl set image 更新容器镜像版本<br>
+              • kubectl rollout restart 触发滚动更新<br>
+              • kubectl rollout status --timeout=600s等待就绪<br>
+              • kubectl get pods 验证Pod状态无Error
+            </div>
+          </div>
+          
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 7: 覆盖率报告归档</div>
+            <div class="project-timeline-text">
+              <strong>前端</strong>：<br>
+              • parseFrontendCoverage()解析lcov.info提取行/分支/函数覆盖<br>
+              • archiveArtifacts归档coverage/目录<br>
+              • publishHTML发布HTML报告到Jenkins界面<br>
+              <br>
+              <strong>后端</strong>：<br>
+              • jacoco插件生成XML/HTML报告<br>
+              • 动态配置阈值(min/max)做质量门禁判断<br>
+              • parseCoverageFromLog()解析日志提取指标<br>
+              • archiveArtifacts归档jacoco/site目录
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="tools-heading">
+        <h2 id="tools-heading" class="project-heading">工具链集成详情</h2>
+        
+        <ul class="project-list">
+          <li><strong>GitLab — 代码托管 & Webhook触发</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>私有GitLab实例(dev.klhbs.com:8888)</li>
+              <li>Webhook配置指向Jenkins /gitlab-webhook/ 端点</li>
+              <li>Push事件携带branch/commit/user信息供Pipeline消费</li>
+              <li>Git凭据存储在Jenkins Credentials中(ID: fa2845e8-...)</li>
+            </ul>
+          </li>
+          <li><strong>Jenkins — 流水线编排引擎</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>Pipeline插件支持Declarative语法</li>
+              <li>全局工具配置：Maven(多版本)/JDK(8/21)/NodeJS-18/SonarScanner-4.x</li>
+              <li>插件生态：Git SCM / SSH Publisher / HTML Publisher / AnsiColor</li>
+              <li>凭据管理：加密存储各类Token/密码</li>
+            </ul>
+          </li>
+          <li><strong>Maven — Java项目构建</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>多环境Maven配置(maven-dev/maven-test/maven-prod)</li>
+              <li>settings.xml配置私有仓库地址与认证</li>
+              <li>Maven缓存目录(/var/jenkins_home/.m2/repository)加速依赖下载</li>
+            </ul>
+          </li>
+          <li><strong>SonarQube — 代码质量管理</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>自建SonarQube实例(dev.klhbs.com:9000)</li>
+              <li>前端规则集：JavaScript/Vue/TypeScript</li>
+              <li>后端规则集：Java/Spring</li>
+              <li>质量门(Quality Gate)：覆盖率≥80%、重复率≤3%、阻断Bug=0</li>
+            </ul>
+          </li>
+          <li><strong>Docker — 容器化打包</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>多阶段构建(Multi-stage Build)优化镜像体积</li>
+              <li>基础镜像：OpenJDK 8/21 Alpine / Node 18 Alpine</li>
+              <li>Dockerfile中集成健康检查(HEALTHCHECK指令)</li>
+            </ul>
+          </li>
+          <li><strong>Harbor — 镜像仓库</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>私有Registry(dev.klhbs.com:8433)</li>
+              <li>library公共项目存放业务镜像</li>
+              <li>镜像扫描(Trivy)漏洞检测</li>
+              <li>镜像保留策略(保留最近20个版本自动清理)</li>
+            </ul>
+          </li>
+          <li><strong>Kubernetes + Rancher — 容器编排</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>Rancher管理多集群(dev/test/prod)</li>
+              <li>每个环境独立Namespace(rental4cloud-dev/test/prod)</li>
+              <li>Deployment滚动更新策略(RollingUpdate)</li>
+              <li>Readiness/Liveness探针保障服务可用性</li>
+              <li>HPA自动扩缩容(基于CPU/内存指标)</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="notification-heading">
+        <h2 id="notification-heading" class="project-heading">通知机制</h2>
+        
+        <ul class="project-list">
+          <li><strong>企业微信机器人通知</strong>：构建完成后通过Webhook发送消息到企业微信群，包含项目名/分支/环境/结果/耗时/触发人等信息</li>
+          <li><strong>Post钩子分级通知</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><code>success</code>：发送绿色成功消息</li>
+              <li><code>failure</code>：发送红色失败消息(含错误摘要)</li>
+              <li><code>unstable</code>：发送黄色警告消息(如测试未通过但继续)</li>
+              <li><code>aborted</code>：发送灰色取消消息</li>
+            </ul>
+          </li>
+          <li><strong>cleanWs()</strong>：每次构建结束后清理工作空间，避免磁盘空间耗尽</li>
+        </ul>
+
+        <div class="project-code-block">// Post钩子示例
+post {
+    always { 
+        cleanWs()  // 清理工作空间
+    }
+    success { 
+        sendNotification("成功", "info") 
+    }
+    failure { 
+        sendNotification("失败", "danger") 
+    }
+    unstable { 
+        sendNotification("不稳定", "warning") 
+    }
+    aborted { 
+        sendNotification("已取消", "comment") 
+    }
+}
+
+// 通知方法实现(在Pipeline外部)
+def sendNotification(String status, String color) {
+    def message = """
+        📦 **${env.PROJECT}** | ${env.BRANCH} → ${env.ENVIRONMENT}
+        📊 构建${status} | 耗时: ${currentBuild.durationString}
+        👤 触发人: ${env.USER_NAME}
+        🔗 [查看详情](${env.BUILD_URL})
+    """
+    sh """
+        curl -X POST '${WECHAT_WEBHOOK_URL}' \
+        -H 'Content-Type: application/json' \
+        -d '{"msgtype": "markdown", "markdown": {"content": "${message}"}}'
+    """
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="utility-heading">
+        <h2 id="utility-heading" class="project-heading">工具函数库(Groovy Shared Library)</h2>
+        
+        <p class="project-text">Pipeline外部定义的可复用工具方法，实现配置管理与数据处理逻辑：</p>
+
+        <div class="project-code-block">// ====================== 配置类工具方法 ======================
+
+// 获取环境配置（服务地址、Rancher栈名）
+def getEnvConfig(String env, String group) {
+    def configMap = [
+        dev: [
+            serviceHost: 'dev.klhbs.com',
+            rancherStack: 'rental4cloud-dev'
+        ],
+        test: [
+            serviceHost: (group == 'mes') ? 'dev.klhbs.com' : 'test.klhbs.com',
+            rancherStack: (group == 'mes') ? 'mes-test' : 'rental4cloud-test'
+        ],
+        prod: [
+            serviceHost: 'prod.klhbs.com',
+            rancherStack: 'rental4cloud-prod'
+        ]
+    ]
+    return configMap[env] ?: configMap.dev
+}
+
+// Git仓库名映射（处理单体仓库内的多模块情况）
+def getGitProject(String project) {
+    def gitMap = [
+        'pigx-common': 'klhbs',
+        'pigx-register': 'klhbs',
+        'pigx-auth': 'klhbs',
+        'pigx-gateway': 'klhbs',
+        'pigx-xxl-job-admin': 'klhbs',
+        'pigx-monitor': 'klhbs'
+    ]
+    return gitMap[project] ?: project
+}
+
+// 后端项目构建目录映射
+def getBackendDir(String project) {
+    def dirMap = [
+        'klhbs': 'pigx-common',
+        'pigx-xxl-job-admin': 'pigx-visual/pigx-xxl-job-admin',
+        'pigx-monitor': 'pigx-visual/pigx-monitor',
+        'upms': 'pigx-upms-biz'
+    ]
+    return dirMap[project] ?: "${project}-biz"
+}
+
+// ====================== 覆盖率解析工具方法 ======================
+
+// 解析前端Jest生成的lcov.info覆盖率
+def parseFrontendCoverage() {
+    try {
+        def lcovPath = 'coverage/lcov.info'
+        if (fileExists(lcovPath)) {
+            def lcovContent = readFile(lcovPath)
+            
+            // DA: 行覆盖率 (hit/total)
+            def lineCoverage = calculateCoverage(lcovContent, 'DA')
+            // BRDA: 分支覆盖率
+            def branchCoverage = calculateCoverage(lcovContent, 'BRDA')
+            // FN: 函数覆盖率
+            def functionCoverage = calculateCoverage(lcovContent, 'FN')
+            // SF: 语句覆盖率
+            def statementCoverage = calculateCoverage(lcovContent, 'SF')
+
+            return [
+                "class=N/A",
+                "method=${functionCoverage}",
+                "line=${lineCoverage}",
+                "branch=${branchCoverage}",
+                "instruction=${statementCoverage}",
+                "complexity=N/A"
+            ].join(';')
+        }
+    } catch (Exception e) {
+        echo "解析前端覆盖率异常: ${e.message}"
+    }
+    return null
+}
+
+// 通用覆盖率计算辅助方法
+def calculateCoverage(String content, String prefix) {
+    def lines = content.split('\n')
+    def total = 0
+    def hit = 0
+    lines.each { line ->
+        if (line.startsWith(prefix)) {
+            total++
+            if (!line.endsWith(',0') && !line.endsWith(',0)')) {
+                hit++
+            }
+        }
+    }
+    return total > 0 ? "${Math.round(hit * 100 / total)}%" : "N/A"
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="project-heading">技术栈全景</h2>
+        <div class="project-tech-grid">
+          <div class="project-tech-card">
+            <div class="project-tech-name">Jenkins</div>
+            <div class="project-tech-desc">流水线引擎</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">GitLab</div>
+            <div class="project-tech-desc">代码托管</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Maven</div>
+            <div class="project-tech-desc">Java构建</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Node.js/NPM</div>
+            <div class="project-tech-desc">前端构建</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">SonarQube</div>
+            <div class="project-tech-desc">代码质量</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Docker</div>
+            <div class="project-tech-desc">容器化</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Harbor</div>
+            <div class="project-tech-desc">镜像仓库</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Kubernetes</div>
+            <div class="project-tech-desc">容器编排</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Rancher</div>
+            <div class="project-tech-desc">集群管理</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="best-practice-heading">
+        <h2 id="best-practice-heading" class="project-heading">最佳实践总结</h2>
+        
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🏆 关键设计决策</div>
+          <div class="project-highlight-text">
+            <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+              <li><strong>参数化 vs 硬编码</strong>：所有环境相关配置均参数化，同一Pipeline支持多项目多环境复用</li>
+              <li><strong>安全优先</strong>：敏感信息全部走Credentials，禁止硬编码密码到Jenkinsfile</li>
+              <li><strong>容错设计</strong>：SonarQube分析失败设为UNSTABLE而非FAILURE，允许人工评审后决定是否阻塞</li>
+              <li><strong>缓存加速</strong>：Maven本地仓库(.m2)和NPM缓存(.npm)持久化到Jenkins宿主机，避免每次重新下载依赖</li>
+              <li><strong>可观测性</strong>：每步关键操作都有echo日志输出，问题排查时可快速定位卡点</li>
+              <li><strong>幂等性</strong>：部署操作(kubectl set image)可重复执行不会产生副作用</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="项目导航">
+        <a href="project-6-msa-framework.html" class="project-nav-link project-nav-prev">微服务通用框架组件</a>
+        <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+        <a href="project-1-saas.html" class="project-nav-link project-nav-next">智慧租住SaaS平台</a>
+      </nav>
+
+          <!-- 右侧项目章节目录 -->
+      
+    </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li>
+            <li class="toc-nav-item"><a href="#architecture-heading" class="toc-nav-link">整体架构设计</a></li>
+            <li class="toc-nav-item"><a href="#pipeline-heading" class="toc-nav-link">Pipeline 核心设计</a></li>
+            <li class="toc-nav-item"><a href="#stages-heading" class="toc-nav-link">七大核心阶段详解</a></li>
+            <li class="toc-nav-item"><a href="#tools-heading" class="toc-nav-link">工具链集成详情</a></li>
+            <li class="toc-nav-item"><a href="#notification-heading" class="toc-nav-link">通知机制</a></li>
+            <li class="toc-nav-item"><a href="#utility-heading" class="toc-nav-link">工具函数库(Groovy Shared Library)</a></li>
+            <li class="toc-nav-item"><a href="#tech-heading" class="toc-nav-link">技术栈全景</a></li>
+            <li class="toc-nav-item"><a href="#best-practice-heading" class="toc-nav-link">最佳实践总结</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 阅读进度条 -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- 返回顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

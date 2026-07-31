@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="微服务零停机发布系统 — 基于CI/CD的无感知微服务更新，流量灰度与服务无损升级，发明专利">
+  <title>微服务零停机发布系统 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+
+  <style>
+    /* ===== 右侧目录索引导航 ===== */
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">微服务零停机发布系统</h1>
+        <p class="project-subtitle">基于CI/CD的无感知微服务更新方案 — 流量灰度与服务无损升级，已规模化落地于企业级生产环境（国家发明专利 CN121680904A）</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> DevOps / 系统</span>
+          <span class="project-meta-item"><span class="project-meta-label">影响力:</span> 94.8%</span>
+          <span class="project-meta-item"><span class="project-meta-label">专利号:</span> CN121680904A</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout"><article class="project-content-area">
+
+      <section class="project-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="project-heading">项目概述</h2>
+        <p class="project-text">在微服务架构下，<strong>服务发布导致的业务中断</strong>是运维团队面临的核心挑战。传统滚动更新方式存在连接断开、请求失败、数据不一致等问题。</p>
+        <p class="project-text">本系统设计并实现了<strong>基于CI/CD的无感知微服务更新方法及系统</strong>，通过流量灰度与服务无损升级策略，实现<strong>真正的零停机发布(Zero-Downtime Deployment)</strong>，已获得<strong>国家发明专利公布（CN121680904A）</strong>。</p>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🎯 核心价值</div>
+          <div class="project-highlight-text">
+            发布期间：<br>
+            • 用户<strong>无感知</strong> — 无报错、无重试、无超时<br>
+            • 数据<strong>一致性</strong> — 无丢失、无重复、无错乱<br>
+            • 回滚<strong>即时性</strong> — 一键回滚至上一版本，秒级生效
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="grayscale-heading">
+        <h2 id="grayscale-heading" class="project-heading">流量灰度发布机制</h2>
+        
+        <ul class="project-list">
+          <li><strong>基于权重的流量分配</strong>：Nginx Upstream配置支持按比例分流。新版本初始权重10%，逐步提升至50%→100%。每步间隔可配置观察期（默认5分钟），期间监控错误率指标</li>
+          <li><strong>基于Header的精准路由</strong>：支持按用户ID Hash、用户标签(VIP/普通)、地域(IP段)等维度做精细化灰度。内部测试用户优先体验新版本，验证通过后全量开放</li>
+          <li><strong>金丝雀发布(Canary Release)</strong>：自动化的灰度流程编排。代码提交 → 自动构建 → 部署到Canary集群 → 流量切分1% → 指标校验(P99延迟/错误率) → 通过则扩大至10%→50%→100%，任一环节异常触发自动回滚</li>
+          <li><strong>全链路追踪关联</strong>：每次发布的流量打上版本Tag(Release-ID)，在SkyWalking链路中可精确追踪每个请求经过的版本，快速定位问题根因</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="zero-downtime-heading">
+        <h2 id="zero-downtime-heading" class="project-heading">零停机技术实现</h2>
+        
+        <ul class="project-list">
+          <li><strong>优雅停机(Graceful Shutdown)</strong>：接收SIGTERM信号后，服务端执行：(1) 健康检查接口返回Unhealthy → (2) Nginx摘除该节点 → (3) 等待进行中请求完成(设置Deadline 30s) → (4) 关闭监听端口 → (5) 退出进程。确保"无正在处理的请求被中断"</li>
+          <li><strong>预热启动(Warm-up)</strong>：新实例启动后不立即承接全部流量。JVM JIT编译需要时间，冷启动时性能较差。通过渐进式权重增加(10%→30%→60%→100%)让实例逐步"热起来"</li>
+          <li><strong>数据库Schema兼容</strong>：发布顺序严格遵循"先DB变更、再API变更、最后前端变更"。新旧版本必须同时兼容当前DB Schema。禁止破坏性DDL(DROP COLUMN/CHANGE TYPE)</li>
+          <li><strong>消息队列消费偏移管理</strong>：Kafka Consumer Group Rebalance期间暂停消费或使用StickyAssignor避免分区重新分配导致的消息重复处理。关键业务消息实现幂等性(Idempotency Key)</li>
+        </ul>
+
+        <div class="project-code-block">// Spring Boot优雅停机配置
+server:
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+// Kubernetes Pod终止流程
+lifecycle:
+  preStop:
+    exec:
+      command: ["/bin/sh", "-c", "curl -X POST localhost:8081/actuator/shutdown"]
+terminationGracePeriodSeconds: 45</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="pipeline-heading">
+        <h2 id="pipeline-heading" class="project-heading">CI/CD流水线设计</h2>
+        
+        <div class="project-timeline">
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 1: 代码提交 & 触发</div>
+            <div class="project-timeline-text">Git Push → Webhook触发Jenkins Pipeline → 参数化构建(选择分支/环境)</div>
+          </div>
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 2: 构建 & 测试</div>
+            <div class="project-timeline-text">Maven多模块编译 → 单元测试(JUnit5 + Mockito) → 代码覆盖率检查(JaCoCo阈值80%+) → SonarQube静态分析(阻断Blocker/Critical问题)</div>
+          </div>
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 3: 制品 & 安全扫描</div>
+            <div class="project-timeline-text">Docker镜像构建(多阶段构建优化体积) → 推送Harbor私有仓库 → Trivy容器镜像漏洞扫描 → 签名(Notary)</div>
+          </div>
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 4: 部署 & 验证</div>
+            <div class="project-timeline-text">Kubectl Rolling Update → 灰度流量注入 → E2E自动化测试(Postman/Newman) → 性能基线对比(JMeter) → 全量发布或回滚</div>
+          </div>
+          <div class="project-timeline-item">
+            <div class="project-timeline-marker"></div>
+            <div class="project-timeline-date">Stage 5: 通知 & 归档</div>
+            <div class="project-timeline-text">企业微信/钉钉通知发布结果 → 构建日志归档 → Git Tag打标 → 发布记录写入CMDB</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="project-heading">技术栈</h2>
+        <div class="project-tech-grid">
+          <div class="project-tech-card">
+            <div class="project-tech-name">Jenkins</div>
+            <div class="project-tech-desc">CI/CD引擎</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Kubernetes</div>
+            <div class="project-tech-desc">容器编排平台</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Helm Charts</div>
+            <div class="project-tech-desc">应用包管理</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Istio Service Mesh</div>
+            <div class="project-tech-desc">流量治理</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Harbor</div>
+            <div class="project-tech-desc">镜像仓库</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">SonarQube</div>
+            <div class="project-tech-desc">代码质量</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="patent-heading">
+        <h2 id="patent-heading" class="project-heading">专利信息</h2>
+        <div class="project-stats-grid">
+          <div class="project-stat-card">
+            <div class="project-stat-value">CN121680904A</div>
+            <div class="project-stat-label">专利公开号</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">2024年</div>
+            <div class="project-stat-label">公布年份</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">核心发明人</div>
+            <div class="project-stat-label">发明人顺位</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">DevOps</div>
+            <div class="project-stat-label">技术领域</div>
+          </div>
+        </div>
+        <p class="project-text" style="margin-top:var(--spacing-lg);"><strong>专利名称：</strong>基于CI/CD的无感知微服务更新方法及系统</p>
+      </section>
+
+      <nav class="project-nav" aria-label="项目导航">
+        <a href="project-2-smart-lock.html" class="project-nav-link project-nav-prev">智能门锁保洁服务系统</a>
+        <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+        <a href="project-4-cross-border.html" class="project-nav-link project-nav-next">跨境电商平台</a>
+      </nav>
+
+          <!-- 右侧项目章节目录 -->
+      
+    </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li>
+            <li class="toc-nav-item"><a href="#grayscale-heading" class="toc-nav-link">流量灰度发布机制</a></li>
+            <li class="toc-nav-item"><a href="#zero-downtime-heading" class="toc-nav-link">零停机技术实现</a></li>
+            <li class="toc-nav-item"><a href="#pipeline-heading" class="toc-nav-link">CI/CD流水线设计</a></li>
+            <li class="toc-nav-item"><a href="#tech-heading" class="toc-nav-link">技术栈</a></li>
+            <li class="toc-nav-item"><a href="#patent-heading" class="toc-nav-link">专利信息</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 阅读进度条 -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- 返回顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

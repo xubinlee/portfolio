@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="海外船东数据爬虫系统 — 分布式大数据采集平台，自动抓取30余家海外船东及口岸数据">
+  <title>海外船东数据爬虫系统 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    .toc-sidebar{width:260px;flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}.toc-sidebar::-webkit-scrollbar-track{background:transparent}.toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:toc-counter}
+    .toc-nav-item{position:relative;margin-bottom:6px;counter-increment:toc-counter}
+    .toc-nav-item::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:-22px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:8px 12px 8px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.86rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:72px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .back-to-top{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .back-to-top.visible{opacity:1;visibility:visible}
+    .back-to-top:hover,.back-to-top:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .project-layout{display:flex;gap:40px;max-width:var(--max-width);margin:0 auto;padding:var(--spacing-3xl) var(--spacing-lg)}
+    .project-content-area{flex:1;min-width:0}
+    @media(max-width:1024px){.toc-sidebar{display:none}.project-layout{padding:var(--spacing-2xl) var(--spacing-md)}}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">海外船东数据爬虫系统</h1>
+        <p class="project-subtitle">国际航运分布式大数据采集平台 — 自动化抓取30余家海外船东及口岸数据，为航运数据分析提供可靠数据底座</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 核心开发</span>
+          <span class="project-meta-item"><span class="project-meta-label">领域:</span> 大数据采集 / 分布式爬虫</span>
+          <span class="project-meta-item"><span class="project-meta-label">规模:</span> 30+ 海外船东</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout">
+      <article class="project-content-area">
+
+        <section class="project-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="project-heading">项目背景</h2>
+          <p class="project-text">搭建<strong>国际航运分布式大数据采集平台</strong>，自动化抓取 30 余家海外船东及口岸数据，涵盖集装箱轨迹、船期、港口记录；依托分布式爬虫完成数据清洗与标准化，为航运数据分析、货物溯源提供可靠数据底座。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🎯 核心目标</div>
+            <div class="project-highlight-text">
+              <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+                <li>自动化抓取 <strong>30+ 海外船东</strong> 及口岸数据</li>
+                <li>覆盖 <strong>集装箱轨迹 / 船期 / 港口记录</strong> 三大数据类型</li>
+                <li>分布式架构支撑 <strong>大规模并行抓取</strong>，保障时效性</li>
+                <li>智能反爬引擎，有效规避 <strong>IP封禁 / 验证码 / 动态渲染</strong> 等反爬机制</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="arch-heading">
+          <h2 id="arch-heading" class="project-heading">分布式爬虫架构设计</h2>
+          <p class="project-text">独立从零搭建 <strong>Master-Worker</strong> 分布式爬虫架构，通过 RabbitMQ 实现任务分发、解耦调度，支持大规模并行抓取。</p>
+
+          <ul class="project-list">
+            <li><strong>Master 节点</strong>：负责链接抓取与任务调度。从种子URL出发，深度优先遍历页面链接，提取目标列表页URL，将每条数据详情页URL封装为任务消息投递至 RabbitMQ 队列</li>
+            <li><strong>Worker 节点</strong>：负责精细化数据采集。从 RabbitMQ 消费任务消息，执行页面解析、字段提取、数据清洗，写入统一数据存储</li>
+            <li><strong>RabbitMQ 任务分发</strong>：Master 与 Worker 之间通过 RabbitMQ 完全解耦，Worker 可横向扩展，支持动态增减节点应对抓取压力</li>
+            <li><strong>调度策略</strong>：基于 Redis 实现任务去重（Bloom Filter），避免重复抓取；支持优先级队列，热点船东数据优先采集</li>
+          </ul>
+
+          <div class="project-code-block">// Master-Worker 分布式爬虫架构
+// — Master 节点: 链接发现 + 任务分发
+@Component
+public class CrawlMaster {
+
+  @Autowired private RabbitTemplate rabbitTemplate;
+  @Autowired private RedisTemplate redisTemplate;
+
+  public void discoverAndDispatch(String seedUrl) {
+    // 深度优先遍历，提取列表页
+    Queue&lt;String&gt; urlQueue = new LinkedList<>();
+    urlQueue.add(seedUrl);
+    Set&lt;String&gt; visited = new HashSet<>();
+
+    while (!urlQueue.isEmpty()) {
+      String url = urlQueue.poll();
+      if (visited.contains(url)) continue;
+      visited.add(url);
+
+      PageResult result = pageFetcher.fetch(url);
+      // 提取列表页中的详情页链接
+      for (String detailUrl : result.getDetailUrls()) {
+        // Bloom Filter 去重
+        if (!redisTemplate.opsForHyperLogLog()
+            .add("crawler:dedup", detailUrl)) {
+          continue;
+        }
+        // 投递任务到 RabbitMQ
+        rabbitTemplate.convertAndSend(
+            "crawler.exchange", "task.detail",
+            new CrawlTask(detailUrl));
+      }
+      // 提取下一页链接继续遍历
+      urlQueue.addAll(result.getNextPageUrls());
+    }
+  }
+}
+
+// — Worker 节点: 精细化数据采集
+@Component
+public class CrawlWorker {
+
+  @RabbitListener(queues = "crawler.task.detail")
+  public void process(CrawlTask task) {
+    try {
+      // 精细化数据采集
+      ShipData data = dataExtractor.extract(
+          task.getUrl());
+      // 数据清洗
+      ShipData cleaned = dataCleaner.clean(data);
+      // 写入存储
+      dataRepository.save(cleaned);
+    } catch (Exception e) {
+      // 失败重试
+      retryHandler.handle(task, e);
+    }
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="engine-heading">
+          <h2 id="engine-heading" class="project-heading">爬虫内核封装</h2>
+          <p class="project-text">基于 <strong>Selenium</strong> 自研通用浏览器驱动，兼容 Chrome、IE、PhantomJS 多内核，支持代理切换、Cookie 状态留存、隐身访问，有效规避反爬机制。</p>
+
+          <ul class="project-list">
+            <li><strong>多内核兼容</strong>：基于 Selenium WebDriver 封装统一浏览器驱动接口，底层适配 Chrome（ChromeDriver）、IE（IEDriver）、PhantomJS（无头浏览器），通过配置切换无需改动业务代码</li>
+            <li><strong>代理切换</strong>：内置代理池管理，支持轮询/随机切换代理IP，单个IP请求频率超阈值自动切换，降低被封风险</li>
+            <li><strong>Cookie 状态留存</strong>：登录态 Cookie 持久化至 Redis，Worker 启动时自动加载，无需重复登录，提升抓取效率</li>
+            <li><strong>隐身访问</strong>：随机化 User-Agent、禁用自动化标识（navigator.webdriver）、模拟人类操作延迟（随机等待/鼠标轨迹），有效绕过反爬检测</li>
+          </ul>
+
+          <div class="project-code-block">// 通用浏览器驱动 — 多内核兼容 + 反爬对抗
+@Component
+public class BrowserDriverFactory {
+
+  private static final String[] USER_AGENTS = {
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ...",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ...",
+    "Mozilla/5.0 (X11; Linux x86_64) ..."
+  };
+
+  public WebDriver create(BrowserType type) {
+    ChromeOptions options = new ChromeOptions();
+    // 隐身模式
+    options.addArguments("--incognito");
+    // 随机 User-Agent
+    options.addArguments("--user-agent=" +
+        USER_AGENTS[ThreadLocalRandom.current()
+            .nextInt(USER_AGENTS.length)]);
+    // 禁用自动化标识
+    options.addArguments("--disable-blink-features"
+        + "=AutomationControlled");
+    options.setExperimentalOption(
+        "excludeSwitches",
+        new String[]{"enable-automation"});
+
+    return switch (type) {
+      case CHROME    -> new ChromeDriver(options);
+      case HEADLESS  -> {
+        options.addArguments("--headless");
+        options.addArguments("--disable-gpu");
+        yield new ChromeDriver(options);
+      }
+      case PHANTOMJS -> {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("phantomjs.page.settings"
+            + ".userAgent",
+            USER_AGENTS[ThreadLocalRandom.current()
+                .nextInt(USER_AGENTS.length)]);
+        yield new PhantomJSDriver(caps);
+      }
+    };
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="data-process-heading">
+          <h2 id="data-process-heading" class="project-heading">数据智能处理</h2>
+          <p class="project-text">集成 OCR 图片识别能力解决图片验证码与图文数据采集难题，通过正则表达式完成数据清洗、去重、标准化规整，保障输出数据统一可用。</p>
+
+          <ul class="project-list">
+            <li><strong>OCR 图片识别</strong>：集成 Tesseract OCR 引擎，自动识别图片验证码（数字+字母），解决验证码拦截问题；同时支持船东网站中嵌入的图片数据（如船期表截图、集装箱信息图片）文字提取</li>
+            <li><strong>验证码自动处理</strong>：OCR 识别失败时自动重试，多次失败触发人工审核队列，保障抓取连续性</li>
+            <li><strong>正则表达式清洗</strong>：针对不同船东数据格式差异，编写正则规则完成字段提取、格式标准化，如集装箱号格式校验（4字母+7数字）、日期格式统一（ISO 8601）</li>
+            <li><strong>数据去重与标准化</strong>：基于 Redis HyperLogLog + 业务主键双重去重，保障数据唯一性；统一数据模型映射，输出标准化数据结构</li>
+          </ul>
+
+          <div class="project-code-block">// OCR 验证码识别
+@Component
+public class CaptchaResolver {
+
+  @Autowired private Tesseract tesseract;
+
+  public String resolve(byte[] captchaImage) {
+    // 图片预处理 — 灰度化 + 二值化 + 去噪
+    BufferedImage processed = preprocess(captchaImage);
+    try {
+      return tesseract.doOCR(processed)
+          .replaceAll("[^a-zA-Z0-9]", "");
+    } catch (TesseractException e) {
+      throw new CaptchaResolveException(
+          "验证码识别失败", e);
+    }
+  }
+
+  private BufferedImage preprocess(byte[] raw) {
+    BufferedImage img = ImageIO.read(
+        new ByteArrayInputStream(raw));
+    // 灰度化
+    BufferedImage gray = new BufferedImage(
+        img.getWidth(), img.getHeight(),
+        BufferedImage.TYPE_BYTE_GRAY);
+    Graphics g = gray.getGraphics();
+    g.drawImage(img, 0, 0, null);
+    g.dispose();
+    // 二值化 + 去噪
+    return binarizeAndDenoise(gray);
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="stability-heading">
+          <h2 id="stability-heading" class="project-heading">稳定性优化</h2>
+          <p class="project-text">优化抓取策略与任务重试机制，解决网络波动、页面加载异常、IP 封禁等稳定性问题，保障 7×24 小时稳定运行。</p>
+
+          <ul class="project-list">
+            <li><strong>智能重试机制</strong>：网络超时/页面加载失败自动重试（指数退避：1s→2s→4s→8s），重试3次仍失败则降级为延迟重试（30分钟后重入队列），避免硬失败导致数据丢失</li>
+            <li><strong>IP 代理池管理</strong>：维护代理IP可用性评分，请求失败自动标记降分，分数低于阈值移出代理池，动态补充新代理IP，保障代理可用性</li>
+            <li><strong>页面加载异常处理</strong>：Selenium 加载超时自动刷新页面重试，检测页面内容完整性（关键词匹配），内容不完整则标记为异常页面重试</li>
+            <li><strong>监控告警</strong>：抓取成功率、平均响应时间、Worker 活跃度等指标通过 Prometheus 采集，Grafana 可视化管理，异常自动告警</li>
+          </ul>
+        </section>
+
+        <section class="project-section" aria-labelledby="techstack-heading">
+          <h2 id="techstack-heading" class="project-heading">技术栈</h2>
+          <div class="project-tech-grid">
+            <div class="project-tech-card"><div class="project-tech-name">RabbitMQ</div><div class="project-tech-desc">任务分发·解耦调度</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Selenium</div><div class="project-tech-desc">多内核浏览器驱动</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Tesseract OCR</div><div class="project-tech-desc">图片识别·验证码</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Redis</div><div class="project-tech-desc">去重·代理池·Cookie</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">ChromeDriver</div><div class="project-tech-desc">Chrome内核</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">PhantomJS</div><div class="project-tech-desc">无头浏览器</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">MySQL</div><div class="project-tech-desc">结构化数据存储</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Prometheus</div><div class="project-tech-desc">监控采集</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Grafana</div><div class="project-tech-desc">可视化看板</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Regex</div><div class="project-tech-desc">数据清洗·标准化</div></div>
+          </div>
+        </section>
+
+        <nav class="project-nav" aria-label="项目导航">
+          <a href="project-11-mes-platform.html" class="project-nav-link project-nav-prev">MES数字化平台</a>
+          <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+          <a href="project-1-saas.html" class="project-nav-link project-nav-next">智慧租住SaaS平台</a>
+        </nav>
+
+      </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目背景</a></li>
+            <li class="toc-nav-item"><a href="#arch-heading" class="toc-nav-link">分布式爬虫架构设计</a></li>
+            <li class="toc-nav-item"><a href="#engine-heading" class="toc-nav-link">爬虫内核封装</a></li>
+            <li class="toc-nav-item"><a href="#data-process-heading" class="toc-nav-link">数据智能处理</a></li>
+            <li class="toc-nav-item"><a href="#stability-heading" class="toc-nav-link">稳定性优化</a></li>
+            <li class="toc-nav-item"><a href="#techstack-heading" class="toc-nav-link">技术栈</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content"><p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p></div>
+  </footer>
+
+  <script>
+    const sections=document.querySelectorAll('.project-section'),tocLinks=document.querySelectorAll('.toc-nav-link');
+    function updateActiveToc(){let h='';const p=window.scrollY+120;sections.forEach(s=>{if(p>=s.offsetTop){const hd=s.querySelector('.project-heading');if(hd)h=hd.id}});tocLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+h)l.classList.add('active')})}
+    function updateReadingProgress(){const m=document.querySelector('.project-content-area');if(!m)return;const ct=m.offsetTop,ch=m.offsetHeight,wh=window.innerHeight,st=window.scrollY;let pr=(st-ct)/(ch-wh);pr=Math.min(Math.max(pr,0),1);document.getElementById('readingProgress').style.transform='scaleX('+pr+')'}
+    function toggleBackToTop(){const b=document.getElementById('backToTop');b.classList.toggle('visible',window.scrollY>400)}
+    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+    tocLinks.forEach(l=>{l.addEventListener('click',function(e){e.preventDefault();const t=document.getElementById(this.getAttribute('href').substring(1));if(t)window.scrollTo({top:t.offsetTop-20,behavior:'smooth'})})});
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){window.requestAnimationFrame(()=>{updateActiveToc();updateReadingProgress();toggleBackToTop();ticking=false});ticking=true}},{passive:true});
+    updateActiveToc();updateReadingProgress();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

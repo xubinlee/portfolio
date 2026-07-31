@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI智能体工程化框架 — 完整LLMOps工程体系，涵盖记忆工程、Prompt工程、Context工程、Harness工程">
+  <title>AI智能体工程化框架 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+
+  <style>
+    /* ===== 右侧目录索引导航 ===== */
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">AI智能体工程化框架</h1>
+        <p class="project-subtitle">完整的LLMOps工程体系 — 将AI智能体开发从实验性探索升级为可规模化落地的生产级能力</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> AI / LLMOps</span>
+          <span class="project-meta-item"><span class="project-meta-label">影响力:</span> 95.5%</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产级</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout"><article class="project-content-area">
+
+      <section class="project-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="project-heading">项目概述</h2>
+        <p class="project-text">本框架是一套<strong>企业级AI智能体工程化解决方案</strong>，旨在解决当前LLM应用落地过程中的核心痛点：智能体行为不可控、多Agent协作困难、生产环境稳定性不足。</p>
+        <p class="project-text">通过系统化的四大工程模块——<strong>记忆工程 (Memory Engineering)</strong>、<strong>Prompt工程 (Prompt Engineering)</strong>、<strong>上下文工程 (Context Engineering)</strong>、<strong>整体框架工程 (Harness Engineering)</strong>，构建了一套可复用、可扩展、可观测的AI Agent开发体系。</p>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🎯 核心价值主张</div>
+          <div class="project-highlight-text">
+            <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+              <li>从"提示词调试"到"工程化开发"的能力跃迁</li>
+              <li>支持MCP/A2A跨智能体通信协议标准</li>
+              <li>兼容ReAct/Plan-Execute等主流决策模式</li>
+              <li>已在智慧租住SaaS平台实现3类Agent协同工作</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="memory-heading">
+        <h2 id="memory-heading" class="project-heading">Memory Engineering — 记忆工程</h2>
+        <p class="project-text">记忆是智能体的"经验积累系统"。本模块设计了分层记忆架构，解决长期对话中的信息遗忘与上下文窗口限制问题。</p>
+
+        <ul class="project-list">
+          <li><strong>短期记忆 (Working Memory)</strong>：当前对话上下文窗口管理。采用滑动窗口策略 + 摘要压缩算法，在Token预算内保留高信息密度内容，支持动态调整窗口大小以适配不同模型（GPT-4/Claude/Qwen）</li>
+          <li><strong>长期记忆 (Long-term Memory)</strong>：向量数据库持久化存储。基于Embedding模型将历史交互转化为向量索引，配合RAG检索增强生成机制，实现跨会话的知识复用</li>
+          <li><strong>情景记忆 (Episodic Memory)</strong>：历史交互经验沉淀。自动提取成功/失败案例模式库，形成可复用的决策模板，支持相似场景快速响应</li>
+          <li><strong>语义记忆 (Semantic Memory)</strong>：领域知识图谱构建。将非结构化文档转化为结构化三元组存储，支持复杂的多跳推理查询</li>
+          <li><strong>记忆分层架构</strong>：L1(内存缓存) → L2(向量数据库) → L3(关系型DB)，实现性能与成本的动态平衡，热数据秒级访问，冷数据持久归档</li>
+        </ul>
+
+        <div class="project-code-block">// 记忆系统核心接口定义
+interface AgentMemory {
+  // 存储一段交互经历
+  store(episode: Episode): Promise&lt;void&gt;;
+
+  // 根据语义相似度检索相关记忆
+  retrieve(query: string, k?: number): Promise&lt;Episode[]&gt;;
+
+  // 对指定会话生成摘要
+  summarize(conversationId: string): Promise&lt;string&gt;;
+
+  // 遗忘低价值记忆（基于时间衰减+重要性评分）
+  forget(threshold: number): Promise&lt;number&gt;;
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="prompt-heading">
+        <h2 id="prompt-heading" class="project-heading">Prompt Engineering — 提示词工程</h2>
+        <p class="project-text">提示词是智能体的"指令语言"。本模块超越了简单的文本拼接，建立了系统化的提示词管理与优化体系。</p>
+
+        <ul class="project-list">
+          <li><strong>Few-Shot Learning 动态示例选择</strong>：维护示例池，根据用户输入的语义特征，通过向量检索匹配最相似的K个历史案例作为上下文示例，显著提升零样本任务的准确率</li>
+          <li><strong>Chain-of-Thought (CoT) 思维链引导</strong>：自动在Prompt中插入推理步骤引导模板，强制模型展示思考过程，提升复杂逻辑问题的解题正确率</li>
+          <li><strong>Self-Consistency 自洽性校验</strong>：对同一问题进行多次采样推理，通过多数投票机制筛选一致性最高的答案，有效降低幻觉(Hallucination)率</li>
+          <li><strong>Prompt模板引擎</strong>：支持变量插值(`{{variable}}`)、条件渲染(`{{#if}}`)、版本管理(git-like diff)、A/B测试对比的全生命周期管理</li>
+          <li><strong>对抗性鲁棒性防护</strong>：多层安全防线包括注入检测(Pattern Matching + LLM判断)、越狱防护(Output Filtering)、输出安全过滤(Sensitive Content Scanner)，符合企业合规要求</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="context-heading">
+        <h2 id="context-heading" class="project-heading">Context Engineering — 上下文工程</h2>
+        <p class="project-text">上下文是智能体的"感知范围"。本模块解决了如何在有限的Token预算内最大化信息密度的工程难题。</p>
+
+        <ul class="project-list">
+          <li><strong>动态上下文组装器</strong>：根据任务类型（问答/代码/分析/创作）自动决定组装策略，智能组合工具描述、历史记录、领域知识、实时数据等要素</li>
+          <li><strong>上下文压缩管线</strong>：基于信息熵评估的内容优先级排序算法，优先裁剪冗余问候语、重复表述、低价值细节，保留关键约束条件和决策依据</li>
+          <li><strong>多源数据融合层</strong>：统一抽象API接口/文档(RAG)/结构化数据库/非结构化文件等多种数据源的接入规范，屏蔽底层差异</li>
+          <li><strong>上下文窗口自适应</strong>：针对不同模型的窗口特性(GPT-4:128K / Claude:200K / Qwen:32K)做差异化适配，自动调整检索数量和摘要粒度</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="harness-heading">
+        <h2 id="harness-heading" class="project-heading">Harness Engineering — 整体工程框架</h2>
+        <p class="project-text">Harness是智能体的"骨骼与神经系统"，负责协调上述所有模块的协同运行。</p>
+
+        <ul class="project-list">
+          <li><strong>AgentScope集成</strong>：基于清华大学开源的多智能体编排框架，采用消息驱动(Message-driven)通信模式，支持广播/单播/组播多种消息路由策略</li>
+          <li><strong>Spring AI封装层</strong>：企业级Java生态深度整合，提供声明式Agent定义(`@Agent`注解)、自动Bean依赖注入、配置中心集成(Nacos/Apollo)</li>
+          <li><strong>MCP协议实现</strong>：Model Context Protocol标准对接，实现Tool调用/Resource获取/Prompt管理的统一抽象层，一次开发多平台复用</li>
+          <li><strong>A2A智能体通信</strong>：Agent-to-Agent协议支持，实现跨团队/跨系统的Agent互操作，支持能力发现(Capability Discovery)与服务编排(Service Orchestration)</li>
+          <li><strong>ReAct决策模式</strong>：Reasoning → Acting → Observation循环迭代，支持Thought链路追踪、Action执行超时控制、Observation结果验证的三阶段管控</li>
+          <li><strong>Plan-Execute规划模式</strong>：先生成执行计划(DAG图)，再按计划逐步执行，支持计划修正(Re-plan)、分支回溯(Rollback)、并行子任务(Fork-Join)</li>
+        </ul>
+
+        <div class="project-code-block">// Agent决策模式切换枚举
+enum DecisionMode {
+  REACT,         // 实时反应式：适合简单任务，延迟低
+  PLAN_EXECUTE   // 规划执行式：适合复杂任务，可控性强
+}
+
+// 核心Harness接口
+interface AgentHarness {
+  // 切换决策模式
+  setMode(mode: DecisionMode): void;
+
+  // 注册可用工具
+  registerTool(tool: ToolDefinition): void;
+
+  // 执行任务并返回结果
+  execute(task: TaskInput): Promise&lt;TaskResult&gt;;
+
+  // 获取当前执行状态快照
+  getStatus(): ExecutionStatus;
+}
+
+// 工具定义结构
+interface ToolDefinition {
+  name: string;
+  description: string;
+  parameters: Schema;
+  handler: (args: any) =&gt; Promise&lt;any&gt;;
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="project-heading">技术栈全景</h2>
+        <div class="project-tech-grid">
+          <div class="project-tech-card">
+            <div class="project-tech-name">AgentScope</div>
+            <div class="project-tech-desc">清华开源多智能体编排框架</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Spring AI</div>
+            <div class="project-tech-desc">Java企业级AI整合框架</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">MCP Protocol</div>
+            <div class="project-tech-desc">Model Context Protocol标准化</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">A2A Communication</div>
+            <div class="project-tech-desc">Agent-to-Agent互操作协议</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">LangChain</div>
+            <div class="project-tech-desc">LLM编排与应用框架</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Vector Database</div>
+            <div class="project-tech-desc">Milvus/Pgvector记忆存储</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Redis</div>
+            <div class="project-tech-desc">分布式缓存与会话管理</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Apache Kafka</div>
+            <div class="project-tech-desc">事件流处理与消息队列</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="architecture-heading">
+        <h2 id="architecture-heading" class="project-heading">架构设计要点</h2>
+        
+        <div class="project-stats-grid">
+          <div class="project-stat-card">
+            <div class="project-stat-value">4</div>
+            <div class="project-stat-label">核心工程模块</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">2+</div>
+            <div class="project-stat-label">决策模式支持</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">3</div>
+            <div class="project-stat-label">生产环境Agent类型</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">99.5%</div>
+            <div class="project-stat-label">目标可用性SLA</div>
+          </div>
+        </div>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">📊 已落地应用场景</div>
+          <div class="project-highlight-text">
+            在<strong>智慧租住SaaS平台</strong>中实现三类Agent协同工作：
+            <br><br>
+            • <strong>智能客服Agent</strong>：7×24小时在线应答，支持租客咨询/报修/投诉等多轮对话，自动工单创建与流转<br>
+            • <strong>运营分析Agent</strong>：定时采集业务数据，自动生成运营周报/月报，异常指标预警推送<br>
+            • <strong>IoT调度Agent</strong>：监控设备在线状态，智能门锁异常自动派单，保洁服务动态调度
+          </div>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="项目导航">
+        <a href="project-4-cross-border.html" class="project-nav-link project-nav-prev">跨境电商平台</a>
+        <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+        <a href="project-6-msa-framework.html" class="project-nav-link project-nav-next">微服务通用框架组件</a>
+      </nav>
+
+          <!-- 右侧项目章节目录 -->
+      
+    </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li>
+            <li class="toc-nav-item"><a href="#memory-heading" class="toc-nav-link">Memory Engineering — 记忆工程</a></li>
+            <li class="toc-nav-item"><a href="#prompt-heading" class="toc-nav-link">Prompt Engineering — 提示词工程</a></li>
+            <li class="toc-nav-item"><a href="#context-heading" class="toc-nav-link">Context Engineering — 上下文工程</a></li>
+            <li class="toc-nav-item"><a href="#harness-heading" class="toc-nav-link">Harness Engineering — 整体工程框架</a></li>
+            <li class="toc-nav-item"><a href="#tech-heading" class="toc-nav-link">技术栈全景</a></li>
+            <li class="toc-nav-item"><a href="#architecture-heading" class="toc-nav-link">架构设计要点</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 阅读进度条 -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- 返回顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

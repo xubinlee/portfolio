@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="跨境电商平台 — 微服务架构重构，核心模块设计与技术选型，支撑海外业务规模化扩张，全链路数据闭环">
+  <title>跨境电商平台 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+
+  <style>
+    /* ===== 右侧目录索引导航 ===== */
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">跨境电商平台</h1>
+        <p class="project-subtitle">微服务架构重构与核心模块设计 — 支撑海外业务规模化扩张的全链路电商解决方案</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> 电商平台 / 微服务</span>
+          <span class="project-meta-item"><span class="project-meta-label">影响力:</span> 91.0%</span>
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 项目Leader</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout"><article class="project-content-area">
+
+      <section class="project-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="project-heading">项目概述</h2>
+        <p class="project-text">在<strong>深圳市慕晨科技有限公司</strong>任职期间（2020.11 - 2022.05），我担任Java高级开发工程师兼项目Leader，主导了跨境电商平台的<strong>微服务架构全面重构</strong>。</p>
+        <p class="project-text">项目目标是将原有单体架构迁移至Spring Cloud微服务体系，支撑公司海外业务的<strong>规模化扩张</strong>需求。作为技术负责人，我负责核心模块架构设计、关键技术选型、团队任务分配与进度管控。</p>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🎯 项目成果</div>
+          <div class="project-highlight-text">
+            <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+              <li>从单体应用拆分为 <strong>12+ 微服务</strong></li>
+              <li>日均订单处理量从 <strong>5万 → 100万+</strong></li>
+              <li>搜索响应时间从 <strong>3秒 → &lt;200毫秒</strong></li>
+              <li>海外部署节点扩展至 <strong>3个区域</strong>(东南亚/欧洲/北美)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="refactor-heading">
+        <h2 id="refactor-heading" class="project-heading">架构重构策略</h2>
+        
+        <ul class="project-list">
+          <li><strong>领域驱动设计(DDD)划分服务边界</strong>：按照业务领域而非技术层次划分微服务。核心域：订单服务(Order)、商品服务(Product)、库存服务(Inventory)；支撑域：用户服务(User)、支付服务(Payment)、物流服务(Logistics)；通用域：通知服务(Notification)、文件服务(File)。避免出现"大泥球"反模式</li>
+          <li><strong>渐进式迁移(Strangler Fig Pattern)</strong>：不采用"大爆炸式"一次性切换。在单体应用前架设API Gateway，逐步将流量路由到新微服务。每个模块独立上线验证，风险可控</li>
+          <li><strong>数据库拆分策略</strong>：按服务拆分数据库(一服务一DB)，跨服务调用禁止直连他人DB，必须通过API或消息队列。历史数据通过ETL脚本做数据迁移与校验</li>
+          <li><strong>接口兼容性保障</strong>：新旧版本并行运行期间，API保持向后兼容(Versioning Header)。使用Consumer-Driven Contract测试确保契约不被破坏</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="core-module-heading">
+        <h2 id="core-module-heading" class="project-heading">核心模块设计</h2>
+        
+        <ul class="project-list">
+          <li><strong>订单服务(Order Service)</strong>：采用<strong>TCC分布式事务</strong>保证下单→扣库存→创建支付单的原子性。Try阶段预扣库存并冻结金额，Confirm阶段确认提交，Cancel阶段回滚释放。引入Seata框架简化TCC编码复杂度</li>
+          <li><strong>商品搜索(Search Service)</strong>：基于<strong>Elasticsearch</strong>构建全文检索能力。商品数据通过Canal监听MySQL Binlog实时同步到ES索引，支持多语言分词(IK Analyzer中文 / Standard英文)、Facet聚合筛选、Suggestion智能补全</li>
+          <li><strong>库存服务(Inventory Service)</strong>：<strong>Redis + Lua脚本</strong>实现超卖防护。扣减操作原子执行(DECRBY)，配合DB最终一致性补偿。支持多仓库库存同步、预售库存锁定、库存预警通知</li>
+          <li><strong>支付服务(Payment Service)</strong>：对接PayPal/Stripe等国际支付网关，统一封装支付/退款/回调处理逻辑。Webhook异步通知确保支付状态最终一致，本地状态机管理支付流转(PENDING → PROCESSING → SUCCESS/FAILED)</li>
+          <li><strong>多语言国际化(i18n)</strong>：前端Vue i18n + 后端MessageSource双层方案。商品标题/描述/规格等多语言字段独立存储，根据请求Accept-Language或用户偏好动态加载</li>
+        </ul>
+
+        <div class="project-code-block">// TCC分布式事务示例 - 下单流程
+@GlobalTransactional
+public OrderResult placeOrder(PlaceOrderCommand cmd) {
+  
+  // Try: 预扣库存
+  inventoryService.tryDeduct(cmd.getItemId(), cmd.getQuantity());
+  
+  // Try: 冻结资金
+  paymentService.tryFreeze(cmd.getUserId(), cmd.getAmount());
+  
+  // Confirm: 创建订单
+  Order order = orderRepository.save(new Order(cmd));
+  
+  return OrderResult.success(order.getId());
+}
+
+// 库存服务 TCC 实现
+public class InventoryTccAction implements TccAction {
+  
+  @TwoPhaseBusinessAction(name = "deductInventory")
+  public boolean tryDeduct(Integer itemId, Integer quantity) {
+    // 预扣库存到冻结表
+    return frozenStockDao.deduct(itemId, quantity);
+  }
+  
+  @TwoPhaseBusinessActionCommitMethod
+  public boolean confirmDeduct(BusinessActionContext ctx) {
+    // 从冻结表正式扣除
+    return frozenStockDao.confirm(ctx.getXid());
+  }
+  
+  @TwoPhaseBusinessActionRollbackMethod
+  public boolean cancelDeduct(BusinessActionContext ctx) {
+    // 回滚：恢复冻结库存
+    return frozenStockDao.rollback(ctx.getXid());
+  }
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="performance-heading">
+        <h2 id="performance-heading" class="project-heading">性能优化实践</h2>
+        
+        <ul class="project-list">
+          <li><strong>缓存体系设计</strong>：L1本地缓存(Caffeine) + L2分布式缓存(Redis Cluster)二级架构。热点商品信息本地缓存TTL 5min，减少网络开销；用户会话/购物车等个性化数据走Redis，支持跨实例共享</li>
+          <li><strong>数据库优化</strong>：慢查询分析(开启slow_query_log)定位Top10瓶颈SQL，添加复合索引覆盖WHERE条件；大表分区(按月分区订单表)；读写分离(MyCat中间件路由)</li>
+          <li><strong>JVM调优</strong>：G1垃圾收集器替代CMS，设置MaxGCPauseMillis=200ms目标停顿时间；堆内存从4G调整至8G；排查并修复OOM问题(某次批量导出功能未分页导致Full GC)</li>
+          <li><strong>CDN加速</strong>：静态资源(JS/CSS/图片)推送到Cloudflare CDN边缘节点，海外用户访问延迟降低60%+</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="project-heading">技术栈</h2>
+        <div class="project-tech-grid">
+          <div class="project-tech-card">
+            <div class="project-tech-name">Spring Cloud Alibaba</div>
+            <div class="project-tech-desc">微服务框架</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Seata</div>
+            <div class="project-tech-desc">分布式事务</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Elasticsearch</div>
+            <div class="project-tech-desc">搜索引擎</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Canal</div>
+            <div class="project-tech-desc">CDC数据同步</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Redis Cluster</div>
+            <div class="project-tech-desc">分布式缓存</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">RabbitMQ</div>
+            <div class="project-tech-desc">消息队列</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Vue.js 3</div>
+            <div class="project-tech-desc">前端框架</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Nginx</div>
+            <div class="project-tech-desc">反向代理/LB</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="role-heading">
+        <h2 id="role-heading" class="project-heading">我的角色与贡献</h2>
+        
+        <div class="project-stats-grid">
+          <div class="project-stat-card">
+            <div class="project-stat-value">Leader</div>
+            <div class="project-stat-label">项目角色</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">18个月</div>
+            <div class="project-stat-label">项目周期</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">8人</div>
+            <div class="project-stat-label">团队规模</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">12+</div>
+            <div class="project-stat-label">交付微服务数</div>
+          </div>
+        </div>
+
+        <ul class="project-list">
+          <li>制定整体技术方案与架构设计文档</li>
+          <li>负责核心模块(订单/搜索/库存)的技术攻关</li>
+          <li>组织每日站会、周迭代评审、技术分享会</li>
+          <li>Code Review把控代码质量，建立团队编码规范</li>
+          <li>处理线上故障On-call，主导根因分析与改进措施落地</li>
+        </ul>
+      </section>
+
+      <nav class="project-nav" aria-label="项目导航">
+        <a href="project-3-cicd.html" class="project-nav-link project-nav-prev">微服务零停机发布系统</a>
+        <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+        <a href="project-5-harness-engineering.html" class="project-nav-link project-nav-next">AI智能体工程化框架</a>
+      </nav>
+
+          <!-- 右侧项目章节目录 -->
+      
+    </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li>
+            <li class="toc-nav-item"><a href="#refactor-heading" class="toc-nav-link">架构重构策略</a></li>
+            <li class="toc-nav-item"><a href="#core-module-heading" class="toc-nav-link">核心模块设计</a></li>
+            <li class="toc-nav-item"><a href="#performance-heading" class="toc-nav-link">性能优化实践</a></li>
+            <li class="toc-nav-item"><a href="#tech-heading" class="toc-nav-link">技术栈</a></li>
+            <li class="toc-nav-item"><a href="#role-heading" class="toc-nav-link">我的角色与贡献</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 阅读进度条 -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- 返回顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

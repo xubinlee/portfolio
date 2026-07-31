@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI分布式多智能体智能库存管理系统 — 大模型+多智能体+EDA双引擎，全流程智能化盘点系统">
+  <title>AI分布式多智能体智能库存管理系统 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .project-layout {
+      display: flex; gap: 40px; max-width: var(--max-width);
+      margin: 0 auto; padding: var(--spacing-3xl) var(--spacing-lg);
+    }
+
+    .project-content-area {
+      flex: 1; min-width: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .project-layout { padding: var(--spacing-2xl) var(--spacing-md); }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">AI分布式多智能体智能库存管理系统</h1>
+        <p class="project-subtitle">大模型 + 多智能体 + EDA双引擎 — 全流程智能化盘点系统，盘点任务自动化、差异分析智能化、报告生成标准化</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 技术主管、AI架构</span>
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> AI / Multi-Agent</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产运行中</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout">
+      <article class="project-content-area">
+
+        <section class="project-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="project-heading">项目背景</h2>
+          <p class="project-text">传统仓储盘点依赖人工操作，存在<strong>效率低、误差大、流程不规范</strong>等痛点。引入大模型与多智能体技术打造全流程智能化盘点系统，实现<strong>盘点任务自动化、差异分析智能化与报告生成标准化</strong>。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🎯 核心价值主张</div>
+            <div class="project-highlight-text">
+              <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+                <li>盘点效率提升 <strong>10x+</strong>，人工干预率降低至 <strong>&lt; 5%</strong></li>
+                <li>差异分析准确率 <strong>&gt; 95%</strong>，异常归因可追溯</li>
+                <li>报告生成从小时级降至 <strong>分钟级</strong>，格式标准化</li>
+                <li>支持 <strong>Human-in-the-Loop</strong> 人工介入纠错与复盘迭代</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="agent-arch-heading">
+          <h2 id="agent-arch-heading" class="project-heading">分层多智能体架构</h2>
+          <p class="project-text">对标业界先进的 <strong>A2A 智能体通信标准</strong>，设计三级协作拓扑，采用 <strong>ReAct 决策模式</strong>实现复杂任务自主拆解、分布式协同与动态调度。</p>
+
+          <ul class="project-list">
+            <li><strong>监督智能体 (Supervisor Agent)</strong>：顶层编排中枢，负责盘点任务的全局规划、子任务拆解与分发、执行状态监控与异常兜底，基于 ReAct 模式自主决策下一步行动</li>
+            <li><strong>领域智能体 (Domain Agent)</strong>：按业务领域划分的专业智能体——库存查询Agent、盘点执行Agent、差异计算Agent、异常分析Agent、报告生成Agent，各司其职、独立演进</li>
+            <li><strong>工具智能体 (Tool Agent)</strong>：标准化封装底层业务能力接口——数据库查询、ERP对接、文件导出、消息通知等，通过 MCP 协议暴露为可调用工具，支持热插拔</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">📊 三级协作拓扑</div>
+            <div class="project-highlight-text">
+              <strong>L1 · 监督智能体</strong>：全局编排 + 任务拆解 + 状态监控 + 异常兜底<br>
+              <strong>L2 · 领域智能体</strong>：库存查询 / 盘点执行 / 差异计算 / 异常分析 / 报告生成<br>
+              <strong>L3 · 工具智能体</strong>：DB查询 / ERP对接 / 文件导出 / 消息通知 / MCP工具<br><br>
+              通信标准：A2A Protocol，支持能力发现(Capability Discovery)与服务编排(Service Orchestration)
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="stategraph-heading">
+          <h2 id="stategraph-heading" class="project-heading">StateGraph 工作流编排</h2>
+          <p class="project-text">基于 <strong>Spring AI Alibaba Graph</strong> 实现类 LangGraph 的有状态工作流引擎，设计七节点流程链路，支持条件分支路由、人工干预中断恢复及状态持久化。</p>
+
+          <ul class="project-list">
+            <li><strong>七节点流程链路</strong>：EDA优化 → 库存查询 → 盘点执行 → 差异计算 → 异常分析 → 复盘决策 → 人工审核，每个节点独立状态管理与错误恢复</li>
+            <li><strong>条件分支路由</strong>：根据差异率阈值、异常等级、业务规则动态路由——低差异自动通过、中差异触发复盘、高差异人工审核</li>
+            <li><strong>Human-in-the-Loop</strong>：在复盘决策与人工审核节点支持中断挂起，等待人工确认/修正后恢复执行，兼顾AI自动化与业务灵活性</li>
+            <li><strong>状态持久化</strong>：工作流状态快照持久化到 Redis，支持任务中断恢复、断点续跑、历史回溯</li>
+          </ul>
+
+          <div class="project-code-block">// StateGraph 七节点工作流定义
+@Bean
+public StateGraph&lt;InventoryState&gt; inventoryWorkflow() {
+  return new StateGraph.Builder&lt;&gt;(InventoryState.class)
+    .addNode("eda_optimize",   this::edaOptimize)
+    .addNode("query_stock",    this::queryStock)
+    .addNode("execute_count",  this::executeCount)
+    .addNode("calc_diff",      this::calcDifference)
+    .addNode("analyze_anomaly",this::analyzeAnomaly)
+    .addNode("review_decision",this::reviewDecision)
+    .addNode("human_audit",    this::humanAudit)
+    .addEdge(START, "eda_optimize")
+    .addEdge("eda_optimize", "query_stock")
+    .addEdge("query_stock",  "execute_count")
+    .addEdge("execute_count","calc_diff")
+    .addConditionalEdge("calc_diff", this::routeByDiffRate,
+      Map.of("auto_pass",  END,
+             "review",     "analyze_anomaly",
+             "human_audit","human_audit"))
+    .addEdge("analyze_anomaly", "review_decision")
+    .addConditionalEdge("review_decision", this::routeByDecision,
+      Map.of("approved", END,
+             "recount",   "execute_count",
+             "escalate",  "human_audit"))
+    .addEdge("human_audit", END)
+    .build();
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="mcp-gateway-heading">
+          <h2 id="mcp-gateway-heading" class="project-heading">AI工具网关建设</h2>
+          <p class="project-text">基于 <strong>MCP 协议</strong>标准化封装业务能力接口，依托 <strong>Nacos</strong> 实现工具服务动态注册与发现，解耦大模型智能体与业务系统，支持 Skill 插件热插拔。</p>
+
+          <ul class="project-list">
+            <li><strong>MCP 协议标准化</strong>：统一工具定义规范（名称/描述/参数Schema/返回格式），大模型通过标准化接口调用业务能力，无需感知底层实现差异</li>
+            <li><strong>Nacos 动态注册发现</strong>：工具服务启动时自动注册到 Nacos，智能体通过服务发现获取可用工具列表，支持运行时动态扩缩容</li>
+            <li><strong>Skill 插件热插拔</strong>：新增盘点策略/对接新ERP/接入新数据源只需开发 Skill 插件并注册，无需修改智能体核心逻辑</li>
+            <li><strong>解耦大模型与业务系统</strong>：工具网关作为中间层，隔离大模型推理与业务系统调用，任何一方变更不影响另一方</li>
+          </ul>
+
+          <div class="project-code-block">// MCP 工具注册示例
+@McpTool(name = "query_inventory", description = "查询指定仓库的库存数据")
+public class InventoryQueryTool {
+
+  @ToolAction(description = "按仓库和SKU查询实时库存")
+  public InventoryResult query(
+      @Param(name = "warehouseId", description = "仓库ID") String warehouseId,
+      @Param(name = "skuCodes",    description = "SKU编码列表") List&lt;String&gt; skuCodes) {
+    return inventoryService.queryRealtime(warehouseId, skuCodes);
+  }
+
+  @ToolAction(description = "查询历史盘点差异趋势")
+  public DiffTrendResult diffTrend(
+      @Param(name = "warehouseId", description = "仓库ID") String warehouseId,
+      @Param(name = "period",      description = "统计周期") String period) {
+    return diffAnalysisService.getTrend(warehouseId, period);
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="memory-heading">
+          <h2 id="memory-heading" class="project-heading">分层记忆工程体系</h2>
+          <p class="project-text">构建「短期上下文记忆 + 长期业务记忆」分层记忆架构，结合 <strong>AutoContextMemory 上下文压缩</strong>与 <strong>Mem0 云端记忆服务</strong>，实现业务认知持续迭代，同时降低大模型 Token 消耗，有效控制推理成本。</p>
+
+          <ul class="project-list">
+            <li><strong>短期上下文记忆 (Working Memory)</strong>：当前盘点会话的上下文管理，采用 AutoContextMemory 滑动窗口 + 摘要压缩，在 Token 预算内保留高信息密度内容，避免关键信息被截断</li>
+            <li><strong>长期业务记忆 (Long-term Memory)</strong>：基于 Mem0 云端记忆服务持久化存储历史盘点经验、差异模式库、异常归因知识，跨会话复用业务认知</li>
+            <li><strong>AutoContextMemory 上下文压缩</strong>：智能评估上下文各要素的信息价值，优先裁剪冗余内容保留决策依据，将 Token 消耗降低 40%+</li>
+            <li><strong>记忆迭代闭环</strong>：每次盘点结果自动沉淀为长期记忆，持续优化差异识别与异常归因的准确率，实现"越用越准"的业务认知进化</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🧠 记忆分层架构</div>
+            <div class="project-highlight-text">
+              <strong>L1 · 短期上下文</strong>：当前会话滑动窗口 + AutoContextMemory 压缩 → 毫秒级访问<br>
+              <strong>L2 · Mem0 云端记忆</strong>：历史盘点经验 + 差异模式库 + 异常归因知识 → 秒级检索<br>
+              <strong>L3 · 业务知识图谱</strong>：领域规则 + 仓库特性 + SKU关联 → 持久归档<br><br>
+              Token 消耗优化：AutoContextMemory 压缩率 &gt; 40%，推理成本降低 &gt; 30%
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="dual-engine-heading">
+          <h2 id="dual-engine-heading" class="project-heading">双引擎决策机制</h2>
+          <p class="project-text">首创「大模型语义分析 + EDA 分布估计算法全局优化」双引擎架构，利用大模型完成差异语义识别与异常归因，通过 EDA 算法对盘点数据进行全局进化校准，解决大模型数值幻觉与局部最优问题。</p>
+
+          <ul class="project-list">
+            <li><strong>大模型语义分析引擎</strong>：利用 LLM 的语义理解能力，完成差异原因自然语言解释、异常模式识别、非结构化数据（如备注/照片）理解，擅长"定性分析"</li>
+            <li><strong>EDA 分布估计算法引擎</strong>：基于概率模型的进化优化算法，对盘点数据进行全局分布估计与进化校准，通过选择-变异-采样迭代逼近最优解，擅长"定量优化"</li>
+            <li><strong>双引擎协同</strong>：大模型识别差异语义 → EDA 进行全局数值校准 → 大模型解释校准结果 → 迭代收敛，互补解决大模型数值幻觉与 EDA 语义缺失问题</li>
+            <li><strong>幻觉抑制</strong>：EDA 引擎作为"事实校准器"，对大模型输出的数值结果进行交叉验证，偏差超阈值自动触发重新推理</li>
+          </ul>
+
+          <div class="project-code-block">// 双引擎协同决策核心逻辑
+public class DualEngineDecision {
+
+  private final LLMEngine llmEngine;
+  private final EDAEngine edaEngine;
+
+  public DecisionResult decide(InventoryContext ctx) {
+    // Step 1: 大模型语义分析 — 识别差异原因
+    SemanticResult semantic = llmEngine.analyzeDiff(ctx);
+
+    // Step 2: EDA全局校准 — 进化优化数值结果
+    EDAResult calibrated = edaEngine.optimize(
+        ctx.getCountData(), semantic.getDiffPattern());
+
+    // Step 3: 交叉验证 — 抑制大模型数值幻觉
+    if (calibrated.deviation() > HALLUCINATION_THRESHOLD) {
+      semantic = llmEngine.reAnalyze(ctx, calibrated.feedback());
+      calibrated = edaEngine.reOptimize(semantic);
+    }
+
+    // Step 4: 大模型生成自然语言解释
+    String explanation = llmEngine.explain(
+        semantic, calibrated);
+
+    return new DecisionResult(
+        calibrated.optimalValues(),
+        explanation,
+        calibrated.confidence());
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="security-heading">
+          <h2 id="security-heading" class="project-heading">AI安全治理体系</h2>
+          <p class="project-text">构建 Prompt 注入防护、SQL 语法白名单校验、数据权限沙箱三层防护，严格拦截增删改等危险操作，确保 AI 调用业务系统的安全性。</p>
+
+          <ul class="project-list">
+            <li><strong>Prompt 注入防护</strong>：多层防线——输入层 Pattern Matching 检测已知攻击模式 + LLM 判断层识别语义级注入 + 输出层安全过滤拦截敏感内容泄露</li>
+            <li><strong>SQL 语法白名单校验</strong>：AI 生成的数据库查询语句必须通过白名单校验，仅允许 SELECT 操作，严格拦截 INSERT/UPDATE/DELETE 等危险操作</li>
+            <li><strong>数据权限沙箱</strong>：AI 调用业务接口时自动注入租户隔离与数据范围约束，确保智能体只能访问授权范围内的数据，杜绝越权访问</li>
+            <li><strong>操作审计日志</strong>：全链路记录 AI 调用链路（Prompt → Tool → Result），支持事后追溯与合规审计</li>
+          </ul>
+
+          <div class="project-code-block">// SQL白名单校验拦截器
+@Component
+public class SqlWhitelistInterceptor {
+
+  private static final Set&lt;String&gt; ALLOWED_PREFIXES =
+      Set.of("SELECT", "SHOW", "DESCRIBE", "EXPLAIN");
+
+  private static final Set&lt;String&gt; BLOCKED_KEYWORDS =
+      Set.of("INSERT", "UPDATE", "DELETE", "DROP",
+             "ALTER", "CREATE", "TRUNCATE", "GRANT");
+
+  public void validate(String sql) {
+    String normalized = sql.trim().toUpperCase();
+
+    // 拦截危险操作
+    for (String keyword : BLOCKED_KEYWORDS) {
+      if (normalized.contains(keyword)) {
+        throw new SecurityException(
+            "AI安全拦截: 禁止执行 " + keyword + " 操作");
+      }
+    }
+
+    // 校验白名单前缀
+    boolean allowed = ALLOWED_PREFIXES.stream()
+        .anyMatch(normalized::startsWith);
+    if (!allowed) {
+      throw new SecurityException(
+          "AI安全拦截: 非法SQL语句 - " + normalized);
+    }
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="fault-tolerance-heading">
+          <h2 id="fault-tolerance-heading" class="project-heading">容错与人机协同</h2>
+          <p class="project-text">基于 Redis 实现盘点工作流持久化与状态快照，支持任务中断恢复、人工介入纠错与复盘循环迭代，兼顾 AI 自动化与业务灵活性。</p>
+
+          <ul class="project-list">
+            <li><strong>工作流持久化</strong>：盘点工作流每个节点的状态快照持久化到 Redis，包括输入数据、执行结果、决策路径，支持断点续跑</li>
+            <li><strong>任务中断恢复</strong>：系统异常/网络中断/服务重启后，自动从最近快照恢复执行上下文，无需从头开始</li>
+            <li><strong>人工介入纠错</strong>：在复盘决策与人工审核节点，支持人工修正差异归因、调整盘点范围、覆盖AI决策，修正结果自动回写工作流状态</li>
+            <li><strong>复盘循环迭代</strong>：支持"差异超阈值 → 重新盘点 → 再次分析"的循环迭代，直到差异收敛或人工确认接受</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🔄 容错与协同机制</div>
+            <div class="project-highlight-text">
+              <strong>状态快照</strong>：每个工作流节点执行后自动快照到 Redis，TTL 7天<br>
+              <strong>中断恢复</strong>：异常后自动加载最近快照，从断点节点继续执行<br>
+              <strong>人工介入</strong>：Human-in-the-Loop 节点挂起等待，支持确认/修正/驳回<br>
+              <strong>复盘迭代</strong>：差异率 &gt; 阈值 → 自动触发复盘循环，最多 3 轮迭代
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="techstack-heading">
+          <h2 id="techstack-heading" class="project-heading">技术栈</h2>
+          <div class="project-tech-grid">
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring AI Alibaba</div>
+              <div class="project-tech-desc">AI应用开发框架</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">StateGraph</div>
+              <div class="project-tech-desc">有状态工作流引擎</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">MCP Protocol</div>
+              <div class="project-tech-desc">工具调用标准化协议</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">A2A Protocol</div>
+              <div class="project-tech-desc">智能体通信标准</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Mem0</div>
+              <div class="project-tech-desc">云端记忆服务</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">AutoContextMemory</div>
+              <div class="project-tech-desc">上下文压缩引擎</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">EDA算法引擎</div>
+              <div class="project-tech-desc">分布估计算法优化</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Nacos</div>
+              <div class="project-tech-desc">工具服务注册发现</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Redis</div>
+              <div class="project-tech-desc">状态持久化·快照</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">ReAct</div>
+              <div class="project-tech-desc">推理-行动决策模式</div>
+            </div>
+          </div>
+        </section>
+
+        <nav class="project-nav" aria-label="项目导航">
+          <a href="project-5-harness-engineering.html" class="project-nav-link project-nav-prev">AI智能体工程化框架</a>
+          <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+          <a href="project-2-smart-lock.html" class="project-nav-link project-nav-next">智能门锁保洁服务系统</a>
+        </nav>
+
+      </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目背景</a></li>
+            <li class="toc-nav-item"><a href="#agent-arch-heading" class="toc-nav-link">分层多智能体架构</a></li>
+            <li class="toc-nav-item"><a href="#stategraph-heading" class="toc-nav-link">StateGraph 工作流编排</a></li>
+            <li class="toc-nav-item"><a href="#mcp-gateway-heading" class="toc-nav-link">AI工具网关建设</a></li>
+            <li class="toc-nav-item"><a href="#memory-heading" class="toc-nav-link">分层记忆工程体系</a></li>
+            <li class="toc-nav-item"><a href="#dual-engine-heading" class="toc-nav-link">双引擎决策机制</a></li>
+            <li class="toc-nav-item"><a href="#security-heading" class="toc-nav-link">AI安全治理体系</a></li>
+            <li class="toc-nav-item"><a href="#fault-tolerance-heading" class="toc-nav-link">容错与人机协同</a></li>
+            <li class="toc-nav-item"><a href="#techstack-heading" class="toc-nav-link">技术栈</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+    updateReadingProgress();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

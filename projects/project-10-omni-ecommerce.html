@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="全域电商业务平台 — CRM/OMS/WMS/TMS/FMS/BI，打通多渠道多系统数据链路，业财一体化">
+  <title>全域电商业务平台 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+    .toc-nav-item { position: relative; margin-bottom: 6px; counter-increment: toc-counter; }
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+    .project-layout {
+      display: flex; gap: 40px; max-width: var(--max-width);
+      margin: 0 auto; padding: var(--spacing-3xl) var(--spacing-lg);
+    }
+    .project-content-area { flex: 1; min-width: 0; }
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .project-layout { padding: var(--spacing-2xl) var(--spacing-md); }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">全域电商业务平台</h1>
+        <p class="project-subtitle">CRM / OMS / WMS / TMS / FMS / BI — 打通多渠道、多系统、跨国内外电商的数据链路，实现业财一体化</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 技术负责人</span>
+          <span class="project-meta-item"><span class="project-meta-label">领域:</span> 全域电商中台</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产运行中</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout">
+      <article class="project-content-area">
+
+        <section class="project-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="project-heading">项目背景</h2>
+          <p class="project-text">各业务系统（第三方ERP、金蝶财务、自研系统、第三方物流）形成<strong>数据孤岛</strong>，订单-仓储-财务数据割裂，人工对账耗时易错。主导构建全域电商业务中台，打通多渠道、多系统、跨国内外电商的数据链路。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🎯 核心目标</div>
+            <div class="project-highlight-text">
+              <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+                <li>打通 <strong>CRM / OMS / WMS / TMS / FMS / BI</strong> 六大业务域数据链路</li>
+                <li>对接 <strong>领星/马帮/管易云</strong> 等第三方ERP系统</li>
+                <li>实现 <strong>平台账单→支付流水→财务凭证</strong> 三层对账自动化</li>
+                <li>对账效率提升 <strong>20x+</strong>，人工对账耗时从数天降至分钟级</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="infra-heading">
+          <h2 id="infra-heading" class="project-heading">基础设施与网关</h2>
+          <ul class="project-list">
+            <li><strong>Nacos 服务发现 + 多环境配置隔离</strong>：支持 dev/test/uat/prod 多环境配置隔离，配置热加载无需重启服务</li>
+            <li><strong>Spring Cloud Gateway 统一网关</strong>：统一入口路由 + Redis 令牌桶实现租户级/IP级双重限流，保障多系统接入场景下的流量管控</li>
+          </ul>
+        </section>
+
+        <section class="project-section" aria-labelledby="oms-heading">
+          <h2 id="oms-heading" class="project-heading">OMS — 订单管理系统</h2>
+          <p class="project-text">多渠道订单统一接入与智能调度，实现订单全生命周期管理。</p>
+
+          <ul class="project-list">
+            <li><strong>适配器模式 + 配置化路由规则</strong>：多渠道订单（Shopee/Lazada/TikTok Shop/自营站）通过适配器模式统一归一化处理，路由规则通过 Nacos 配置热加载，无需重启即可调整路由策略</li>
+            <li><strong>智能调度引擎</strong>：按仓库距离/库存水位/物流成本多维度加权评分，自动选择最优履约仓库，最大化降低履约成本</li>
+            <li><strong>Flowable 工作流编排</strong>：使用 Flowable 编排拆单/合单/换仓流程，支持人工审批节点与异常处理分支</li>
+            <li><strong>最终一致性保障</strong>：本地事务 + RocketMQ 事务消息保证订单状态与库存扣减的最终一致性，订单创建→库存预占→支付确认→库存实扣全链路可靠</li>
+          </ul>
+
+          <div class="project-code-block">// 订单履约路由 — 多维度加权评分
+@Component
+public class OrderFulfillmentRouter {
+
+  public Warehouse selectOptimal(List&lt;Warehouse&gt; warehouses,
+                                  Order order) {
+    return warehouses.stream()
+        .max(Comparator.comparingDouble(w ->
+            scoreByDistance(w, order.getAddress()) * 0.4
+          + scoreByInventory(w, order.getSkus())   * 0.35
+          + scoreByLogisticsCost(w, order)          * 0.25
+        ))
+        .orElseThrow(() -> new NoAvailableWarehouseException());
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="wms-heading">
+          <h2 id="wms-heading" class="project-heading">WMS — 仓储管理系统</h2>
+          <p class="project-text">以四层库存模型为基础，构建三层库存防超卖体系，确保库存数据的绝对准确。</p>
+
+          <ul class="project-list">
+            <li><strong>四层库存模型</strong>：可售库存（available）/ 在途库存（in_transit）/ 锁定库存（locked）/ 残次库存（defective），精细化区分库存状态，支持多维度库存查询</li>
+            <li><strong>三层库存防超卖体系</strong>：
+              <br>L1 · Redis Lua 原子预占：扣减前先原子预占库存，脚本保证检查+扣减的原子性，避免高并发超卖
+              <br>L2 · RocketMQ 延时消息超时释放：未支付订单的预占库存通过延时消息自动释放（默认15分钟），防止库存永久锁定
+              <br>L3 · XXL-Job 定时对账兜底：每小时对比 Redis 预占与 DB 实际库存，发现差异自动修正并告警</li>
+          </ul>
+
+          <div class="project-code-block">// Redis Lua 库存原子预占
+private static final String LUA_PRE_OCCUPY =
+  "local stock = redis.call('HGET', KEYS[1], ARGV[1]) " +
+  "if stock and tonumber(stock) >= tonumber(ARGV[2]) then " +
+  "  redis.call('HINCRBY', KEYS[1], ARGV[1], -ARGV[2]) " +
+  "  redis.call('HSET', KEYS[2], ARGV[3], ARGV[2]) " +
+  "  return 1 " +
+  "else " +
+  "  return 0 " +
+  "end";
+
+public boolean preOccupy(String sku, int quantity,
+                          String orderId) {
+  Long result = redisTemplate.execute(
+    new DefaultRedisScript<>(LUA_PRE_OCCUPY, Long.class),
+    Arrays.asList(
+      "stock:available:" + warehouseId,
+      "stock:locked:" + warehouseId),
+    sku, String.valueOf(quantity), orderId);
+  return result != null && result == 1;
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="tms-heading">
+          <h2 id="tms-heading" class="project-heading">TMS — 运输管理系统</h2>
+          <p class="project-text">策略模式 + 工厂模式封装物流商选择算法，RocketMQ驱动的轨迹推送与WebSocket实时刷新。</p>
+
+          <ul class="project-list">
+            <li><strong>策略模式 + 工厂模式封装物流商选择算法</strong>：按时效优先/成本优先/清关能力三个维度加权评分，工厂类根据订单目的国+包裹属性自动路由最优物流商</li>
+            <li><strong>RocketMQ 驱动轨迹推送</strong>：物流商回传轨迹事件经 RocketMQ 异步处理，解耦轨迹接收与业务处理，支持轨迹异常实时告警</li>
+            <li><strong>WebSocket 实时刷新</strong>：前端通过 WebSocket 订阅订单轨迹更新，无需轮询即可实时查看物流状态</li>
+            <li><strong>适配器模式统一账单格式</strong>：各家物流商账单格式差异通过适配器模式统一转换，屏蔽底层差异，自动生成标准化对账单</li>
+          </ul>
+
+          <div class="project-code-block">// 物流商选择算法
+@Component
+public class LogisticsSelector {
+
+  public LogisticsProvider select(Order order) {
+    List&lt;LogisticsProvider&gt; candidates =
+        providerRepo.findByCountry(order.getDestCountry());
+
+    return candidates.stream()
+        .max(Comparator.comparingDouble(p ->
+            scoreByTransitTime(p, order) * 0.35
+          + scoreByCost(p, order)          * 0.35
+          + scoreByCustomsCapability(p)     * 0.30
+        ))
+        .orElseThrow(() ->
+            new NoLogisticsAvailableException());
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="erp-heading">
+          <h2 id="erp-heading" class="project-heading">第三方 ERP 集成</h2>
+          <p class="project-text">适配器模式对接领星/马帮/管易云等第三方ERP，支持 OpenAPI/Webhook/MQ 三种同步通道，限流熔断 + 断点续传保障集成稳定性。</p>
+
+          <ul class="project-list">
+            <li><strong>适配器模式统一对接</strong>：领星/马帮/管易云等第三方ERP接口差异通过适配器模式透明化，业务层无需感知底层接口差异</li>
+            <li><strong>三种同步通道</strong>：OpenAPI 主动拉取（定时同步）、Webhook 被动接收（实时推送）、MQ 异步消息（削峰填谷），根据业务场景灵活选择</li>
+            <li><strong>限流熔断 + 断点续传</strong>：Sentinel 限流保护第三方API不被过度调用，Redis 记录同步进度支持断点续传，服务重启后自动从上次中断位置继续</li>
+          </ul>
+        </section>
+
+        <section class="project-section" aria-labelledby="finance-heading">
+          <h2 id="finance-heading" class="project-heading">业财一体 — 三层对账</h2>
+          <p class="project-text">构建平台账单对账→支付账单对账→财务凭证生成三层对账体系，实现全链路业财一体化。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">📊 三层对账体系</div>
+            <div class="project-highlight-text">
+              <strong>L1 · 平台账单对账</strong>：XXL-Job 分片并行拉取电商平台结算账单，与系统订单明细逐笔匹配，差异自动标记<br>
+              <strong>L2 · 支付账单对账</strong>：支付流水与订单金额自动核销，多币种汇率锁定杜绝汇率波动造成对账不平<br>
+              <strong>L3 · 财务凭证生成</strong>：配置化科目映射，RocketMQ 异步推送金蝶，定时对账兜底保障
+            </div>
+          </div>
+
+          <h3 class="project-subheading">L1 · 平台账单对账</h3>
+          <ul class="project-list">
+            <li><strong>XXL-Job 分片并行拉取</strong>：按店铺维度分片，多个 Executor 并行拉取各电商平台结算账单，Redis 记录拉取进度支持断点续传</li>
+            <li><strong>逐笔匹配 + 差异标记</strong>：账单明细与系统订单逐笔匹配（平台订单号+金额+时间），匹配成功自动确认，差异自动标记为待处理并推送预警</li>
+          </ul>
+
+          <h3 class="project-subheading">L2 · 支付账单对账</h3>
+          <ul class="project-list">
+            <li><strong>策略模式 + 工厂模式统一接入多渠道支付</strong>：各支付渠道对账单格式差异通过策略模式透明化，统一返回标准化对账数据结构</li>
+            <li><strong>Seata AT 保证核销-状态更新事务一致性</strong>：支付流水核销与订单状态更新绑定在同一分布式事务中，保证核销记录与订单状态的一致性</li>
+            <li><strong>多币种汇率锁定</strong>：下单时记录汇率→支付时锁定汇率存Redis→对账时使用锁定汇率换算，杜绝汇率波动导致对账不平</li>
+          </ul>
+
+          <div class="project-code-block">// 多币种汇率锁定
+@Component
+public class ExchangeRateLock {
+
+  // 下单时记录汇率
+  public void recordRateOnOrder(String orderId,
+      String fromCurrency, String toCurrency) {
+    BigDecimal rate = exchangeRateService.getRate(
+        fromCurrency, toCurrency);
+    // 锁定汇率，有效期30天
+    redisTemplate.opsForValue().set(
+        "rate:lock:" + orderId,
+        rate.toPlainString(),
+        Duration.ofDays(30));
+  }
+
+  // 对账时使用锁定汇率
+  public BigDecimal getLockedRate(String orderId) {
+    String rate = redisTemplate.opsForValue()
+        .get("rate:lock:" + orderId);
+    Assert.notNull(rate, "订单汇率已过期或不存在: " + orderId);
+    return new BigDecimal(rate);
+  }
+}</div>
+
+          <h3 class="project-subheading">L3 · 财务凭证生成</h3>
+          <ul class="project-list">
+            <li><strong>配置化科目映射</strong>：业务单据类型与财务科目通过配置化映射表管理，新增业务类型只需配置不需改代码，支持 Nacos 热加载</li>
+            <li><strong>RocketMQ 异步推送金蝶</strong>：对账完成的对账记录通过 RocketMQ 异步生成财务凭证并推送金蝶，削峰填谷保障系统稳定性</li>
+            <li><strong>XXL-Job 定时对账兜底</strong>：每小时检查推送状态，匹配失败/推送失败自动重试，达到阈值推送预警</li>
+          </ul>
+        </section>
+
+        <section class="project-section" aria-labelledby="techstack-heading">
+          <h2 id="techstack-heading" class="project-heading">技术栈</h2>
+          <div class="project-tech-grid">
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring Cloud Alibaba</div>
+              <div class="project-tech-desc">微服务全家桶</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Nacos</div>
+              <div class="project-tech-desc">注册中心·配置中心</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring Cloud Gateway</div>
+              <div class="project-tech-desc">统一API网关</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Redis</div>
+              <div class="project-tech-desc">分布式缓存·Lua脚本</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">RocketMQ</div>
+              <div class="project-tech-desc">事务消息·延时消息</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Seata</div>
+              <div class="project-tech-desc">分布式事务 AT模式</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">XXL-Job</div>
+              <div class="project-tech-desc">分布式定时调度</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Flowable</div>
+              <div class="project-tech-desc">工作流编排引擎</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">WebSocket</div>
+              <div class="project-tech-desc">实时推送</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Sentinel</div>
+              <div class="project-tech-desc">限流熔断</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">MyBatis-Plus</div>
+              <div class="project-tech-desc">ORM框架</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">MySQL</div>
+              <div class="project-tech-desc">关系型数据库</div>
+            </div>
+          </div>
+        </section>
+
+        <nav class="project-nav" aria-label="项目导航">
+          <a href="project-9-cross-border-ecommerce.html" class="project-nav-link project-nav-prev">自研跨境电商国家站平台</a>
+          <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+          <a href="project-1-saas.html" class="project-nav-link project-nav-next">智慧租住SaaS平台</a>
+        </nav>
+
+      </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目背景</a></li>
+            <li class="toc-nav-item"><a href="#infra-heading" class="toc-nav-link">基础设施与网关</a></li>
+            <li class="toc-nav-item"><a href="#oms-heading" class="toc-nav-link">OMS 订单管理系统</a></li>
+            <li class="toc-nav-item"><a href="#wms-heading" class="toc-nav-link">WMS 仓储管理系统</a></li>
+            <li class="toc-nav-item"><a href="#tms-heading" class="toc-nav-link">TMS 运输管理系统</a></li>
+            <li class="toc-nav-item"><a href="#erp-heading" class="toc-nav-link">第三方 ERP 集成</a></li>
+            <li class="toc-nav-item"><a href="#finance-heading" class="toc-nav-link">业财一体 — 三层对账</a></li>
+            <li class="toc-nav-item"><a href="#techstack-heading" class="toc-nav-link">技术栈</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) currentHeading = heading.id;
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) link.classList.add('active');
+      });
+    }
+
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetElement = document.getElementById(this.getAttribute('href').substring(1));
+        if (targetElement) window.scrollTo({ top: targetElement.offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc(); updateReadingProgress(); toggleBackToTop(); ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc(); updateReadingProgress();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

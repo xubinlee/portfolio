@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="微服务通用框架组件 — 基于Spring Cloud Alibaba生态的企业级微服务基础平台，集成注册发现、配置中心、网关、熔断降级、分布式事务等核心能力">
+  <title>微服务通用框架组件 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+
+  <style>
+    /* ===== 右侧目录索引导航 ===== */
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">微服务通用框架组件</h1>
+        <p class="project-subtitle">基于Spring Cloud Alibaba生态的企业级微服务基础平台 — 一站式解决服务治理、配置管理、流量控制、分布式事务等核心问题</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> 微服务 / 基础架构</span>
+          <span class="project-meta-item"><span class="project-meta-label">影响力:</span> 97.2%</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产运行中</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout"><article class="project-content-area">
+
+      <section class="project-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="project-heading">框架概述</h2>
+        <p class="project-text">本框架是一套<strong>企业级微服务基础设施平台</strong>，基于<strong>Spring Cloud Alibaba</strong>技术栈构建，整合了微服务架构所需的全部核心组件。</p>
+        <p class="project-text">作为技术主管主导的基础设施建设项目，该框架已支撑公司内部<strong>12+业务微服务</strong>稳定运行超过3年，日均处理请求量达<strong>千万级</strong>。通过统一的框架封装，新业务服务接入时间从原来的<strong>2周缩短至3天</strong>。</p>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🎯 设计目标</div>
+          <div class="project-highlight-text">
+            <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+              <li><strong>开箱即用</strong>：引入Starter依赖即可获得全套微服务能力</li>
+              <li><strong>统一规范</strong>：强制执行编码标准、接口契约、异常处理规范</li>
+              <li><strong>可观测性</strong>：内置链路追踪、指标采集、日志聚合能力</li>
+              <li><strong>高可用</strong>：所有组件均支持集群部署与故障自动转移</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="architecture-heading">
+        <h2 id="architecture-heading" class="project-heading">核心组件架构</h2>
+        
+        <div class="project-stats-grid">
+          <div class="project-stat-card">
+            <div class="project-stat-value">8+</div>
+            <div class="project-stat-label">核心组件数</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">12+</div>
+            <div class="project-stat-label">接入业务服务</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">99.9%</div>
+            <div class="project-stat-label">整体可用性</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">3天</div>
+            <div class="project-stat-label">新服务接入周期</div>
+          </div>
+        </div>
+
+        <ul class="project-list">
+          <li><strong>Nacos — 服务注册发现 & 配置中心</strong>：双模式合一。服务实例自动注册与健康检查(心跳/TCP/HTTP三种模式)；配置支持Namespace环境隔离 + Group分组管理 + 动态刷新(@RefreshScope)。集群部署采用Raft协议保证一致性</li>
+          <li><strong>Spring Cloud Gateway — API网关</strong>：统一入口层，集成鉴权(JWT Token校验)、限流(Sentinel)、路由转发、日志记录四大横切关注点。支持动态路由配置(Nacos同步)、灰度发布(Header匹配)</li>
+          <li><strong>Sentinel — 流量控制 & 熔断降级</strong>：实时监控QPS/RT/线程数等指标，支持QPS流控(快速失败/Warm Up/排队等待)、熔断降级(慢调用比例/异常比例/异常数三种策略)。Dashboard可视化配置规则，支持热更新不重启</li>
+          <li><strong>Seata — 分布式事务解决方案</strong>：支持AT(自动补偿)、TCC(手动确认/取消)、SAGA长事务、XA四种模式。AT模式对业务代码零侵入，通过undo_log表实现回滚。集成Nacos做全局事务协调器(TC)</li>
+          <li><strong>RocketMQ — 消息队列</strong>：异步解耦与削峰填谷。封装统一消息模板(MsaTemplate)，支持可靠生产(同步/异步/单向)、顺序消息(分区有序)、事务消息(半消息机制)、延时消息(18个级别)</li>
+          <li><strong>SkyWalking — 分布式链路追踪</strong>：Agent无侵入式埋点，自动生成调用链拓扑图。支持性能剖析(Snapshot)、服务告警(Webhook通知)、度量指标(Prometheus导出)</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="nacos-heading">
+        <h2 id="nacos-heading" class="project-heading">Nacos 注册发现 & 配置中心</h2>
+        
+        <ul class="project-list">
+          <li><strong>服务注册机制</strong>：基于gRPC长连接的心跳上报模型。服务启动时向Nacos Server注册Instance(IP+Port+Metadata)，默认5秒心跳间隔，连续15秒未收到心跳标记为不健康，30秒后剔除</li>
+          <li><strong>健康检查策略</strong>：提供Client端主动上报(Server不探测)和Server端主动探测(Client被动响应)两种模式。推荐TCP端口探测模式，准确判断进程存活状态</li>
+          <li><strong>配置管理模型</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><code>Namespace</code>：环境隔离(dev/test/prod)，物理隔离不同环境的配置</li>
+              <li><code>Group</code>：业务分组(order-group/payment-group)，逻辑区分不同业务线</li>
+              <li><code>DataId</code>：具体配置文件标识(application.yml / datasource.yml)</li>
+            </ul>
+          </li>
+          <li><strong>动态刷新机制</strong>：配置变更时Nacos Server推送Long Polling通知 → Client拉取最新配置 → 触发RefreshEvent事件 → Spring容器刷新@Value/@ConfigurationProperties标注的Bean</li>
+        </ul>
+
+        <div class="project-code-block">// Nacos配置示例
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:nacos-cluster}:8848
+        namespace: ${PROFILE:prod}
+        group: MSA_FRAMEWORK
+        metadata:
+          version: ${project.version}
+          region: cn-south
+      config:
+        server-addr: ${NACOS_HOST:nacos-cluster}:8848
+        namespace: ${PROFILE:prod}
+        shared-configs:
+          - data-id: common-mysql.yaml
+            group: SHARED_CONFIG
+            refresh: true
+          - data-id: common-redis.yaml
+            group: SHARED_CONFIG
+            refresh: true
+
+// 自定义配置类示例
+@Configuration
+@RefreshScope
+public class MsaFrameworkProperties {
+    
+    @Value("${msa.request.timeout:5000}")
+    private int requestTimeout;
+    
+    @Value("${msa.retry.max-attempts:3}")
+    private int maxRetryAttempts;
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="gateway-heading">
+        <h2 id="gateway-heading" class="project-heading">Gateway 网关路由</h2>
+        
+        <ul class="project-list">
+          <li><strong>路由断言工厂(Route Predicate Factory)</strong>：支持Path(路径匹配)/Method(HTTP方法)/Header(请求头)/Query(查询参数)/Cookie/Cookie/Host/IP/Weight等多种断言组合。实现灵活的路由规则定义</li>
+          <li><strong>过滤器链(Filter Chain)</strong>：
+            <br><br>
+            <strong>Global Filter（全局）：</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>AuthFilter：JWT Token解析与用户身份注入</li>
+              <li>LogFilter：请求/响应日志记录(含耗时统计)</li>
+              <li>TraceFilter：TraceId生成与透传(SkyWalking集成)</li>
+              <li>ErrorFilter：统一异常捕获与友好错误响应</li>
+            </ul>
+            <br>
+            <strong>Gateway Filter（路由级）：</strong>
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>RatelimitFilter：Sentinel限流拦截</li>
+              <li>StripPrefixFilter：路径前缀剥离(/api/v1/order → /order)</li>
+              <li>RetryFilter：失败重试(可配次数与状态码)</li>
+              <li>CorsFilter：跨域资源共享配置</li>
+            </ul>
+          </li>
+          <li><strong>动态路由加载</strong>：路由配置存储于Nacos，网关启动时拉取并监听变更。新增服务无需重启网关，配置生效延迟&lt;5s</li>
+        </ul>
+
+        <div class="project-code-block">// Gateway路由配置(YAML)
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://msa-order-service
+          predicates:
+            - Path=/api/order/**
+            - Header=X-Request-Source, mobile|web
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@ipKeyResolver}"
+        
+        - id: payment-service
+          uri: lb://msa-payment-service
+          predicates:
+            - Path=/api/payment/**
+          metadata:
+            response-timeout: 10000
+            retry-count: 3
+
+// 自定义全局过滤器示例
+@Component
+public class AuthGlobalFilter implements GlobalFilter, Ordered {
+    
+    @Override
+    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, 
+                                GatewayFilterChain chain) {
+        String token = exchange.getRequest()
+            .getHeaders().getFirst("Authorization");
+        
+        if (token == null || !jwtUtil.validate(token)) {
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.writeWith(
+                Mono.just(response.bufferFactory()
+                    .wrap("{\"code\":401,\"msg\":\"Unauthorized\"}".getBytes()))
+            );
+        }
+        
+        return chain.filter(exchange);
+    }
+    
+    @Override
+    public int getOrder() { return -100; }
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="sentinel-heading">
+        <h2 id="sentinel-heading" class="project-heading">Sentinel 流量控制 & 熔断降级</h2>
+        
+        <ul class="project-list">
+          <li><strong>流量控制规则</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><strong>QPS流控</strong>：限制每秒请求数量。阈值100表示最多100QPS</li>
+              <li><strong>并发线程数</strong>：限制同时处理的线程数。防止慢调用耗尽线程池</li>
+              <li><strong>流控效果</strong>：
+                <ul style="padding-left:var(--spacing-lg);margin-top:var(--spacing-xs);">
+                  <li><em>Fast Fail</em>(直接拒绝)：超出阈值立即返回错误</li>
+                  <li><em>Warm Up</em>(预热)：冷启动时逐步放开流量，避免瞬时冲击</li>
+                  <li><em>Queueing Wait</em>(匀速排队)：超出的请求排队等待，适合突发流量</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><strong>熔断降级规则</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><strong>慢调用比例</strong>：RT超过阈值(如500ms)的请求占比达到阈值(如50%)触发熔断</li>
+              <li><strong>异常比例</strong>：异常数占总请求数的比例触发熔断</li>
+              <li><strong>异常数</strong>：绝对异常数量触发熔断(适用于小流量场景)</li>
+              <li><strong>熔断时长</strong>：进入Open状态后的持续时间(如10s)，之后进入Half-Open试探</li>
+            </ul>
+          </li>
+          <li><strong>热点参数限流</strong>：针对特定参数值(如用户ID)单独设置限流规则。VIP用户可配置更高阈值</li>
+          <li><strong>系统自适应保护</strong>：根据系统Load1/CPU使用率/平均RT/入口QPS/并发线程数综合计算系统水位，自动调整流控阈值(BBR算法思想)</li>
+        </ul>
+
+        <div class="project-code-block">// Sentinel注解式使用示例
+@RestController
+@RequestMapping("/api/order")
+public class OrderController {
+
+    @GetMapping("/{orderId}")
+    @SentinelResource(
+        value = "getOrderDetail",
+        blockHandler = "handleBlock",
+        fallback = "handleFallback"
+    )
+    public Result&lt;OrderVO&gt; getOrderDetail(@PathVariable Long orderId) {
+        return Result.success(orderService.getById(orderId));
+    }
+
+    // 流控/熔断触发的降级处理
+    public Result&lt;OrderVO&gt; handleBlock(Long orderId, BlockException ex) {
+        log.warn("订单查询被限流, orderId={}, reason={}", orderId, ex.getClass());
+        return Result.fail(429, "系统繁忙，请稍后再试");
+    }
+
+    // 业务异常的兜底处理
+    public Result&lt;OrderVO&gt; handleFallback(Long orderId, Throwable t) {
+        log.error("订单查询异常, orderId={}", orderId, t);
+        return Result.fail(500, "订单服务暂时不可用");
+    }
+}
+
+// Sentinel规则持久化到Nacos配置
+@Component
+public class SentinelRulePublisher implements CommandLineRunner {
+
+    @Override
+    public void run(String... args) {
+        List&lt;FlowRule&gt; rules = new ArrayList&lt;&gt;();
+        
+        FlowRule orderRule = new FlowRule();
+        orderRule.setResource("getOrderDetail");
+        orderRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
+        orderRule.setCount(200); // QPS阈值
+        orderRule.setLimitApp("default");
+        orderRule.setStrategy(RuleConstant.STRATEGY_DIRECT);
+        orderRule.setControlBehavior(CONTROL_BEHAVIOR_DEFAULT);
+        rules.add(orderRule);
+
+        FlowRuleManager.loadRules(rules);
+    }
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="seata-heading">
+        <h2 id="seata-heading" class="project-heading">Seata 分布式事务</h2>
+        
+        <ul class="project-list">
+          <li><strong>AT模式(Auto Transaction)</strong>：<strong>最常用</strong>，对业务代码零侵入。一阶段提交本地事务，二阶段全局回滚时通过undo_log表自动生成反向SQL补偿。前提是业务SQL满足以下约束：不支持INSERT...SELECT、不支持嵌套事务、UPDATE必须带WHERE条件且命中唯一索引</li>
+          <li><strong>TCC模式(Try-Confirm-Cancel)</strong>：强一致性要求场景。Try阶段预留资源(冻结库存/锁定金额)，Confirm确认提交，Cancel释放资源。需要手动编写三个接口的实现</li>
+          <li><strong>SAGA模式</strong>：长事务场景(如订单→支付→发货→签收全流程)。每个子事务正向操作+补偿操作，最终一致性的保证</li>
+          <li><strong>角色分工</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><strong>TM(Transaction Manager)</strong>：发起全局事务的业务方，@GlobalTransactional标注</li>
+              <li><strong>RM(Resource Manager)</strong>：参与者，管理分支事务与undo_log</li>
+              <li><strong>TC(Transaction Coordinator)</strong>：协调者，维护全局事务状态(XID/BranchId)，驱动二阶段提交或回滚</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="project-code-block">// AT模式分布式事务示例
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
+    private InventoryFeignClient inventoryClient;
+
+    @Autowired
+    private AccountFeignClient accountClient;
+
+    @Override
+    @GlobalTransactional(name = "createOrderTx", rollbackFor = Exception.class)
+    public Long createOrder(CreateOrderCommand cmd) {
+        
+        // 1. 创建订单 (本地事务)
+        Order order = new Order();
+        order.setUserId(cmd.getUserId());
+        order.setAmount(cmd.getTotalAmount());
+        order.setStatus(OrderStatus.CREATED);
+        orderMapper.insert(order);
+
+        // 2. 扣减库存 (远程RPC - RM分支事务)
+        inventoryClient.deduct(cmd.getItemId(), cmd.getQuantity());
+
+        // 3. 扣减余额 (远程RPC - RM分支事务)
+        accountClient.deduct(cmd.getUserId(), cmd.getTotalAmount());
+
+        // 4. 更新订单状态为已支付
+        order.setStatus(OrderStatus.PAID);
+        orderMapper.updateById(order);
+
+        return order.getId();
+    }
+}
+
+// Seata配置
+seata:
+  enabled: true
+  application-id: msa-order-service
+  tx-service-group: my_tx_group
+  service:
+    vgroup-mapping:
+      my_tx_group: default
+  registry:
+    type: nacos
+    nacos:
+      server-addr: ${NACOS_HOST}:8848
+      namespace: prod
+      group: SEATA_GROUP
+  config:
+    type: nacos
+    nacos:
+      server-addr: ${NACOS_HOST}:8848
+      namespace: prod
+      group: SEATA_GROUP</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="mq-heading">
+        <h2 id="mq-heading" class="project-heading">RocketMQ 消息队列</h2>
+        
+        <ul class="project-list">
+          <li><strong>MsaTemplate 统一封装</strong>：屏蔽底层RocketMQ Client细节，提供syncSend/asyncSend/sendOneWay三种发送方式。内置重试机制(3次指数退避)、消息轨迹记录、发送结果回调</li>
+          <li><strong>消息可靠性保障</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li><strong>生产者</strong>：Sync模式下Broker ACK确认才返回成功；开启事务消息防丢；本地持久化未确认消息</li>
+              <li><strong>Broker</strong>：主从同步复制(同步刷盘+同步复制)、Dledger Raft选主</li>
+              <li><strong>消费者</strong>：ACK消费确认(消费成功后才offset+1)；失败消息进入死信队列(DLQ)人工介入</li>
+            </ul>
+          </li>
+          <li><strong>顺序消息</strong>：同一业务键(如订单ID)的消息路由到同一个Queue，保证FIFO顺序消费。适用于订单状态流转、资金流水等场景</li>
+          <li><strong>延时消息</strong>：支持18个等级(1s/5s/10s/30s/1m/2m/3m/4m/5m/6m/7m/8m/9m/10m/20m/30m/1h/2h)。用于订单超时取消、活动定时提醒等场景</li>
+        </ul>
+
+        <div class="project-code-block">// MsaTemplate 使用示例
+@Service
+public class OrderEventService {
+
+    @Autowired
+    private MsaTemplate msaTemplate;
+
+    // 异步发送订单创建事件
+    public void sendOrderCreatedEvent(OrderCreatedEvent event) {
+        msaTemplate.asyncSend(
+            "order-created-topic",     // Topic
+            event,                      // 消息体
+            String.valueOf(event.getOrderId()), // 业务Key(用于顺序消息)
+            new SendCallback() {
+                @Override
+                public void onSuccess(SendResult result) {
+                    log.info("订单事件发送成功, msgId={}", result.getMsgId());
+                }
+                @Override
+                public void onException(Throwable e) {
+                    log.error("订单事件发送失败", e);
+                }
+            }
+        );
+    }
+
+    // 发送延时消息(30分钟后取消超时未支付订单)
+    public void sendOrderTimeoutCheck(Long orderId) {
+        Message msg = MessageBuilder.withPayload(orderId)
+            .setHeader(MessageConst.PROPERTY_DELAY_TIME_LEVEL, "16") // 30分钟
+            .build();
+        msaTemplate.syncSend("order-timeout-check-topic", msg);
+    }
+}
+
+// 消费者监听示例
+@Component
+@RocketMQMessageListener(
+    topic = "order-created-topic",
+    consumerGroup = "inventory-consumer-group",
+    consumeMode = ConsumeMode.ORDERLY,  // 顺序消费
+    messageModel = MessageModel.CLUSTERING
+)
+public class InventoryConsumer implements RocketMQListener&lt;OrderCreatedEvent&gt; {
+
+    @Autowired
+    private InventoryService inventoryService;
+
+    @Override
+    public void onMessage(OrderCreatedEvent event) {
+        try {
+            inventoryService.reserveStock(
+                event.getItemId(), 
+                event.getQuantity(),
+                event.getOrderId()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("库存扣减失败，触发重试", e);
+        }
+    }
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="observability-heading">
+        <h2 id="observability-heading" class="project-heading">可观测性体系</h2>
+        
+        <ul class="project-list">
+          <li><strong>SkyWalking 链路追踪</strong>：Agent字节码增强自动埋点，覆盖HTTP/RPC/MQ/DB/Cache全链路。Topo视图展示服务间调用关系，Trace视图展示单次请求完整调用链路(含各Span耗时占比)</li>
+          <li><strong>结构化日志</strong>：Logback + JSON Layout输出，包含traceId/spanId字段便于关联查询。ELK Stack(Elasticsearch + Logstash + Kibana)集中收集与分析</li>
+          <li><strong>Metrics 指标采集</strong>：Micrometer + Prometheus Exporter暴露JVM/HTTP/MQ等指标。Grafana Dashboard可视化展示QPS/RT/Error Rate/P95/P99等关键指标</li>
+          <li><strong>告警规则</strong>：
+            <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
+              <li>P99延迟连续5分钟 > 2s → P1告警(电话+短信)</li>
+              <li>错误率 > 1% 持续3分钟 → P2告警(企业微信)</li>
+              <li>服务实例宕机(心跳丢失) → P0告警(立即电话)</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="project-heading">技术栈全景</h2>
+        <div class="project-tech-grid">
+          <div class="project-tech-card">
+            <div class="project-tech-name">Spring Boot 2.7</div>
+            <div class="project-tech-desc">应用框架基座</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Spring Cloud Alibaba</div>
+            <div class="project-tech-desc">微服务全家桶</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Nacos 2.x</div>
+            <div class="project-tech-desc">注册&配置中心</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Sentinel 1.8</div>
+            <div class="project-tech-desc">流量控制</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Seata 1.7</div>
+            <div class="project-tech-desc">分布式事务</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">RocketMQ 5.x</div>
+            <div class="project-tech-desc">消息队列</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">SkyWalking 9.x</div>
+            <div class="project-tech-desc">链路追踪APM</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Redis Cluster</div>
+            <div class="project-tech-desc">缓存&限流计数</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="best-practice-heading">
+        <h2 id="best-practice-heading" class="project-heading">最佳实践 & 规范</h2>
+        
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">📋 强制执行的编码规范</div>
+          <div class="project-highlight-text">
+            <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+              <li><strong>接口版本管理</strong>：RESTful URL必须带版本号前缀 `/api/v{major}/resource`</li>
+              <li><strong>统一响应格式</strong>：`Result<T>` 包装(code/message/data/timestamp)，禁止直接返回实体</li>
+              <li><strong>异常体系</strong>：自定义BusinessException(业务异常)与SystemException(系统异常)，全局ExceptionHandler统一捕获</li>
+              <li><strong>DTO隔离</strong>：Controller接收RequestVO、返回ResponseVO，禁止Entity透传到Controller层</li>
+              <li><strong>分页规范</strong>：统一使用PageHelper/Page对象，前端传pageNum/pageSize，返回total/list</li>
+              <li><strong>ID生成</strong>：雪花算法(Snowflake)生成全局唯一ID，禁止使用数据库自增</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="project-code-block">// 统一响应格式
+@Data
+@AllArgsConstructor
+public class Result&lt;T&gt; implements Serializable {
+    private int code;
+    private String message;
+    private T data;
+    private long timestamp;
+
+    public static &lt;T&gt; Result&lt;T&gt; success(T data) {
+        return new Result&lt;&gt;(200, "success", data, System.currentTimeMillis());
+    }
+
+    public static &lt;T&gt; Result&lt;T&gt; fail(int code, String msg) {
+        return new Result&lt;&gt;(code, msg, null, System.currentTimeMillis());
+    }
+}
+
+// 全局异常处理器
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public Result&lt;Void&gt; handleBusiness(BusinessException e) {
+        log.warn("业务异常: {}", e.getMessage());
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Result&lt;Void&gt; handleSystem(Exception e) {
+        log.error("系统异常", e);
+        return Result.fail(500, "服务器内部错误");
+    }
+}</div>
+      </section>
+
+      <nav class="project-nav" aria-label="项目导航">
+        <a href="project-5-harness-engineering.html" class="project-nav-link project-nav-prev">AI智能体工程化框架</a>
+        <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+        <a href="project-7-cicd-pipeline.html" class="project-nav-link project-nav-next">企业级CI/CD流水线平台</a>
+      </nav>
+
+          <!-- 右侧项目章节目录 -->
+      
+    </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">框架概述</a></li>
+            <li class="toc-nav-item"><a href="#architecture-heading" class="toc-nav-link">核心组件架构</a></li>
+            <li class="toc-nav-item"><a href="#nacos-heading" class="toc-nav-link">Nacos 注册发现 & 配置中心</a></li>
+            <li class="toc-nav-item"><a href="#gateway-heading" class="toc-nav-link">Gateway 网关路由</a></li>
+            <li class="toc-nav-item"><a href="#sentinel-heading" class="toc-nav-link">Sentinel 流量控制 & 熔断降级</a></li>
+            <li class="toc-nav-item"><a href="#seata-heading" class="toc-nav-link">Seata 分布式事务</a></li>
+            <li class="toc-nav-item"><a href="#mq-heading" class="toc-nav-link">RocketMQ 消息队列</a></li>
+            <li class="toc-nav-item"><a href="#observability-heading" class="toc-nav-link">可观测性体系</a></li>
+            <li class="toc-nav-item"><a href="#tech-heading" class="toc-nav-link">技术栈全景</a></li>
+            <li class="toc-nav-item"><a href="#best-practice-heading" class="toc-nav-link">最佳实践 & 规范</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 阅读进度条 -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- 返回顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

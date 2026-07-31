@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="自研跨境电商国家站平台 — 越南/泰国/印尼/俄罗斯4国站点，微服务架构+多租户SaaS+跨境支付网关">
+  <title>自研跨境电商国家站平台 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+    .toc-nav-item { position: relative; margin-bottom: 6px; counter-increment: toc-counter; }
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+    .project-layout {
+      display: flex; gap: 40px; max-width: var(--max-width);
+      margin: 0 auto; padding: var(--spacing-3xl) var(--spacing-lg);
+    }
+    .project-content-area { flex: 1; min-width: 0; }
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .project-layout { padding: var(--spacing-2xl) var(--spacing-md); }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">自研跨境电商国家站平台</h1>
+        <p class="project-subtitle">越南·泰国·印尼·俄罗斯 — 从"依赖第三方平台"到"自有品牌独立站出海"的战略转型</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 项目Leader、高级开发</span>
+          <span class="project-meta-item"><span class="project-meta-label">站点:</span> 越南 / 泰国 / 印尼 / 俄罗斯</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产运行中</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout">
+      <article class="project-content-area">
+
+        <section class="project-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="project-heading">项目概述</h2>
+          <p class="project-text">主导自研跨境电商国家站平台，覆盖<strong>越南、泰国、印尼、俄罗斯</strong>4个国家站点，实现从"依赖第三方平台"到"自有品牌独立站出海"的战略转型。基于 <strong>Spring Cloud Alibaba</strong> 微服务架构，构建技术中台+业务中台双层体系，支撑多国本地化运营与跨境供应链协同。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🎯 核心成就</div>
+            <div class="project-highlight-text">
+              <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+                <li>覆盖 <strong>4个国家站点</strong>，支撑海外本地化运营</li>
+                <li>技术中台+业务中台双层体系，核心能力复用率 <strong>&gt; 80%</strong></li>
+                <li>接入 <strong>6+ 本地支付渠道</strong>（Momo/ZaloPay/PromptPay/OVO/Dana/Yandex Pay）</li>
+                <li>实现从"依赖第三方平台"到"自有品牌独立站"的战略转型</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="microservice-heading">
+          <h2 id="microservice-heading" class="project-heading">微服务架构设计</h2>
+          <p class="project-text">基于 Spring Cloud Alibaba 构建技术中台+业务中台双层体系，底层核心微服务支撑上层业务快速迭代，公共组件沉淀降低重复建设成本。</p>
+
+          <ul class="project-list">
+            <li><strong>底层核心微服务</strong>：注册中心（Nacos）、API网关（Spring Cloud Gateway WebFlux）、认证中心（OAuth2）、用户权限管理、工作流引擎（Flowable 8.0），统一技术底座支撑多国业务</li>
+            <li><strong>业务中台服务</strong>：商品中心、订单中心、支付中心、物流中心、营销中心，各国家站点按需组装，共享核心业务逻辑</li>
+            <li><strong>公共组件沉淀</strong>：安全组件（加解密/防篡改）、数据组件（多数据源/读写分离）、审计组件（操作日志/数据变更追踪）、多租户组件（TenantLineHandler/TenantBroker）、缓存组件（Redis多级缓存）、Feign组件（统一拦截器/熔断降级）</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">📐 双层架构拓扑</div>
+            <div class="project-highlight-text">
+              <strong>技术中台</strong>：Nacos注册中心 + Gateway网关 + OAuth2认证 + 用户权限 + Flowable工作流 + 公共组件库<br>
+              <strong>业务中台</strong>：商品中心 + 订单中心 + 支付中心 + 物流中心 + 营销中心<br>
+              <strong>国家站点</strong>：越南站 / 泰国站 / 印尼站 / 俄罗斯站 — 复用中台能力，差异化本地配置
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="multitenant-heading">
+          <h2 id="multitenant-heading" class="project-heading">多租户 SaaS 架构</h2>
+          <p class="project-text">设计共享数据库+租户字段逻辑隔离方案，确保多国家站点数据安全隔离的同时最大化资源利用率。</p>
+
+          <ul class="project-list">
+            <li><strong>共享数据库 + 租户字段逻辑隔离</strong>：每个国家站点作为独立租户，共享同一数据库实例，通过 tenant_id 字段实现逻辑隔离，降低基础设施成本</li>
+            <li><strong>MyBatis-Plus TenantLineHandler 插件</strong>：SQL 自动注入租户过滤条件，业务代码零侵入，SELECT/INSERT/UPDATE/DELETE 全自动拼接 tenant_id 条件</li>
+            <li><strong>TenantBroker 租户切换器</strong>：支持异步线程/定时任务中安全切换和还原多租户系统中的租户ID，解决跨站点数据查询与批量任务场景下的租户上下文混乱问题</li>
+            <li><strong>DataScope 数据权限拦截器</strong>：实现行级数据隔离，支持全部/本部门/本部门及下级/仅本人等多级数据范围控制，确保即使在同一租户内也能按组织架构隔离数据</li>
+          </ul>
+
+          <div class="project-code-block">// TenantBroker — 定时任务中安全切换租户上下文
+@Component
+public class CrossCountryReportJob {
+
+  @XxlJob("crossCountrySalesReport")
+  public void execute() {
+    List&lt;Integer&gt; tenantIds = tenantService.getAllTenantIds();
+
+    for (Integer tenantId : tenantIds) {
+      TenantBroker.runAs(tenantId, () -> {
+        // 当前线程自动切换为该租户上下文
+        SalesReport report = reportService.generateMonthlyReport();
+        reportService.dispatch(report);
+        return null;
+      });
+    }
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="security-heading">
+          <h2 id="security-heading" class="project-heading">统一安全体系</h2>
+          <p class="project-text">基于 Spring Authorization Server 构建统一安全体系，一套认证机制覆盖多国家站点、多端接入场景。</p>
+
+          <ul class="project-list">
+            <li><strong>OAuth2 授权服务器</strong>：基于 Spring Authorization Server 实现，支持密码模式、短信模式、客户端模式三种认证方式，覆盖用户端、管理后台、第三方系统多端场景</li>
+            <li><strong>自定义 Token 内省器</strong>：支持 Bearer Token + API Key 双模式鉴权，Bearer Token 用于浏览器/移动端，API Key 用于第三方系统对接与自动化脚本</li>
+            <li><strong>@HasPermission 注解</strong>：实现按钮级权限控制，支持权限表达式（如 @HasPermission("order:export")），前端菜单+后端接口双重校验，杜绝越权访问</li>
+            <li><strong>@Inner 注解 + AOP 切面</strong>：内部服务调用安全隔离，仅允许携带内部标识的 Feign 调用访问标注 @Inner 的接口，外部请求直接拒绝</li>
+          </ul>
+
+          <div class="project-code-block">// 双模式Token内省 — Bearer Token + API Key
+@Component
+public class CustomTokenIntrospector
+    implements OpaqueTokenIntrospector {
+
+  @Override
+  public OAuth2AuthenticatedPrincipal introspect(String token) {
+    // 模式1: Bearer Token — 标准OAuth2流程
+    if (token.startsWith(SecurityConstants.BEARER)) {
+      return introspectBearerToken(token);
+    }
+
+    // 模式2: API Key — 第三方系统对接
+    if (token.startsWith(SecurityConstants.API_KEY_PREFIX)) {
+      return introspectApiKey(token);
+    }
+
+    throw new BadOpaqueTokenException("无效的Token格式");
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="payment-heading">
+          <h2 id="payment-heading" class="project-heading">跨境支付网关</h2>
+          <p class="project-text">策略模式 + 工厂模式统一接入各国本地支付渠道，多币种实时汇率转换 + 跨境结算对账。</p>
+
+          <ul class="project-list">
+            <li><strong>策略模式 + 工厂模式统一接入</strong>：抽象支付渠道接口（创建订单/查询/退款/回调），各本地支付渠道实现独立策略类，工厂类根据国家+渠道类型自动路由</li>
+            <li><strong>本地支付渠道覆盖</strong>：越南 Momo/ZaloPay、泰国 PromptPay、印尼 OVO/Dana、俄罗斯 Yandex Pay，支持钱包支付、扫码支付、网银转账等多种支付方式</li>
+            <li><strong>多币种实时汇率转换</strong>：接入外汇API实时汇率 + Redis缓存，下单时锁定汇率存Redis，避免汇率波动导致对账不平</li>
+            <li><strong>跨境结算对账</strong>：XXL-Job定时拉取各渠道结算账单，与系统订单明细逐笔匹配，差异自动标记并推送预警</li>
+          </ul>
+
+          <div class="project-code-block">// 支付渠道策略工厂
+@Component
+public class PaymentChannelFactory {
+
+  private final Map&lt;String, PaymentChannel&gt; channelMap;
+
+  public PaymentChannelFactory(List&lt;PaymentChannel&gt; channels) {
+    this.channelMap = channels.stream()
+        .collect(Collectors.toMap(
+            c -> c.getClass()
+                .getAnnotation(PaymentType.class).value(),
+            Function.identity()));
+  }
+
+  public PaymentChannel getChannel(String countryCode,
+                                    String paymentMethod) {
+    String key = countryCode + "_" + paymentMethod;
+    PaymentChannel channel = channelMap.get(key);
+    Assert.notNull(channel, "不支持的支付渠道: " + key);
+    return channel;
+  }
+}
+
+// 示例：越南Momo支付
+@PaymentType("VN_MOMO")
+@Component
+public class MomoPaymentChannel implements PaymentChannel {
+
+  @Override
+  public PaymentResult createOrder(PaymentRequest req) {
+    // Momo API签名 + 请求
+    String signature = hmacSHA256(req, momoSecretKey);
+    return momoClient.createOrder(req, signature);
+  }
+
+  @Override
+  public PaymentResult query(String orderId) {
+    return momoClient.queryOrder(orderId);
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="devops-heading">
+          <h2 id="devops-heading" class="project-heading">自动化运维</h2>
+          <p class="project-text">Jenkins Pipeline CI/CD 全链路自动化 + 质量门禁 + 可观测性监控，保障多站点稳定运行。</p>
+
+          <ul class="project-list">
+            <li><strong>Jenkins Pipeline CI/CD</strong>：Git Push → Maven 编译 → JaCoCo 覆盖率检测 → SonarQube 质量门禁（阻断 Bug/漏洞）→ Docker 镜像构建 → 容器化部署，全链路自动化</li>
+            <li><strong>JaCoCo + SonarQube 质量门禁</strong>：代码覆盖率不达标、Bug/漏洞发现时自动阻断发布流程，确保多站点代码质量一致性</li>
+            <li><strong>Docker Compose 容器化部署</strong>：标准化的容器编排，支持多环境（dev/test/uat/prod）一键部署，降低环境差异导致的问题</li>
+            <li><strong>可观测性监控</strong>：SkyWalking 全链路追踪 + ELK 日志检索 + Prometheus 指标监控，多站点统一监控大屏</li>
+          </ul>
+        </section>
+
+        <section class="project-section" aria-labelledby="techstack-heading">
+          <h2 id="techstack-heading" class="project-heading">技术栈</h2>
+          <div class="project-tech-grid">
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring Boot</div>
+              <div class="project-tech-desc">微服务基础框架</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring Cloud</div>
+              <div class="project-tech-desc">微服务全家桶</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring Cloud Alibaba</div>
+              <div class="project-tech-desc">云原生微服务方案</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Nacos</div>
+              <div class="project-tech-desc">注册中心·配置中心</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Gateway(WebFlux)</div>
+              <div class="project-tech-desc">响应式API网关</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">OAuth2</div>
+              <div class="project-tech-desc">统一认证授权</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">MyBatis-Plus</div>
+              <div class="project-tech-desc">ORM·多租户插件</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Flowable 8.0</div>
+              <div class="project-tech-desc">工作流引擎</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Redis</div>
+              <div class="project-tech-desc">分布式缓存·限流</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">RocketMQ</div>
+              <div class="project-tech-desc">消息队列·事务消息</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">XXL-Job</div>
+              <div class="project-tech-desc">分布式定时调度</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Seata</div>
+              <div class="project-tech-desc">分布式事务</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Docker</div>
+              <div class="project-tech-desc">容器化部署</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">SkyWalking</div>
+              <div class="project-tech-desc">全链路追踪</div>
+            </div>
+          </div>
+        </section>
+
+        <nav class="project-nav" aria-label="项目导航">
+          <a href="project-8-ai-inventory.html" class="project-nav-link project-nav-prev">AI多智能体库存管理</a>
+          <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+          <a href="project-10-omni-ecommerce.html" class="project-nav-link project-nav-next">全域电商业务平台</a>
+        </nav>
+
+      </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li>
+            <li class="toc-nav-item"><a href="#microservice-heading" class="toc-nav-link">微服务架构设计</a></li>
+            <li class="toc-nav-item"><a href="#multitenant-heading" class="toc-nav-link">多租户 SaaS 架构</a></li>
+            <li class="toc-nav-item"><a href="#security-heading" class="toc-nav-link">统一安全体系</a></li>
+            <li class="toc-nav-item"><a href="#payment-heading" class="toc-nav-link">跨境支付网关</a></li>
+            <li class="toc-nav-item"><a href="#devops-heading" class="toc-nav-link">自动化运维</a></li>
+            <li class="toc-nav-item"><a href="#techstack-heading" class="toc-nav-link">技术栈</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) currentHeading = heading.id;
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) link.classList.add('active');
+      });
+    }
+
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetElement = document.getElementById(this.getAttribute('href').substring(1));
+        if (targetElement) window.scrollTo({ top: targetElement.offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc(); updateReadingProgress(); toggleBackToTop(); ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc(); updateReadingProgress();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

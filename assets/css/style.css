@@ -1,0 +1,362 @@
+/* ===== 全局重置 & 浅色主题 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5f6f8;
+    /* 腾讯文档同款背景色 */
+    color: #1a1a2e;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    line-height: 1.7;
+    padding: 2rem 1.5rem;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ===== 头部 ===== */
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e8ecf0;
+    margin-bottom: 2rem;
+}
+
+.header-left h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: -0.5px;
+}
+
+.header-left h1 span.highlight {
+    background: linear-gradient(135deg, #4f6ef7, #7c5cfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-left .sub {
+    color: #5a6a7e;
+    margin-top: 4px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+}
+
+.header-left .sub i {
+    color: #4f6ef7;
+    width: 20px;
+}
+
+.header-right {
+    display: flex;
+    gap: 18px;
+    font-size: 1.5rem;
+}
+
+.header-right a {
+    color: #5a6a7e;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.header-right a:hover {
+    color: #4f6ef7;
+    transform: translateY(-2px);
+}
+
+/* ===== 卡片 ===== */
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e8ecf0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #1a1a2e;
+}
+
+.card-title i {
+    color: #4f6ef7;
+    font-size: 1.3rem;
+}
+
+.card-title .badge {
+    background: #eef2f7;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    color: #4a5a7a;
+    margin-left: 8px;
+}
+
+/* ===== 返回链接 ===== */
+.back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: #4f6ef7;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #3a56d4;
+    text-decoration: underline;
+}
+
+/* ===== 项目卡片（首页用） ===== */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.8rem;
+    margin: 2rem 0;
+}
+
+.project-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.8rem;
+    border: 1px solid #e8ecf0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.project-card:hover {
+    border-color: #4f6ef7;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(79, 110, 247, 0.12);
+}
+
+.project-card .icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.project-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+}
+
+.project-card .desc {
+    color: #5a6a7e;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.project-card .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.project-card .tags span {
+    background: #f0f2f5;
+    padding: 0.15rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: #4a5a7a;
+    border: 1px solid #e8ecf0;
+}
+
+.project-card .badge-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.8rem;
+    border-radius: 20px;
+    margin-top: 0.8rem;
+    background: #e6f7ed;
+    color: #1a8a5a;
+    border: 1px solid #b8e6d0;
+}
+
+/* ===== 底部 ===== */
+.footer {
+    margin-top: 3rem;
+    text-align: center;
+    color: #8a9aaa;
+    font-size: 0.9rem;
+    border-top: 1px solid #e8ecf0;
+    padding-top: 2rem;
+}
+
+.footer a {
+    color: #6a7a8e;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer a:hover {
+    color: #4f6ef7;
+}
+
+/* ===== 工具类 ===== */
+.mt-1 {
+    margin-top: 0.6rem;
+}
+
+.text-muted {
+    color: #6a7a8e;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* ============================================================ */
+/* ===== 腾讯文档 iframe 适配样式 ===== */
+/* ============================================================ */
+
+/* 文档卡片 - 无内边距，iframe 完全撑满 */
+.card-doc {
+    padding: 0 !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e8ecf0;
+}
+
+.card-doc .card-title {
+    padding: 1.2rem 2rem 0.8rem 2rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+    border-bottom: 1px solid #eef0f4;
+    background: #fafbfc;
+    border-radius: 16px 16px 0 0;
+}
+
+.card-doc .card-title .badge {
+    background: #eef2f7;
+    color: #4a5a7a;
+    border: none;
+}
+
+/* iframe 容器 */
+.doc-iframe-wrapper {
+    width: 100%;
+    flex: 1;
+    min-height: 600px;
+    height: 75vh;
+    max-height: 1200px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.doc-iframe-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: #ffffff;
+}
+
+/* ===== 响应式 ===== */
+
+@media (max-width: 1024px) {
+    .doc-iframe-wrapper {
+        height: 65vh;
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 680px) {
+    body {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-right {
+        align-self: flex-start;
+    }
+
+    .header-left h1 {
+        font-size: 1.6rem;
+    }
+
+    .header-left .sub {
+        font-size: 0.8rem;
+        gap: 10px;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 1.2rem 1rem;
+        border-radius: 12px;
+    }
+
+    .card-doc .card-title {
+        padding: 1rem 1rem 0.6rem 1rem;
+        font-size: 1rem;
+    }
+
+    .doc-iframe-wrapper {
+        height: 55vh;
+        min-height: 400px;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+        padding-top: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .back-link {
+        font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1200px;
+    }
+
+    .doc-iframe-wrapper {
+        height: 70vh;
+        max-height: 1000px;
+        min-height: 700px;
+    }
+}

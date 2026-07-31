@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="智能门锁保洁服务系统 — 多模态感知与动态调度，IoT设备联动服务架构，发明专利">
+  <title>智能门锁保洁服务系统 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    /* ===== 右侧目录索引导航 ===== */
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">智能门锁保洁服务系统</h1>
+        <p class="project-subtitle">基于多模态感知与动态调度的IoT设备联动服务架构 — 国家发明专利（CN121482893A）</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">分类:</span> IoT / AI</span>
+          <span class="project-meta-item"><span class="project-meta-label">影响力:</span> 93.2%</span>
+          <span class="project-meta-item"><span class="project-meta-label">专利号:</span> CN121482893A</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout"><article class="project-content-area">
+
+      <section class="project-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="project-heading">项目概述</h2>
+        <p class="project-text">本系统是<strong>智能家居场景下多终端协同调度与资源最优分配</strong>的解决方案。首创IoT设备联动与服务动态调度架构，将智能门锁、传感器、保洁人员、租客等多方参与者纳入统一的调度体系。</p>
+        <p class="project-text">作为核心发明人，我负责系统整体架构设计与关键技术攻关，该技术已获得<strong>国家发明专利公布（CN121482893A）</strong>。</p>
+
+        <div class="project-highlight-box">
+          <div class="project-highlight-title">🎯 解决的行业痛点</div>
+          <div class="project-highlight-text">
+            传统公寓/酒店保洁模式存在三大问题：<br>
+            • <strong>调度效率低</strong>：人工排班，无法根据实时入住/退房情况动态调整<br>
+            • <strong>资源浪费</strong>：保洁员空跑率高达30%+，人力成本居高不下<br>
+            • <strong>体验差</strong>：退房后保洁响应慢，影响下一波入住体验
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="innovation-heading">
+        <h2 id="innovation-heading" class="project-heading">技术创新点</h2>
+        
+        <ul class="project-list">
+          <li><strong>多模态感知融合</strong>：整合门锁状态(开/关/异常)、人体传感器(在室/离室)、水电表读数(入住活跃度)等多维数据源，通过加权融合算法精确判断房间状态，准确率达98.5%</li>
+          <li><strong>动态调度引擎</strong>：基于约束满足问题(CSP)建模的保洁任务分配算法。输入：保洁员位置/技能等级/当前负载 + 房间优先级/面积/脏污程度；输出：最优派工方案。目标函数综合考虑响应时间最短 + 行驶距离最短 + 负载均衡最优</li>
+          <li><strong>IoT事件驱动链</strong>：门锁检测到退房事件 → 触发状态变更 → 调度引擎计算最优保洁员 → APP推送接单通知 → 保洁员确认 → 门锁临时授权 → 保洁完成 → 状态更新 → 通知前台可安排新入住。全流程自动化闭环</li>
+          <li><strong>边缘标签索引机制</strong>：（关联发明专利CN121301398A）基于门锁边缘计算的分布式物品索引，大幅提升空间内物品检索效率与定位精度</li>
+        </ul>
+      </section>
+
+      <section class="project-section" aria-labelledby="architecture-heading">
+        <h2 id="architecture-heading" class="project-heading">系统架构</h2>
+        
+        <ul class="project-list">
+          <li><strong>设备接入层</strong>：MQTT协议对接智能门锁(蓝牙/WiFi/NB-IoT)、红外人体传感器、智能电表水表等终端设备。EMQX Broker集群支撑10万+设备并发连接</li>
+          <li><strong>事件处理层</strong>：Kafka消息队列做事件缓冲，Flink流处理引擎做实时CEP复杂事件匹配（如：连续30分钟无人 + 门锁关闭 = 判定离室）</li>
+          <li><strong>调度决策层</strong>：规则引擎(Drools)处理简单调度逻辑，优化求解器(Google OR-Tools)处理复杂的带约束资源分配问题。支持手动干预覆盖算法结果</li>
+          <li><strong>执行反馈层</strong>：保洁员APP接收推送(Push/APNs)，完成接单→到达→开始→结束的全流程打卡记录。数据回传触发后续状态流转</li>
+        </ul>
+
+        <div class="project-code-block">// 动态调度核心算法伪代码
+function optimizeAssignment(
+  cleaners: Cleaner[], 
+  rooms: Room[]
+): Assignment[] {
+  
+  // 构建约束条件
+  const constraints = [
+    // 每个房间必须且只能分配一个保洁员
+    eachRoomOneCleaner(rooms),
+    
+    // 保洁员总工作量不超过上限
+    workloadLimit(cleaners, MAX_HOURS),
+    
+    // 响应时间不超过SLA要求
+    responseTimeSLA(rooms, MAX_RESPONSE_MIN),
+    
+    // 技能匹配（如：VIP房需高级保洁员）
+    skillMatch(cleaners, rooms)
+  ];
+  
+  // 目标函数：最小化总行驶距离
+  const objective = minimizeTotalDistance(cleaners, rooms);
+  
+  // 求解器运行
+  return solver.solve(constraints, objective);
+}</div>
+      </section>
+
+      <section class="project-section" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="project-heading">技术栈</h2>
+        <div class="project-tech-grid">
+          <div class="project-tech-card">
+            <div class="project-tech-name">MQTT / EMQX</div>
+            <div class="project-tech-desc">IoT设备通信</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Apache Kafka</div>
+            <div class="project-tech-desc">事件消息队列</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Apache Flink</div>
+            <div class="project-tech-desc">流式计算引擎</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Google OR-Tools</div>
+            <div class="project-tech-desc">组合优化求解器</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Drools</div>
+            <div class="project-tech-desc">业务规则引擎</div>
+          </div>
+          <div class="project-tech-card">
+            <div class="project-tech-name">Spring Boot</div>
+            <div class="project-tech-desc">微服务框架</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-section" aria-labelledby="patent-heading">
+        <h2 id="patent-heading" class="project-heading">专利信息</h2>
+        <div class="project-stats-grid">
+          <div class="project-stat-card">
+            <div class="project-stat-value">CN121482893A</div>
+            <div class="project-stat-label">专利公开号</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">2024年</div>
+            <div class="project-stat-label">公布年份</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">核心发明人</div>
+            <div class="project-stat-label">发明人顺位</div>
+          </div>
+          <div class="project-stat-card">
+            <div class="project-stat-value">IoT调度</div>
+            <div class="project-stat-label">技术领域</div>
+          </div>
+        </div>
+        <p class="project-text" style="margin-top:var(--spacing-lg);"><strong>专利名称：</strong>基于多模态感知与动态调度的智能门锁保洁服务系统及方法</p>
+      </section>
+
+      <nav class="project-nav" aria-label="项目导航">
+        <a href="project-1-saas.html" class="project-nav-link project-nav-prev">智慧租住SaaS平台</a>
+        <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+        <a href="project-3-cicd.html" class="project-nav-link project-nav-next">微服务零停机发布系统</a>
+      </nav>
+
+          
+    </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航"><div class="toc-container"><div class="toc-sidebar-title">📑 章节目录</div><ol class="toc-nav-list"><li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li><li class="toc-nav-item"><a href="#innovation-heading" class="toc-nav-link">技术创新点</a></li><li class="toc-nav-item"><a href="#architecture-heading" class="toc-nav-link">系统架构</a></li><li class="toc-nav-item"><a href="#tech-heading" class="toc-nav-link">技术栈</a></li><li class="toc-nav-item"><a href="#patent-heading" class="toc-nav-link">专利信息</a></li></ol></div></aside>
+    </div>
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentHeading = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          const heading = section.querySelector('.project-heading');
+          if (heading) {
+            currentHeading = heading.id;
+          }
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentHeading) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+      
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

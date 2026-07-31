@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="制造执行系统（MES）数字化平台 — 符合ISA-95标准的微服务MES平台，覆盖排产/生产/质检/仓储全流程">
+  <title>制造执行系统（MES）数字化平台 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    .toc-sidebar{width:260px;flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}.toc-sidebar::-webkit-scrollbar-track{background:transparent}.toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:toc-counter}
+    .toc-nav-item{position:relative;margin-bottom:6px;counter-increment:toc-counter}
+    .toc-nav-item::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:-22px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:8px 12px 8px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.86rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:72px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .back-to-top{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .back-to-top.visible{opacity:1;visibility:visible}
+    .back-to-top:hover,.back-to-top:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .project-layout{display:flex;gap:40px;max-width:var(--max-width);margin:0 auto;padding:var(--spacing-3xl) var(--spacing-lg)}
+    .project-content-area{flex:1;min-width:0}
+    @media(max-width:1024px){.toc-sidebar{display:none}.project-layout{padding:var(--spacing-2xl) var(--spacing-md)}}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">制造执行系统（MES）数字化平台</h1>
+        <p class="project-subtitle">符合 ISA-95 标准的微服务 MES 平台 — 覆盖排产、生产、质检、仓储全流程，支持多工厂协同</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 技术主管、核心架构</span>
+          <span class="project-meta-item"><span class="project-meta-label">领域:</span> 电子制造业 / MES</span>
+          <span class="project-meta-item"><span class="project-meta-label">标准:</span> ISA-95</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout">
+      <article class="project-content-area">
+
+        <section class="project-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="project-heading">项目背景</h2>
+          <p class="project-text">面向<strong>电子制造业</strong>搭建符合 ISA-95 标准的微服务 MES 平台，覆盖排产、生产、质检、仓储全流程，打通 <strong>ERP、HR、电子BOM</strong> 等系统，支持多工厂协同，消除数据孤岛、追溯难等行业问题。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🎯 核心目标</div>
+            <div class="project-highlight-text">
+              <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+                <li>覆盖 <strong>排产→生产→质检→仓储</strong> 全流程闭环</li>
+                <li>打通 ERP/HR/电子BOM 系统，消除数据孤岛</li>
+                <li>支持 <strong>多工厂协同</strong>，多租户数据隔离</li>
+                <li>实现 <strong>USN 单件级双向追溯</strong>，原料到成品全链路可查</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="multitenant-heading">
+          <h2 id="multitenant-heading" class="project-heading">顶层多租户架构</h2>
+          <p class="project-text">拆分工单、工艺、生产、质量、设备、仓储六大业务域，实现多工厂数据隔离；封装通用技术底座，沉淀权限、异常处理等公共能力，统一团队开发规范。</p>
+
+          <ul class="project-list">
+            <li><strong>六大业务域拆分</strong>：工单域（排产/工单/派工）、工艺域（工艺路线/BOM/工艺参数）、生产域（工序执行/报工/流转）、质量域（质检/不良品/SPC分析）、设备域（设备台账/点检/OEE）、仓储域（物料/线边仓/退料），每个域独立部署独立演进</li>
+            <li><strong>多工厂数据隔离</strong>：基于租户ID实现多工厂数据物理/逻辑隔离，工厂A无法访问工厂B的生产数据与管理配置</li>
+            <li><strong>通用技术底座</strong>：封装权限管理（RBAC+数据权限）、异常处理（全局异常拦截+业务异常码标准化）、消息通知（站内信+WebSocket+短信）、日志审计（操作日志+数据变更日志）等公共能力</li>
+            <li><strong>统一开发规范</strong>：制定领域驱动设计（DDD）包结构规范、API接口规范、数据库设计规范，保障团队协作一致性</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">📐 六大业务域拓扑</div>
+            <div class="project-highlight-text">
+              <strong>工单域</strong>：排产计划 → 工单生成 → 派工调度<br>
+              <strong>工艺域</strong>：工艺路线 → 电子BOM → 工艺参数<br>
+              <strong>生产域</strong>：工序执行 → 报工登记 → 流转控制<br>
+              <strong>质量域</strong>：来料检验 → 过程检 → 不良品管理 → SPC分析<br>
+              <strong>设备域</strong>：设备台账 → 点检保养 → OEE效能分析<br>
+              <strong>仓储域</strong>：物料入库 → 线边仓管理 → 退料处理
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" aria-labelledby="production-heading">
+          <h2 id="production-heading" class="project-heading">生产核心业务</h2>
+
+          <h3 class="project-subheading">工单全生命周期状态机</h3>
+          <p class="project-text">设计工单从创建到底层归档的全生命周期状态机，覆盖12种状态流转，严格管控状态变更规则，防止非法跳转。</p>
+          <ul class="project-list">
+            <li><strong>状态流转</strong>：待排产 → 已排产 → 已下发 → 生产中 → 已完工 → 已质检 → 已入库 → 已关闭</li>
+            <li><strong>异常分支</strong>：生产中可挂起/恢复，已质检可返工流转，不良品触发MRB评审流程</li>
+            <li><strong>状态变更管控</strong>：基于状态机模式强制校验，非法跳转（如待排产→已入库）直接拒绝，保障生产数据严谨性</li>
+          </ul>
+
+          <h3 class="project-subheading">四级版本化工艺模型</h3>
+          <p class="project-text">设计车间-产线-工艺-工序四级版本化工艺模型，支持工艺变更追溯与版本切换。</p>
+          <ul class="project-list">
+            <li><strong>车间级</strong>：定义车间整体生产能力与资源约束</li>
+            <li><strong>产线级</strong>：定义产线工艺路线与设备配置</li>
+            <li><strong>工艺级</strong>：定义完整工艺路线（BOM+工序序列+质量标准），版本化管理</li>
+            <li><strong>工序级</strong>：定义单工序的操作规范、工艺参数、检验标准</li>
+            <li><strong>版本化</strong>：工艺变更时留存历史版本，已下发工单继续使用旧版本，新工单自动匹配最新版本，版本切换可追溯</li>
+          </ul>
+
+          <div class="project-code-block">// 工单状态机 — 状态变更强制校验
+@Component
+public class WorkOrderStateMachine {
+
+  private static final Map&lt;String, Set&lt;String&gt;&gt; TRANSITIONS =
+      Map.of(
+        "PENDING",    Set.of("SCHEDULED"),
+        "SCHEDULED",  Set.of("RELEASED"),
+        "RELEASED",   Set.of("IN_PRODUCTION", "SUSPENDED"),
+        "IN_PRODUCTION", Set.of("COMPLETED", "SUSPENDED"),
+        "SUSPENDED",  Set.of("IN_PRODUCTION"),
+        "COMPLETED",  Set.of("INSPECTED", "REWORK"),
+        "INSPECTED",  Set.of("WAREHOUSED", "REWORK"),
+        "REWORK",     Set.of("IN_PRODUCTION"),
+        "WAREHOUSED", Set.of("CLOSED")
+      );
+
+  public void transition(WorkOrder order, String target) {
+    String current = order.getStatus();
+    Set&lt;String&gt; allowed = TRANSITIONS.get(current);
+    if (allowed == null || !allowed.contains(target)) {
+      throw new IllegalStateTransitionException(
+          "非法状态跳转: " + current + " → " + target);
+    }
+    order.setStatus(target);
+    // 状态变更事件发布
+    eventBus.publish(new StatusChangedEvent(order));
+  }
+}</div>
+
+          <h3 class="project-subheading">USN 单件级双向追溯体系</h3>
+          <p class="project-text">实现从原料到成品全链路数据可查、责任可定的 USN（Unique Serial Number）单件级双向追溯体系。</p>
+          <ul class="project-list">
+            <li><strong>正向追溯</strong>：原料批次 → 生产工单 → 工序记录 → 质检报告 → 成品SN，一键定位原料所生产的全部成品</li>
+            <li><strong>反向追溯</strong>：成品SN → 生产工单 → 工序记录 → 原料批次 → 供应商，一键定位成品所使用的全部原料</li>
+            <li><strong>数据采集</strong>：每个工序节点自动记录操作人、设备、时间、工艺参数、质检结果，形成完整生产履历</li>
+          </ul>
+        </section>
+
+        <section class="project-section" aria-labelledby="event-driven-heading">
+          <h2 id="event-driven-heading" class="project-heading">实时事件驱动</h2>
+          <p class="project-text">依托 RocketMQ 搭建生产事件总线解耦业务，结合 WebSocket + Redis 实现实时数据推送，满足生产看板与异常告警的实时性要求。</p>
+
+          <ul class="project-list">
+            <li><strong>RocketMQ 生产事件总线</strong>：工序完成事件、质检事件、设备异常事件、物料消耗事件通过 RocketMQ 解耦发布，各业务域独立订阅处理，避免业务耦合导致的联级故障</li>
+            <li><strong>WebSocket + Redis 实时推送</strong>：生产看板通过 WebSocket 订阅实时数据频道，Redis 缓存最新生产数据（当日产量、不良率、OEE），避免频繁查询数据库</li>
+            <li><strong>异常实时告警</strong>：设备故障、品质异常、物料短缺等事件触发实时告警，通过 WebSocket 推送至生产看板与相关人员终端</li>
+          </ul>
+
+          <div class="project-code-block">// 生产事件总线 — 工序完成事件驱动
+@Component
+public class ProductionEventBus {
+
+  @Autowired private RocketMQTemplate rocketMQTemplate;
+
+  // 工序完成后发布事件
+  public void onOperationCompleted(OperationRecord record) {
+    // 发布工序完成事件
+    rocketMQTemplate.send("PRODUCTION_OPERATION_COMPLETED",
+        new OperationCompletedEvent(record));
+
+    // 通知生产看板实时刷新
+    rocketMQTemplate.send("DASHBOARD_REFRESH",
+        new DashboardRefreshEvent(
+            record.getWorkOrderId(),
+            record.getCompletedQuantity()));
+  }
+
+  // 独立订阅 — 质检域自动触发来料检验
+  @RocketMQMessageListener(topic = "PRODUCTION_OPERATION_COMPLETED")
+  public void onMessage(OperationCompletedEvent event) {
+    if (event.getOperationType() == OperationType.INSPECTION) {
+      qualityService.autoTriggerInspection(
+          event.getWorkOrderId());
+    }
+  }
+}</div>
+        </section>
+
+        <section class="project-section" aria-labelledby="techstack-heading">
+          <h2 id="techstack-heading" class="project-heading">技术栈</h2>
+          <div class="project-tech-grid">
+            <div class="project-tech-card"><div class="project-tech-name">Spring Cloud Alibaba</div><div class="project-tech-desc">微服务全家桶</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Nacos</div><div class="project-tech-desc">注册中心·配置中心</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">RocketMQ</div><div class="project-tech-desc">事件总线·消息队列</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">WebSocket</div><div class="project-tech-desc">实时数据推送</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Redis</div><div class="project-tech-desc">分布式缓存·实时看板</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">MyBatis-Plus</div><div class="project-tech-desc">ORM·多租户插件</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">MySQL</div><div class="project-tech-desc">关系型数据库</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">Docker</div><div class="project-tech-desc">容器化部署</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">ISA-95</div><div class="project-tech-desc">国际标准合规</div></div>
+            <div class="project-tech-card"><div class="project-tech-name">DDD</div><div class="project-tech-desc">领域驱动设计</div></div>
+          </div>
+        </section>
+
+        <nav class="project-nav" aria-label="项目导航">
+          <a href="project-10-omni-ecommerce.html" class="project-nav-link project-nav-prev">全域电商业务平台</a>
+          <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+          <a href="project-12-ship-crawler.html" class="project-nav-link project-nav-next">海外船东数据爬虫系统</a>
+        </nav>
+
+      </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目背景</a></li>
+            <li class="toc-nav-item"><a href="#multitenant-heading" class="toc-nav-link">顶层多租户架构</a></li>
+            <li class="toc-nav-item"><a href="#production-heading" class="toc-nav-link">生产核心业务</a></li>
+            <li class="toc-nav-item"><a href="#event-driven-heading" class="toc-nav-link">实时事件驱动</a></li>
+            <li class="toc-nav-item"><a href="#techstack-heading" class="toc-nav-link">技术栈</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content"><p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p></div>
+  </footer>
+
+  <script>
+    const sections=document.querySelectorAll('.project-section'),tocLinks=document.querySelectorAll('.toc-nav-link');
+    function updateActiveToc(){let h='';const p=window.scrollY+120;sections.forEach(s=>{if(p>=s.offsetTop){const hd=s.querySelector('.project-heading');if(hd)h=hd.id}});tocLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+h)l.classList.add('active')})}
+    function updateReadingProgress(){const m=document.querySelector('.project-content-area');if(!m)return;const ct=m.offsetTop,ch=m.offsetHeight,wh=window.innerHeight,st=window.scrollY;let pr=(st-ct)/(ch-wh);pr=Math.min(Math.max(pr,0),1);document.getElementById('readingProgress').style.transform='scaleX('+pr+')'}
+    function toggleBackToTop(){const b=document.getElementById('backToTop');b.classList.toggle('visible',window.scrollY>400)}
+    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+    tocLinks.forEach(l=>{l.addEventListener('click',function(e){e.preventDefault();const t=document.getElementById(this.getAttribute('href').substring(1));if(t)window.scrollTo({top:t.offsetTop-20,behavior:'smooth'})})});
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){window.requestAnimationFrame(()=>{updateActiveToc();updateReadingProgress();toggleBackToTop();ticking=false});ticking=true}},{passive:true});
+    updateActiveToc();updateReadingProgress();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

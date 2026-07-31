@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ISNOWSOFT 技术文档中心 — 博客文章、技术分享、架构设计、最佳实践">
+  <title>Docs | ISNOWSOFT — 技术文档中心</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --sidebar-width: 280px;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      background: var(--accent-cyan);
+      color: #000;
+      padding: 8px 16px;
+      border-radius: 4px;
+      z-index: 10000;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .skip-link:focus {
+      top: 16px;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.9);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .brand-dot {
+      color: var(--accent-cyan);
+      font-weight: 900;
+    }
+
+    .brand-text-accent {
+      color: var(--accent-purple);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      color: var(--accent-cyan);
+    }
+
+    .back-link::before {
+      content: '←';
+      font-size: 1.1em;
+    }
+
+    /* ===== 主布局：左右分栏 ===== */
+    .page-layout {
+      display: flex;
+      min-height: calc(100vh - 72px);
+    }
+
+    /* ===== 左侧边栏（文章索引）===== */
+    .sidebar-left {
+      width: var(--sidebar-width);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      position: sticky;
+      top: 72px;
+      height: calc(100vh - 72px);
+      overflow-y: auto;
+      padding: 28px 20px;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-color) transparent;
+    }
+
+    .sidebar-left::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .sidebar-left::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar-left::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .sidebar-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-section {
+      margin-bottom: 28px;
+    }
+
+    .sidebar-section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      padding-left: 10px;
+    }
+
+    .sidebar-nav-list {
+      list-style: none;
+    }
+
+    .sidebar-nav-item {
+      margin-bottom: 4px;
+    }
+
+    .sidebar-nav-link {
+      display: block;
+      padding: 9px 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      border-radius: 8px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 0;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 2px;
+      transition: height 0.25s ease;
+    }
+
+    .sidebar-nav-link:hover,
+    .sidebar-nav-link:focus-visible,
+    .sidebar-nav-link.active {
+      color: var(--text-primary);
+      background: rgba(0, 212, 255, 0.06);
+      transform: translateX(3px);
+    }
+
+    .sidebar-nav-link:hover::before,
+    .sidebar-nav-link:focus-visible::before,
+    .sidebar-nav-link.active::before {
+      height: 60%;
+    }
+
+    .sidebar-nav-link.active {
+      color: var(--accent-cyan);
+      font-weight: 500;
+    }
+
+    .nav-item-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .nav-tag-tech {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+    }
+
+    .nav-tag-arch {
+      background: rgba(0, 212, 255, 0.15);
+      color: var(--accent-cyan);
+    }
+
+    .nav-tag-ai {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+    }
+
+    .nav-tag-devops {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--accent-gold);
+    }
+
+    .nav-tag-external {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+
+    .external-indicator {
+      font-size: 0.75rem;
+      opacity: 0.6;
+      margin-left: 4px;
+    }
+
+    /* ===== 主内容区 ===== */
+    .main-content-area {
+      flex: 1;
+      min-width: 0;
+      padding: 40px 40px 80px;
+      max-width: 1100px;
+    }
+
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .page-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 14px;
+      letter-spacing: 2px;
+    }
+
+    .page-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--accent-purple);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-title::before {
+      content: '#';
+      color: var(--accent-cyan);
+      font-size: 1.2em;
+    }
+
+    .section-title .section-label {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .section-label-arch {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--accent-cyan);
+    }
+
+    .section-label-ai {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-purple);
+    }
+
+    .section-label-devops {
+      background: rgba(234, 179, 8, 0.12);
+      color: var(--accent-gold);
+    }
+
+    .section-block {
+      margin-bottom: 52px;
+    }
+
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .doc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 26px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .doc-card:hover::before {
+      opacity: 1;
+    }
+
+    .doc-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px var(--shadow-glow), 0 0 30px rgba(139, 92, 246, 0.08);
+      border-color: rgba(0, 212, 255, 0.3);
+    }
+
+    .doc-card:focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 4px;
+    }
+
+    .doc-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .doc-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tag-tech {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-purple);
+    }
+
+    .tag-arch {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--accent-cyan);
+    }
+
+    .tag-ai {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-purple);
+    }
+
+    .tag-devops {
+      background: rgba(234, 179, 8, 0.12);
+      color: var(--accent-gold);
+    }
+
+    .tag-external {
+      background: rgba(34, 197, 94, 0.12);
+      color: #22c55e;
+    }
+
+    .doc-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .doc-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .doc-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .doc-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .doc-author {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .author-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .doc-read-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .external-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.73rem;
+      color: #22c55e;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .external-badge::after {
+      content: '↗';
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .quick-link-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .quick-link-item:hover,
+    .quick-link-item:focus-visible {
+      border-color: var(--accent-cyan);
+      transform: translateX(6px);
+      box-shadow: 0 4px 20px var(--shadow-glow);
+    }
+
+    .quick-link-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(139, 92, 246, 0.15));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .quick-link-info {
+      flex: 1;
+    }
+
+    .quick-link-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+      margin-bottom: 3px;
+    }
+
+    .quick-link-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 36px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      margin-top: 60px;
+    }
+
+    /* 移动端侧边栏切换按钮 */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 16px rgba(0, 212, 255, 0.35);
+      font-size: 1.3rem;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+      transform: scale(1.08);
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --sidebar-width: 250px;
+      }
+      
+      .sidebar-left {
+        position: fixed;
+        left: -280px;
+        top: 72px;
+        height: calc(100vh - 72px);
+        z-index: 998;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .sidebar-left.open {
+        left: 0;
+      }
+
+      .sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-content-area {
+        padding: 30px 20px 60px;
+      }
+
+      .doc-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-links {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-nav {
+        gap: 12px;
+      }
+
+      .back-link {
+        font-size: 0.82rem;
+      }
+
+      .main-content-area {
+        padding: 24px 16px 60px;
+      }
+
+      .page-title {
+        font-size: 1.6rem;
+      }
+
+      .section-title {
+        font-size: 1.15rem;
+      }
+    }
+  
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px; position: relative;
+      transition: background 0.3s ease;
+    }
+    .theme-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px);
+      background: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="../index.html" class="back-link">返回主页</a>
+      
+      
+      <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </nav>
+    </div>
+  </header>
+
+  <div class="page-layout">
+
+    <!-- ===== 左侧边栏：文章索引 ===== -->
+    <aside class="sidebar-left" role="navigation" aria-label="文档索引导航">
+      <div class="sidebar-title">📚 文档索引</div>
+
+      <nav class="sidebar-section" aria-labelledby="sidebar-arch-heading">
+        <h3 id="sidebar-arch-heading" class="sidebar-section-title">🏗️ 架构</h3>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-architecture.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>IoT 业务场景架构设计
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-ecommerce-skills.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>全渠道零售技术架构
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-spring-boot-principles.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>Spring & Spring Boot 核心原理
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="article-spring-cloud-alibaba.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>Spring Cloud Alibaba 实战
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-msa-framework-guide.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>MSA Framework 使用手册
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="article-distributed-transaction.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>分布式事务深度解析
+            </a>
+          </li>
+        </ul>
+      
+      </nav>
+
+      <nav class="sidebar-section" aria-labelledby="sidebar-ai-heading">
+        <h3 id="sidebar-ai-heading" class="sidebar-section-title">🤖 AI</h3>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="doc-harness-engineering.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-ai">AI</span>Harness Engineering
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-ai-inventory-management.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-ai">AI</span>AI 多智能体库存管理
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-ai-agent-engineering.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-ai">AI</span>AI Agent 工程化指南
+            </a>
+          </li>
+        </ul>
+      
+      </nav>
+
+      <nav class="sidebar-section" aria-labelledby="sidebar-devops-heading">
+        <h3 id="sidebar-devops-heading" class="sidebar-section-title">⚙️ DevOps</h3>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="doc-cicd.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-devops">OPS</span>CI/CD 自动化部署
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="article-kubernetes-deployment.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-devops">OPS</span>Kubernetes 部署实战
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="article-docker-best-practices.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-devops">OPS</span>Docker 镜像优化实践
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-jenkins-pipeline-guide.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-devops">OPS</span>Jenkins Pipeline 规范
+            </a>
+          </li>
+        </ul>
+      
+      </nav>
+
+      <!-- 在线资源 -->
+      <nav class="sidebar-section" aria-labelledby="sidebar-external-heading">
+        <h3 id="sidebar-external-heading" class="sidebar-section-title">在线资源</h3>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="https://spring.io/projects/spring-cloud-alibaba" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-external">LINK</span>Spring Cloud Alibaba<span class="external-indicator">↗</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="https://kubernetes.io/zh/docs/" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-external">LINK</span>Kubernetes 中文文档<span class="external-indicator">↗</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="https://seata.io/zh-cn/docs/" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-external">LINK</span>Seata 分布式事务<span class="external-indicator">↗</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="https://jenkins.io/doc/" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-external">LINK</span>Jenkins 用户手册<span class="external-indicator">↗</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="https://sonarqube.org/documentation/" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-external">LINK</span>SonarQube 文档<span class="external-indicator">↗</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="https://docs.docker.com/" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-external">LINK</span>Docker 官方文档<span class="external-indicator">↗</span>
+            </a>
+          </li>
+        </ul>
+      
+      </nav>
+
+      <!-- 快捷入口 -->
+      <nav class="sidebar-section" aria-labelledby="sidebar-quick-heading">
+        <h3 id="sidebar-quick-heading" class="sidebar-section-title">快捷入口</h3>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="../index.html#projects" class="sidebar-nav-link">🚀 项目展示</a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="../index.html#contact" class="sidebar-nav-link">📧 联系作者</a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="sidebar-nav-link">📦 GitHub<span class="external-indicator">↗</span></a>
+          </li>
+        </ul>
+      
+      </nav>
+    </aside>
+
+    <!-- 移动端侧边栏切换按钮 -->
+    <button class="sidebar-toggle" aria-label="切换文档索引" onclick="toggleSidebar()">☰</button>
+
+    <!-- ===== 主内容区 ===== -->
+    <main id="main-content" class="main-content-area">
+
+      <div class="main-container">
+
+        <div class="page-hero">
+          <h1 class="page-title">./docs</h1>
+          <p class="page-subtitle">技术文档中心 — 架构设计 · AI工程 · DevOps实践 · 在线资源</p>
+        </div>
+
+        <section class="section-block" id="arch-section" aria-labelledby="arch-section-heading">
+          <h2 id="arch-section-heading" class="section-title">架构<span class="section-label section-label-arch">6 篇</span></h2>
+          
+          <div class="doc-grid" role="list">
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-architecture.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2026-07-31</span>
+                </div>
+                <h3 class="doc-title">IoT 业务场景架构设计</h3>
+                <p class="doc-desc">高并发限流降级、离线数据同步、全球多区域部署、Edge边缘计算 — 从传统方案到质变级方案的架构演进实践。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">25 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-ecommerce-skills.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2026-07-31</span>
+                </div>
+                <h3 class="doc-title">全渠道零售技术架构</h3>
+                <p class="doc-desc">微服务架构·高并发库存·多仓调度·事件驱动·跨境支付·物流状态机·业财一体 — 跨境电商全链路技术深度解析。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">45 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-spring-boot-principles.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2026-07-31</span>
+                </div>
+                <h3 class="doc-title">Spring & Spring Boot 核心原理</h3>
+                <p class="doc-desc">理清关系 · 深入IoC · 解密自动装配 · 源码链路 — 从Spring Framework到Spring Boot的核心原理全链路解析。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">28 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="article-spring-cloud-alibaba.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2026-01-15</span>
+                </div>
+                <h3 class="doc-title">Spring Cloud Alibaba 实战</h3>
+                <p class="doc-desc">深入剖析 Nacos、Sentinel、Seata、RocketMQ 等核心组件的原理与实践，结合真实项目案例讲解微服务治理的最佳实践。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">18 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-msa-framework-guide.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">持续更新</span>
+                </div>
+                <h3 class="doc-title">MSA Framework 使用手册</h3>
+                <p class="doc-desc">微服务通用框架的完整使用指南，包含快速开始、配置说明、API参考、常见问题解答。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">参考文档</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="article-distributed-transaction.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2025-11-08</span>
+                </div>
+                <h3 class="doc-title">分布式事务深度解析</h3>
+                <p class="doc-desc">对比分析主流分布式事务解决方案的优缺点，提供基于业务场景的选型建议与踩坑经验总结。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">22 min</span>
+                </div>
+              </a>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="section-block" id="ai-section" aria-labelledby="ai-section-heading">
+          <h2 id="ai-section-heading" class="section-title">AI<span class="section-label section-label-ai">3 篇</span></h2>
+          
+          <div class="doc-grid" role="list">
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-harness-engineering.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-ai">AI</span>
+                  <span class="doc-date">2026-07-31</span>
+                </div>
+                <h3 class="doc-title">Harness Engineering — AI 工程实践三次范式跃迁</h3>
+                <p class="doc-desc">Prompt Engineering → Context Engineering → Harness Engineering，从提示词技巧到企业级多智能体工程化体系。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">30 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-ai-inventory-management.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-ai">AI</span>
+                  <span class="doc-date">在线文档</span>
+                </div>
+                <h3 class="doc-title">AI分布式多智能体智能库存管理</h3>
+                <p class="doc-desc">基于多智能体协同的智能库存预测、调度与优化系统，涵盖Agent架构设计、库存预测模型、动态补货策略。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">在线文档</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-ai-agent-engineering.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-ai">AI</span>
+                  <span class="doc-date">持续更新</span>
+                </div>
+                <h3 class="doc-title">AI Agent 工程化开发指南</h3>
+                <p class="doc-desc">LLMOps工程体系的详细文档，涵盖记忆工程、Prompt工程、Context工程、Harness工程的实现细节。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">参考文档</span>
+                </div>
+              </a>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="section-block" id="devops-section" aria-labelledby="devops-section-heading">
+          <h2 id="devops-section-heading" class="section-title">DevOps<span class="section-label section-label-devops">4 篇</span></h2>
+          
+          <div class="doc-grid" role="list">
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-cicd.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-devops">DEVOPS</span>
+                  <span class="doc-date">2026-07-31</span>
+                </div>
+                <h3 class="doc-title">CI/CD 自动化部署</h3>
+                <p class="doc-desc">Jenkins Pipeline 全链路流水线 — 8阶段流水线、参数化构建、质量门禁与滚动部署的端到端自动化实践。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">15 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="article-kubernetes-deployment.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-devops">DEVOPS</span>
+                  <span class="doc-date">2025-12-20</span>
+                </div>
+                <h3 class="doc-title">Kubernetes 生产环境部署实战</h3>
+                <p class="doc-desc">涵盖集群规划、镜像构建、滚动更新、HPA自动扩缩容、监控告警等生产级K8s部署全流程。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">25 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="article-docker-best-practices.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-devops">DEVOPS</span>
+                  <span class="doc-date">2025-10-05</span>
+                </div>
+                <h3 class="doc-title">Docker 镜像优化实践</h3>
+                <p class="doc-desc">多阶段构建、Alpine基础镜像、层缓存优化、.dockerignore 配置等实用技巧，大幅提升CI/CD效率。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">12 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-jenkins-pipeline-guide.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-devops">DEVOPS</span>
+                  <span class="doc-date">持续更新</span>
+                </div>
+                <h3 class="doc-title">Jenkins Pipeline 开发规范</h3>
+                <p class="doc-desc">CI/CD流水线的编写规范、最佳实践、工具函数库说明，以及常见问题排查指南。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>李旭彬</div>
+                  <span class="doc-read-time">参考文档</span>
+                </div>
+              </a>
+            </article>
+
+          </div>
+        </section><section class="section-block" id="external-section" aria-labelledby="external-section-heading">
+          <h2 id="external-section-heading" class="section-title">在线资源</h2>
+          
+          <div class="doc-grid" role="list">
+
+            <a href="https://spring.io/projects/spring-cloud-alibaba" target="_blank" rel="noopener noreferrer" class="doc-card" role="listitem">
+              <div class="doc-meta">
+                <span class="doc-tag tag-external">EXTERNAL</span>
+                <span class="external-badge">外部链接</span>
+              </div>
+              <h3 class="doc-title">Spring Cloud Alibaba 官方文档</h3>
+              <p class="doc-desc">阿里巴巴开源的 Spring Cloud 微服务套件官方文档，包含完整的组件说明与示例代码。</p>
+              <div class="doc-footer">
+                <div class="doc-author"><span class="author-avatar">A</span>Alibaba</div>
+                <span class="doc-read-time">spring.io</span>
+              </div>
+            </a>
+
+            <a href="https://kubernetes.io/zh/docs/" target="_blank" rel="noopener noreferrer" class="doc-card" role="listitem">
+              <div class="doc-meta">
+                <span class="doc-tag tag-external">EXTERNAL</span>
+                <span class="external-badge">外部链接</span>
+              </div>
+              <h3 class="doc-title">Kubernetes 官方文档（中文）</h3>
+              <p class="doc-desc">容器编排平台 Kubernetes 的完整中文文档，从入门概念到高级特性全覆盖。</p>
+              <div class="doc-footer">
+                <div class="doc-author"><span class="author-avatar">C</span>CNCF</div>
+                <span class="doc-read-time">kubernetes.io</span>
+              </div>
+            </a>
+
+            <a href="https://seata.io/zh-cn/docs/overview/what-is-seata.html" target="_blank" rel="noopener noreferrer" class="doc-card" role="listitem">
+              <div class="doc-meta">
+                <span class="doc-tag tag-external">EXTERNAL</span>
+                <span class="external-badge">外部链接</span>
+              </div>
+              <h3 class="doc-title">Seata 分布式事务框架文档</h3>
+              <p class="doc-desc">阿里开源的分布式事务解决方案 Seata 的完整文档，支持AT/TCC/SAGA/XA四种模式。</p>
+              <div class="doc-footer">
+                <div class="doc-author"><span class="author-avatar">S</span>Seata</div>
+                <span class="doc-read-time">seata.io</span>
+              </div>
+            </a>
+
+            <a href="https://jenkins.io/doc/" target="_blank" rel="noopener noreferrer" class="doc-card" role="listitem">
+              <div class="doc-meta">
+                <span class="doc-tag tag-external">EXTERNAL</span>
+                <span class="external-badge">外部链接</span>
+              </div>
+              <h3 class="doc-title">Jenkins 官方用户文档</h3>
+              <p class="doc-desc">CI/CD工具 Jenkins 的完整用户手册，Pipeline语法、插件开发、系统管理等内容。</p>
+              <div class="doc-footer">
+                <div class="doc-author"><span class="author-avatar">J</span>Jenkins</div>
+                <span class="doc-read-time">jenkins.io</span>
+              </div>
+            </a>
+
+            <a href="https://sonarqube.org/documentation/" target="_blank" rel="noopener noreferrer" class="doc-card" role="listitem">
+              <div class="doc-meta">
+                <span class="doc-tag tag-external">EXTERNAL</span>
+                <span class="external-badge">外部链接</span>
+              </div>
+              <h3 class="doc-title">SonarQube 代码质量管理平台文档</h3>
+              <p class="doc-desc">持续代码质量检测平台 SonarQube 的完整文档，安装配置、规则定制、集成方式等。</p>
+              <div class="doc-footer">
+                <div class="doc-author"><span class="author-avatar">SQ</span>SonarQube</div>
+                <span class="doc-read-time">sonarqube.org</span>
+              </div>
+            </a>
+
+            <a href="https://docs.docker.com/" target="_blank" rel="noopener noreferrer" class="doc-card" role="listitem">
+              <div class="doc-meta">
+                <span class="doc-tag tag-external">EXTERNAL</span>
+                <span class="external-badge">外部链接</span>
+              </div>
+              <h3 class="doc-title">Docker 官方文档</h3>
+              <p class="doc-desc">容器化平台 Docker 的权威文档，涵盖引擎、Compose、Swarm、Registry等全部产品线。</p>
+              <div class="doc-footer">
+                <div class="doc-author"><span class="author-avatar">D</span>Docker</div>
+                <span class="doc-read-time">docker.com</span>
+              </div>
+            </a>
+
+          </div>
+        </section>
+
+        <section class="section-block" aria-labelledby="quick-links-section">
+          <h2 id="quick-links-section" class="section-title">快捷入口</h2>
+          
+          <div class="quick-links">
+            <a href="../index.html#projects" class="quick-link-item">
+              <div class="quick-link-icon">🚀</div>
+              <div class="quick-link-info">
+                <div class="quick-link-title">项目展示</div>
+                <div class="quick-link-desc">查看所有项目详情页</div>
+              </div>
+            </a>
+
+            <a href="../index.html#contact" class="quick-link-item">
+              <div class="quick-link-icon">📧</div>
+              <div class="quick-link-info">
+                <div class="quick-link-title">联系作者</div>
+                <div class="quick-link-desc">获取技术支持或合作咨询</div>
+              </div>
+            </a>
+
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="quick-link-item">
+              <div class="quick-link-icon">📦</div>
+              <div class="quick-link-info">
+                <div class="quick-link-title">GitHub</div>
+                <div class="quick-link-desc">查看开源项目源码</div>
+              </div>
+            </a>
+
+            <a href="https://juejin.cn/user/" target="_blank" rel="noopener noreferrer" class="quick-link-item">
+              <div class="quick-link-icon">✍️</div>
+              <div class="quick-link-info">
+                <div class="quick-link-title">掘金专栏</div>
+                <div class="quick-link-desc">更多技术文章与分享</div>
+              </div>
+            </a>
+          </div>
+        </section>
+
+      </div>
+
+      <footer class="site-footer">
+        <p>&copy; 2026 ISNOWSOFT — Docs Center. All rights reserved.</p>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar-left');
+      sidebar.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+      const sidebar = document.querySelector('.sidebar-left');
+      const toggleBtn = document.querySelector('.sidebar-toggle');
+      if (sidebar.classList.contains('open') && 
+          !sidebar.contains(e.target) && 
+          !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+
+    document.querySelectorAll('.sidebar-nav-link[data-target]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        document.querySelectorAll('.sidebar-nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        
+        const targetId = this.getAttribute('data-target');
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          e.preventDefault();
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        if (window.innerWidth <= 1024) {
+          document.querySelector('.sidebar-left').classList.remove('open');
+        }
+      });
+    });
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

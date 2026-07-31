@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="智慧租住SaaS平台 — 从0到1构建企业级多租户SaaS平台，公寓/酒店/园区/私有化双模部署">
+  <title>智慧租住SaaS平台 | ISNOWSOFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="project-common.css">
+  <style>
+    .toc-sidebar {
+      width: 260px; flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .project-layout {
+      display: flex; gap: 40px; max-width: var(--max-width);
+      margin: 0 auto; padding: var(--spacing-3xl) var(--spacing-lg);
+    }
+
+    .project-content-area {
+      flex: 1; min-width: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .project-layout { padding: var(--spacing-2xl) var(--spacing-md); }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <header role="banner" class="site-header">
+    <nav aria-label="主导航" class="main-nav">
+      <div class="nav-brand">
+        <span class="brand-bracket" aria-hidden="true">&lt;</span>
+        <a href="../index.html" style="text-decoration:none;color:inherit;">
+          <span class="brand-text">ISNOW</span><span class="brand-dot" aria-hidden="true">.</span><span class="brand-text-accent">SOFT</span>
+        </a>
+        <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+      </div>
+      <div class="nav-links" style="margin-left:auto;">
+        <a href="../index.html#projects" role="menuitem" class="nav-link">← 返回项目列表</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+    </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="project-page">
+
+    <section class="project-hero" aria-labelledby="project-title">
+      <div class="project-hero-content">
+        <a href="../index.html#projects" class="project-back-link">返回项目列表</a>
+        <h1 id="project-title" class="project-title">智慧租住SaaS平台</h1>
+        <p class="project-subtitle">从0到1构建的企业级多租户SaaS平台 — 公寓·酒店·园区·私有化双模部署，千万级设备在线，百万级消息吞吐</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><span class="project-meta-label">角色:</span> 技术主管、核心架构</span>
+          <span class="project-meta-item"><span class="project-meta-label">业务:</span> 公寓 / 酒店 / 园区 / 私有化</span>
+          <span class="project-meta-item"><span class="project-meta-label">状态:</span> 生产运行中</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="project-layout">
+      <article class="project-content-area">
+
+        <section class="project-section" id="overview-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="project-heading">项目概述</h2>
+          <p class="project-text">作为技术负责人，牵头将传统项目架构升级为企业级 SaaS 平台，从零搭建统一底层技术底座，打造可复用、高扩展的泛租赁业务中台。统一微服务、身份权限、设备协议与运维体系，适配<strong>公寓、酒店、园区</strong>三大业务，支持<strong>公有云 SaaS + 私有化双模部署</strong>。</p>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🎯 核心成就指标</div>
+            <div class="project-highlight-text">
+              <ul class="project-list" style="padding-left:var(--spacing-lg);margin:var(--spacing-sm) 0 0 0;">
+                <li>支撑 <strong>200+ 企业客户</strong> 同时在线运营</li>
+                <li><strong>千万级 IoT 设备</strong>同时在线，<strong>百万级消息吞吐</strong>/秒</li>
+                <li>系统可用性达到 <strong>99.9%+</strong></li>
+                <li>满足<strong>等保三级</strong>安全合规要求</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" id="microservice-section" aria-labelledby="microservice-heading">
+          <h2 id="microservice-heading" class="project-heading">0-1 微服务架构搭建</h2>
+
+          <ul class="project-list">
+            <li><strong>Nacos 服务发现 + 多环境配置隔离</strong>：基于 Nacos 实现服务注册发现与配置中心，支持 dev/test/uat/prod 多环境配置隔离，配置热加载无需重启服务</li>
+            <li><strong>Spring Cloud Gateway 统一网关</strong>：统一入口路由 + Redis 令牌桶实现租户级/IP级双重限流，保障多租户场景下流量公平分配与系统稳定性</li>
+            <li><strong>Feign 声明式调用</strong>：@NoToken 内部免认证 + 自动透传租户/Token 上下文，简化服务间调用链路，避免认证信息丢失</li>
+          </ul>
+
+          <div class="project-code-block">// Feign 租户上下文透传拦截器
+@Component
+public class TenantFeignInterceptor implements RequestInterceptor {
+
+  @Override
+  public void apply(RequestTemplate template) {
+    String tenantId = TenantContext.getCurrentTenant();
+    String token = SecurityContextHolder.getContext()
+        .getAuthentication().getCredentials().toString();
+
+    if (StrUtil.isNotBlank(tenantId)) {
+      template.header(SecurityConstants.TENANT_HEADER, tenantId);
+    }
+    if (StrUtil.isNotBlank(token)) {
+      template.header(HttpHeaders.AUTHORIZATION,
+          SecurityConstants.BEARER + token);
+    }
+  }
+}</div>
+        </section>
+
+        <section class="project-section" id="traffic-section" aria-labelledby="traffic-heading">
+          <h2 id="traffic-heading" class="project-heading">南北向流量治理与全链路削峰填谷</h2>
+
+          <ul class="project-list">
+            <li><strong>LVS + Keepalived 四层TCP分流</strong>：前端流量经 LVS 做四层负载均衡，Keepalived 实现主备高可用切换，单点故障自动转移时间 &lt; 3s</li>
+            <li><strong>七层 HTTP/WS 路由负载均衡</strong>：Nginx 做七层反向代理与 SSL 终结，支持 WebSocket 长连接路由，适配 IoT 设备 MQTT over WebSocket 接入</li>
+            <li><strong>三层削峰架构</strong>：EMQX 共享订阅 → Kafka 分区批量消费 → Redis 窗口聚合去重，构建从设备接入到业务处理的全链路削峰体系，支撑千万级设备同时在线、百万级消息吞吐量</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">📊 三层削峰架构数据流</div>
+            <div class="project-highlight-text">
+              <strong>第一层 · EMQX 共享订阅</strong>：设备 MQTT 消息经 EMQX Broker 接入，共享订阅（Shared Subscription）将消息均匀分发至消费组，避免单点消费瓶颈<br>
+              <strong>第二层 · Kafka 分区批量消费</strong>：消息持久化到 Kafka Topic，按租户/设备类型分区，消费者组批量拉取处理，吞吐量提升 10x+<br>
+              <strong>第三层 · Redis 窗口聚合去重</strong>：滑动窗口聚合高频上报数据（如传感器遥测），去重后批量写入存储，将写入压力降低 80%+
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" id="auth-section" aria-labelledby="auth-heading">
+          <h2 id="auth-heading" class="project-heading">统一身份认证和权限管理</h2>
+
+          <ul class="project-list">
+            <li><strong>OAuth2 授权服务器</strong>：支持密码模式、短信模式、客户端模式三种认证方式，一套认证覆盖<strong>用户端 + 设备端 + 管理后台 + 第三方系统</strong>四端</li>
+            <li><strong>自定义 Token 内省器</strong>：支持 Bearer Token + API Key 双模式鉴权，适配浏览器/移动端/设备端/第三方对接等不同场景</li>
+            <li><strong>@HasPermission 注解</strong>：实现按钮级权限控制，前端菜单 + 后端接口双重校验，杜绝越权访问</li>
+            <li><strong>@Inner 注解 + AOP 切面</strong>：实现内部服务调用安全隔离，标注 @Inner 的接口仅允许内部 Feign 调用，外部请求直接拒绝</li>
+          </ul>
+
+          <div class="project-code-block">// @Inner 内部服务调用安全切面
+@Aspect
+@Component
+public class InnerAuthAspect {
+
+  @Around("@annotation(innerAuth)")
+  public Object around(ProceedingJoinPoint point,
+                       InnerAuth innerAuth) throws Throwable {
+    HttpServletRequest request = WebUtils.getRequest();
+    String requestHeader = request.getHeader(
+        SecurityConstants.FROM);
+
+    // 内部调用必须携带 from 标识
+    if (innerAuth.value() && !SecurityConstants.FROM_IN
+            .equals(requestHeader)) {
+      throw new AccessDeniedException(
+          "内部接口禁止外部访问");
+    }
+    return point.proceed();
+  }
+}</div>
+        </section>
+
+        <section class="project-section" id="multitenant-section" aria-labelledby="multitenant-heading">
+          <h2 id="multitenant-heading" class="project-heading">多租户 SaaS 架构</h2>
+
+          <ul class="project-list">
+            <li><strong>MyBatis-Plus TenantLineHandler 插件</strong>：SQL 自动注入租户过滤条件，业务代码零侵入，SELECT/INSERT/UPDATE/DELETE 全自动拼接 tenant_id 条件</li>
+            <li><strong>TransmittableThreadLocal 父子线程传递</strong>：解决线程池/异步任务中租户上下文丢失问题，确保父子线程租户 ID 自动传递</li>
+            <li><strong>TenantBroker 租户切换器</strong>：安全、规范地切换和还原多租户系统中的租户 ID，解决异步任务/定时任务中租户上下文混乱问题</li>
+            <li><strong>DataScope 拦截器</strong>：实现行级数据权限隔离，支持全部/本部门/本部门及下级/仅本人等多级数据范围控制</li>
+          </ul>
+
+          <div class="project-code-block">// TenantBroker 安全切换租户上下文
+public class TenantBroker {
+
+  public static &lt;T&gt; T runAs(Integer tenantId,
+                               Supplier&lt;T&gt; supplier) {
+    Integer oldTenantId = TenantContext.getCurrentTenant();
+    try {
+      TenantContext.setCurrentTenant(tenantId);
+      return supplier.get();
+    } finally {
+      TenantContext.setCurrentTenant(oldTenantId);
+    }
+  }
+
+  // 异步任务中安全传递租户上下文
+  public static Runnable wrap(Runnable runnable) {
+    Integer tenantId = TenantContext.getCurrentTenant();
+    return () -> {
+      try {
+        TenantContext.setCurrentTenant(tenantId);
+        runnable.run();
+      } finally {
+        TenantContext.clear();
+      }
+    };
+  }
+}</div>
+        </section>
+
+        <section class="project-section" id="integration-section" aria-labelledby="integration-heading">
+          <h2 id="integration-heading" class="project-heading">标准化第三方集成</h2>
+
+          <ul class="project-list">
+            <li><strong>统一 API 接入规范</strong>：制定第三方系统接入标准，Gateway 层统一鉴权限流，降低对接成本与安全风险</li>
+            <li><strong>策略模式 + 工厂模式封装门锁协议差异</strong>：不同品牌智能门锁（蓝牙/WiFi/NB-IoT/Zigbee）协议差异通过策略模式透明化，业务层无需感知底层协议</li>
+            <li><strong>MQTT 异步下发指令</strong>：设备控制指令经 MQTT 异步下发，支持 QoS 分级保障，关键指令（开锁/报警）走 QoS 2 确保送达</li>
+            <li><strong>Redis 缓存临时密码 + 过期自动清理</strong>：一次性密码/限时密码缓存到 Redis 并设置 TTL，过期自动清理，兼顾安全与便捷</li>
+          </ul>
+
+          <div class="project-code-block">// 门锁协议策略工厂
+@Component
+public class LockProtocolFactory {
+
+  private final Map&lt;String, LockProtocol&gt; protocolMap;
+
+  public LockProtocolFactory(List&lt;LockProtocol&gt; protocols) {
+    this.protocolMap = protocols.stream()
+        .collect(Collectors.toMap(
+            p -> p.getClass().getAnnotation(LockType.class)
+                .value(),
+            Function.identity()));
+  }
+
+  public LockProtocol getProtocol(String lockType) {
+    LockProtocol protocol = protocolMap.get(lockType);
+    Assert.notNull(protocol, "不支持的门锁类型: " + lockType);
+    return protocol;
+  }
+}</div>
+        </section>
+
+        <section class="project-section" id="deploy-section" aria-labelledby="deploy-heading">
+          <h2 id="deploy-heading" class="project-heading">公有云 SaaS + 私有化双模部署</h2>
+
+          <ul class="project-list">
+            <li><strong>自研一键私有化部署方案</strong>：Shell + Docker Compose 编排，Harbor 镜像管理 + Rancher 集群管理，支持离线部署包一键导入</li>
+            <li><strong>屏蔽技术门槛</strong>：将环境配置、镜像部署、服务启停等技术操作封装为一键脚本，解决传统模式下技术人员无法常驻现场、实施人员不会部署的行业痛点</li>
+            <li><strong>适配政企客户场景</strong>：支持无外网环境离线部署、高安全等级内网隔离部署，满足等保三级合规要求</li>
+          </ul>
+
+          <div class="project-highlight-box">
+            <div class="project-highlight-title">🏗️ 双模部署架构</div>
+            <div class="project-highlight-text">
+              <strong>公有云 SaaS 模式</strong>：多租户共享资源池，按需付费，自动扩缩容，适合中小客户快速接入<br>
+              <strong>私有化部署模式</strong>：独立环境部署，数据完全隔离，支持离线部署包导入，适合政企/大型客户高安全场景<br><br>
+              两种模式共享同一套业务代码，通过配置开关切换部署模式，降低维护成本
+            </div>
+          </div>
+        </section>
+
+        <section class="project-section" id="cicd-section" aria-labelledby="cicd-heading">
+          <h2 id="cicd-heading" class="project-heading">Jenkins Pipeline CI/CD</h2>
+
+          <ul class="project-list">
+            <li><strong>全链路自动化</strong>：Git Push → Maven 编译 → JaCoCo 覆盖率检测 → SonarQube 质量门禁（阻断 Bug/漏洞）→ Docker 镜像构建 → Harbor 推送 → Rancher 滚动升级</li>
+            <li><strong>质量门禁</strong>：SonarQube 扫描发现 Bug/漏洞时自动阻断发布流程，确保生产环境代码质量</li>
+            <li><strong>滚动升级</strong>：Rancher 滚动升级策略，零停机发布，支持一键回滚</li>
+          </ul>
+        </section>
+
+        <section class="project-section" id="quality-section" aria-labelledby="quality-heading">
+          <h2 id="quality-heading" class="project-heading">代码质量管控</h2>
+
+          <ul class="project-list">
+            <li><strong>单元测试嵌入发布流程</strong>：JaCoCo 覆盖率检测作为 CI 流水线必经阶段，覆盖率不达标自动阻断</li>
+            <li><strong>代码规范与安全检测</strong>：SonarQube 静态分析 + 代码规范检查 + 安全漏洞扫描，前后端分层全覆盖测试</li>
+            <li><strong>Jest 前端测试</strong>：前端单元测试 + 组件测试，确保 UI 层代码质量</li>
+            <li><strong>JaCoCo 覆盖率管控</strong>：Java 代码行覆盖率 &gt; 60%，分支覆盖率 &gt; 50%，核心模块覆盖率 &gt; 80%</li>
+          </ul>
+        </section>
+
+        <section class="project-section" id="monitoring-section" aria-labelledby="monitoring-heading">
+          <h2 id="monitoring-heading" class="project-heading">运维与监控</h2>
+
+          <ul class="project-list">
+            <li><strong>SkyWalking 全链路追踪</strong>：分布式链路追踪 + 服务拓扑图 + 慢接口告警，毫秒级定位性能瓶颈</li>
+            <li><strong>ELK 日志检索</strong>：Elasticsearch + Logstash + Kibana 日志采集检索，支持多维度日志分析与异常告警</li>
+            <li><strong>Prometheus 指标监控</strong>：基础设施 + 应用层指标采集，Grafana 可视化大屏，支持自定义告警规则</li>
+            <li><strong>自动化数据备份迁移</strong>：开发自动化数据备份与迁移脚本，完成数据容灾，满足等保三级要求，减少人工运维成本</li>
+          </ul>
+        </section>
+
+        <section class="project-section" id="techstack-section" aria-labelledby="techstack-heading">
+          <h2 id="techstack-heading" class="project-heading">技术栈</h2>
+          <div class="project-tech-grid">
+            <div class="project-tech-card">
+              <div class="project-tech-name">Spring Cloud Alibaba</div>
+              <div class="project-tech-desc">微服务全家桶</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Nacos</div>
+              <div class="project-tech-desc">注册中心·配置中心</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Seata</div>
+              <div class="project-tech-desc">分布式事务</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">XXL-Job</div>
+              <div class="project-tech-desc">分布式调度</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Redis</div>
+              <div class="project-tech-desc">分布式缓存·限流</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">MySQL</div>
+              <div class="project-tech-desc">主从读写分离</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Docker</div>
+              <div class="project-tech-desc">容器化部署</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Rancher</div>
+              <div class="project-tech-desc">容器编排管理</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Harbor</div>
+              <div class="project-tech-desc">镜像仓库</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Jenkins</div>
+              <div class="project-tech-desc">CI/CD 流水线</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">SkyWalking</div>
+              <div class="project-tech-desc">全链路追踪</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">SonarQube</div>
+              <div class="project-tech-desc">代码质量门禁</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">Jest</div>
+              <div class="project-tech-desc">前端单元测试</div>
+            </div>
+            <div class="project-tech-card">
+              <div class="project-tech-name">JaCoCo</div>
+              <div class="project-tech-desc">覆盖率检测</div>
+            </div>
+          </div>
+        </section>
+
+        <nav class="project-nav" aria-label="项目导航">
+          <a href="project-6-msa-framework.html" class="project-nav-link project-nav-prev">MSA Framework 微服务框架</a>
+          <a href="../index.html#projects" class="project-nav-link">返回项目列表</a>
+          <a href="project-2-smart-lock.html" class="project-nav-link project-nav-next">智能门锁保洁服务系统</a>
+        </nav>
+
+      </article>
+
+      <aside class="toc-sidebar" role="navigation" aria-label="项目章节导航">
+        <div class="toc-container">
+          <div class="toc-sidebar-title">📑 章节目录</div>
+          <ol class="toc-nav-list">
+            <li class="toc-nav-item"><a href="#overview-heading" class="toc-nav-link active">项目概述</a></li>
+            <li class="toc-nav-item"><a href="#microservice-heading" class="toc-nav-link">微服务架构搭建</a></li>
+            <li class="toc-nav-item"><a href="#traffic-heading" class="toc-nav-link">南北向流量治理</a></li>
+            <li class="toc-nav-item"><a href="#auth-heading" class="toc-nav-link">统一身份认证权限</a></li>
+            <li class="toc-nav-item"><a href="#multitenant-heading" class="toc-nav-link">多租户 SaaS 架构</a></li>
+            <li class="toc-nav-item"><a href="#integration-heading" class="toc-nav-link">标准化第三方集成</a></li>
+            <li class="toc-nav-item"><a href="#deploy-heading" class="toc-nav-link">双模部署</a></li>
+            <li class="toc-nav-item"><a href="#cicd-heading" class="toc-nav-link">Jenkins CI/CD</a></li>
+            <li class="toc-nav-item"><a href="#quality-heading" class="toc-nav-link">代码质量管控</a></li>
+            <li class="toc-nav-item"><a href="#monitoring-heading" class="toc-nav-link">运维与监控</a></li>
+            <li class="toc-nav-item"><a href="#techstack-heading" class="toc-nav-link">技术栈</a></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="reading-progress" id="readingProgress"></div>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer role="contentinfo" class="site-footer">
+    <div class="footer-content">
+      <p class="footer-text">&copy; 2026 ISNOWSOFT — All rights reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.project-section');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentSection = section.querySelector('.project-heading')
+            ? section.querySelector('.project-heading').id
+            : section.id;
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const mainContent = document.querySelector('.project-content-area');
+      if (!mainContent) return;
+
+      const contentTop = mainContent.offsetTop;
+      const contentHeight = mainContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+
+      document.getElementById('readingProgress').style.transform =
+        'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+    updateReadingProgress();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
