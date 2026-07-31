@@ -18,6 +18,8 @@
       --text-muted: #6b6b80;
       --accent-cyan: #00d4ff;
       --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
       --border-color: rgba(255, 255, 255, 0.08);
       --shadow-glow: rgba(0, 212, 255, 0.15);
       --toc-width: 260px;
@@ -39,6 +41,20 @@
       --hl-function: #22d3ee;
       --hl-string: #4ade80;
       --hl-number: #fb923c;
+      --bg-danger: rgba(248, 113, 113, 0.08);
+      --bg-success: rgba(52, 211, 153, 0.08);
+      --badge-danger: #ef4444;
+      --badge-success: #22c55e;
+      --badge-danger-bg: rgba(239, 68, 68, 0.15);
+      --badge-success-bg: rgba(34, 197, 94, 0.15);
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
     }
 
     [data-theme="light"] {
@@ -50,6 +66,8 @@
       --text-muted: #8888a0;
       --accent-cyan: #0099cc;
       --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-red: #dc2626;
       --border-color: rgba(0, 0, 0, 0.08);
       --shadow-glow: rgba(0, 153, 204, 0.12);
       --code-blue: #4f6ef7;
@@ -70,6 +88,20 @@
       --hl-function: #0891b2;
       --hl-string: #16a34a;
       --hl-number: #ea580c;
+      --bg-danger: #fdf0f0;
+      --bg-success: #f0f7f0;
+      --badge-danger: #c0392b;
+      --badge-success: #1a8a5a;
+      --badge-danger-bg: rgba(192, 57, 43, 0.12);
+      --badge-success-bg: rgba(26, 138, 90, 0.12);
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -269,28 +301,28 @@
     .iot-content .highlight-box .content { margin-top: 4px; color: var(--text-secondary); }
 
     .iot-content .highlight-box.gold {
-      border-left-color: #e8a838;
-      background: rgba(234, 179, 8, 0.07);
+      border-left-color: var(--code-gold);
+      background: var(--highlight-gold-bg);
     }
-    .iot-content .highlight-box.gold .label { color: #eab308; }
+    .iot-content .highlight-box.gold .label { color: var(--highlight-gold); }
 
     .iot-content .highlight-box.green {
-      border-left-color: #22c55e;
-      background: rgba(34, 197, 94, 0.07);
+      border-left-color: var(--accent-green);
+      background: var(--highlight-green-bg);
     }
-    .iot-content .highlight-box.green .label { color: #22c55e; }
+    .iot-content .highlight-box.green .label { color: var(--highlight-green); }
 
     .iot-content .highlight-box.purple {
-      border-left-color: #8b5cf6;
-      background: rgba(139, 92, 246, 0.07);
+      border-left-color: var(--accent-purple);
+      background: var(--highlight-purple-bg);
     }
-    .iot-content .highlight-box.purple .label { color: #8b5cf6; }
+    .iot-content .highlight-box.purple .label { color: var(--highlight-purple); }
 
     .iot-content .highlight-box.red {
-      border-left-color: #ef4444;
-      background: rgba(239, 68, 68, 0.07);
+      border-left-color: var(--accent-red);
+      background: var(--highlight-red-bg);
     }
-    .iot-content .highlight-box.red .label { color: #ef4444; }
+    .iot-content .highlight-box.red .label { color: var(--highlight-red); }
 
     /* 对比表格 - 暗色主题适配 */
     .iot-content .compare-table {
@@ -311,12 +343,12 @@
     .iot-content .compare-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
 
     .iot-content .compare-table .badge-good {
-      display: inline-block; background: rgba(34, 197, 94, 0.15); color: #22c55e;
+      display: inline-block; background: rgba(34, 197, 94, 0.15); color: var(--highlight-green);
       padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
     }
 
     .iot-content .compare-table .badge-bad {
-      display: inline-block; background: rgba(239, 68, 68, 0.15); color: #ef4444;
+      display: inline-block; background: rgba(239, 68, 68, 0.15); color: var(--highlight-red);
       padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
     }
 
@@ -705,16 +737,16 @@
             <!-- ===== 原方案架构图 ===== -->
             <h4 style="color:var(--code-red);">❌ 应用层硬限流</h4>
             <div style="
-                background: #fdf0f0;
+                background: var(--bg-danger);
                 border-radius: 12px;
                 padding: 1.2rem 1rem;
-                border: 1px solid #f5c8c8;
+                border: 1px solid var(--code-border-red);
                 overflow-x: auto;
                 margin: 0.8rem 0;
             ">
                 <div style="text-align:center; margin-bottom:10px;">
                     <span style="
-                        background:#c0392b;
+                        background: var(--badge-danger);
                         color:#fff;
                         padding:0.2rem 1.2rem;
                         border-radius:20px;
@@ -766,16 +798,16 @@
             <!-- ===== 质变方案架构图 ===== -->
             <h4 style="color:var(--code-green);">✅ 削峰填谷 + 背压</h4>
             <div style="
-                background: #f0f7f0;
+                background: var(--bg-success);
                 border-radius: 12px;
                 padding: 1.2rem 1rem;
-                border: 1px solid #b8dcc8;
+                border: 1px solid var(--code-border-green);
                 overflow-x: auto;
                 margin: 0.8rem 0;
             ">
                 <div style="text-align:center; margin-bottom:10px;">
                     <span style="
-                        background:#1a8a5a;
+                        background: var(--badge-success);
                         color:#fff;
                         padding:0.2rem 1.2rem;
                         border-radius:20px;
@@ -859,10 +891,10 @@
             <!-- ===== 原方案架构图 ===== -->
             <h3 id="old-offline" style="color:var(--code-red);">❌ 原方案：逐条处理 + 无持久化</h3>
             <div style="
-                background: #fdf0f0;
+                background: var(--bg-danger);
                 border-radius: 12px;
                 padding: 1.2rem 1rem;
-                border: 1px solid #f5c8c8;
+                border: 1px solid var(--code-border-red);
                 overflow-x: auto;
                 margin: 0.8rem 0;
             ">
@@ -932,10 +964,10 @@
 			            <!-- ===== 质变方案架构图 ===== -->
             <h3 style="color:var(--code-green);">✅ 质变方案：离线缓存 + 批量同步 + 时序存储</h3>
             <div style="
-                background: #f0f7f0;
+                background: var(--bg-success);
                 border-radius: 12px;
                 padding: 1.2rem 1rem;
-                border: 1px solid #b8dcc8;
+                border: 1px solid var(--code-border-green);
                 overflow-x: auto;
                 margin: 0.8rem 0;
             ">
@@ -1063,16 +1095,16 @@
             <!-- ===== 原方案架构图 ===== -->
             <h3 id="old-global" style="color:var(--code-red);">❌ 多点部署 + 人工串联</h3>
             <div style="
-                background: #fdf0f0;
+                background: var(--bg-danger);
                 border-radius: 12px;
                 padding: 1.2rem 1rem;
-                border: 1px solid #f5c8c8;
+                border: 1px solid var(--code-border-red);
                 overflow-x: auto;
                 margin: 0.8rem 0;
             ">
                 <div style="text-align:center; margin-bottom:8px;">
                     <span style="
-                        background:#c0392b;
+                        background: var(--badge-danger);
                         color:#fff;
                         padding:0.15rem 1rem;
                         border-radius:20px;
@@ -1123,16 +1155,16 @@
             <!-- ===== 质变方案架构图 ===== -->
             <h3 style="color:var(--code-green);">✅ Edge + Mria + 全球分布式数据库</h3>
             <div style="
-                background: #f0f7f0;
+                background: var(--bg-success);
                 border-radius: 12px;
                 padding: 1.2rem 1rem;
-                border: 1px solid #b8dcc8;
+                border: 1px solid var(--code-border-green);
                 overflow-x: auto;
                 margin: 0.8rem 0;
             ">
                 <div style="text-align:center; margin-bottom:8px;">
                     <span style="
-                        background:#1a8a5a;
+                        background: var(--badge-success);
                         color:#fff;
                         padding:0.15rem 1rem;
                         border-radius:20px;
@@ -1363,7 +1395,7 @@ cluster_link {
       const scrollTop = window.scrollY;
       let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
       progress = Math.min(Math.max(progress, 0), 1);
-      document.getElementById('readingProgress').style.transform = scaleX( + progress + );
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
     }
 
     function toggleBackToTop() {

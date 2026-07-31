@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   "use strict";
 
   var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -330,11 +330,11 @@
 
     var responses = {
       help: "可用命令：\n- about: 了解关于我\n- skills: 查看技能\n- projects: 查看项目\n- contact: 联系方式\n- 或者直接输入任何问题！",
-      about: "我是李旭彬，拥有十多年软件工程开发、架构设计与团队管理经验。专注分布式微服务、云原生工程化、AI多智能体系统领域，持有3项国家发明专利与软件设计师中级资质。",
+      about: "我是LI XUBIN，拥有十多年软件工程开发、架构设计与团队管理经验。专注分布式微服务、云原生工程化、AI多智能体系统领域，持有3项国家发明专利与软件设计师中级资质。",
       skills: "核心技能：Java/Spring Cloud、分布式事务/Seata、SaaS多租户、MySQL/ES/Redis、Docker/K8s、CI/CD/GitOps、LLMOps/AgentScope、Spring AI/MCP协议。详见 Capability Graph 部分。",
       projects: "代表项目：智慧租住SaaS平台（IoT联动）、智能门锁保洁服务系统（发明专利）、微服务零停机发布系统（发明专利）、跨境电商平台（微服务重构）、AI智能体工程化框架（LLMOps）、微服务通用框架组件（Spring Cloud Alibaba）、企业级CI/CD流水线平台（Jenkins/K8s）。详见 Neural Outputs 部分。",
-      contact: "邮箱：bin0754@163.com | 电话：15989744575 | 地址：广东深圳 | 也可以使用页面底部的联系表单。",
-      default: "感谢您的消息！我是李旭彬的 AI 助手。输入 help 查看可用命令，或直接提问。"
+      contact: "邮箱：bin0754@163.com | 电话：159******** | 地址：广东深圳 | 也可以使用页面底部的联系表单。",
+      default: "感谢您的消息！我是LI XUBIN的 AI 助手。输入 help 查看可用命令，或直接提问。"
     };
 
     inputForm.addEventListener("submit", function (e) {
