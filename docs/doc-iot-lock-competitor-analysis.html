@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="门锁 Token 鉴权认证体系业界主流品牌竞品分析报告 — 涂鸦/阿里云/华为云/AWS IoT Core/小米/华为/Yale/Apple HomeKit 横向对比">
+  <title>门锁 Token 鉴权竞品分析报告 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-purple: rgba(139, 92, 246, 0.12);
+      --code-bg-yellow: rgba(234, 179, 8, 0.12);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --code-border-red: rgba(248, 113, 113, 0.3);
+      --code-border-green: rgba(52, 211, 153, 0.3);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --bg-danger: rgba(248, 113, 113, 0.08);
+      --bg-success: rgba(52, 211, 153, 0.08);
+      --badge-danger: #ef4444;
+      --badge-success: #22c55e;
+      --badge-danger-bg: rgba(239, 68, 68, 0.15);
+      --badge-success-bg: rgba(34, 197, 94, 0.15);
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+      --highlight-orange: #f59e0b;
+      --highlight-orange-bg: rgba(245, 158, 11, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-red: #dc2626;
+      --accent-orange: #d97706;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-purple: #f5f0ff;
+      --code-bg-yellow: #fdf0a0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --code-border-red: #f5c8c8;
+      --code-border-green: #b8dcc8;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --bg-danger: #fdf0f0;
+      --bg-success: #f0f7f0;
+      --badge-danger: #c0392b;
+      --badge-success: #1a8a5a;
+      --badge-danger-bg: rgba(192, 57, 43, 0.12);
+      --badge-success-bg: rgba(26, 138, 90, 0.12);
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+      --highlight-orange: #d97706;
+      --highlight-orange-bg: rgba(217, 119, 6, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.95);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+
+    .brand-text-accent {
+      color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex; align-items: center; gap: 24px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      transition: color 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-link:hover, .nav-link:focus-visible { color: var(--accent-cyan); }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 9999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .article-layout {
+      display: flex; max-width: 1400px; margin: 0 auto;
+      gap: 40px; padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    .article-main {
+      flex: 1; min-width: 0; max-width: 900px;
+    }
+
+    .article-header {
+      margin-bottom: 40px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .article-breadcrumb {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+      font-size: 0.85rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .breadcrumb-link { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumb-link:hover, .breadcrumb-link:focus-visible { color: var(--accent-cyan); }
+    .breadcrumb-separator::before { content: '/'; opacity: 0.5; }
+
+    .article-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+    }
+
+    .meta-date {
+      font-size: 0.84rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .meta-read-time {
+      font-size: 0.82rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 700;
+      line-height: 1.3; color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .article-subtitle {
+      font-size: 1.08rem; color: var(--text-secondary); line-height: 1.6;
+    }
+
+    .iot-content {
+      font-size: 1.01rem; line-height: 1.9;
+    }
+
+    .iot-content h2 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.5rem;
+      font-weight: 600; color: var(--accent-cyan); margin-top: 44px;
+      margin-bottom: 18px; padding-bottom: 11px;
+      border-bottom: 2px solid var(--border-color);
+      scroll-margin-top: 20px;
+    }
+
+    .iot-content h3 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.22rem;
+      font-weight: 600; color: var(--text-primary); margin-top: 32px;
+      margin-bottom: 14px; scroll-margin-top: 20px;
+    }
+
+    .iot-content h4 {
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--accent-purple); margin-top: 0.8rem; margin-bottom: 0.2rem;
+    }
+
+    .iot-content p { margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .iot-content strong { color: var(--text-primary); font-weight: 600; }
+    .iot-content ul, .iot-content ol { padding-left: 1.8rem; margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .iot-content li { margin-bottom: 0.2rem; }
+    .iot-content code { background: var(--bg-secondary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+
+    .iot-content .code-block {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 22px; margin: 22px 0; overflow-x: auto;
+      position: relative;
+    }
+
+    .iot-content .code-block.light {
+      background: var(--bg-secondary);
+    }
+
+    .iot-content .code-block pre {
+      margin: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.7; color: var(--text-primary);
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    .iot-content .code-block .cls { color: var(--code-gold); }
+    .iot-content .code-block .kw { color: var(--hl-keyword); }
+    .iot-content .code-block .fn { color: var(--hl-function); }
+    .iot-content .code-block .num { color: var(--hl-number); }
+    .iot-content .code-block .str { color: var(--hl-string); }
+    .iot-content .code-block .cmt { color: var(--text-muted); }
+
+    .iot-content .highlight-box {
+      border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
+      border-left: 4px solid var(--accent-cyan);
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(139, 92, 246, 0.07));
+    }
+
+    .iot-content .highlight-box .label {
+      font-weight: 600; color: var(--accent-cyan); font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .iot-content .highlight-box .content { margin-top: 4px; color: var(--text-secondary); }
+
+    .iot-content .highlight-box.gold {
+      border-left-color: var(--code-gold);
+      background: var(--highlight-gold-bg);
+    }
+    .iot-content .highlight-box.gold .label { color: var(--highlight-gold); }
+
+    .iot-content .highlight-box.green {
+      border-left-color: var(--accent-green);
+      background: var(--highlight-green-bg);
+    }
+    .iot-content .highlight-box.green .label { color: var(--highlight-green); }
+
+    .iot-content .highlight-box.purple {
+      border-left-color: var(--accent-purple);
+      background: var(--highlight-purple-bg);
+    }
+    .iot-content .highlight-box.purple .label { color: var(--highlight-purple); }
+
+    .iot-content .highlight-box.red {
+      border-left-color: var(--accent-red);
+      background: var(--highlight-red-bg);
+    }
+    .iot-content .highlight-box.red .label { color: var(--highlight-red); }
+
+    .iot-content .highlight-box.orange {
+      border-left-color: var(--accent-orange);
+      background: var(--highlight-orange-bg);
+    }
+    .iot-content .highlight-box.orange .label { color: var(--highlight-orange); }
+
+    .iot-content .compare-table {
+      width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.8rem 0;
+    }
+
+    .iot-content .compare-table th {
+      background: var(--bg-secondary); text-align: left;
+      padding: 0.5rem 1rem; font-weight: 600; color: var(--accent-purple);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .iot-content .compare-table td {
+      padding: 0.5rem 1rem; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .iot-content .compare-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
+
+    .iot-content .compare-table .badge-good {
+      display: inline-block; background: rgba(34, 197, 94, 0.15); color: var(--highlight-green);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-bad {
+      display: inline-block; background: rgba(239, 68, 68, 0.15); color: var(--highlight-red);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-mid {
+      display: inline-block; background: rgba(245, 158, 11, 0.15); color: var(--highlight-orange);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-iot {
+      display: inline-block; background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .score-table th {
+      background: var(--bg-secondary); text-align: center;
+      padding: 0.6rem 0.5rem; font-weight: 600; color: var(--accent-purple);
+      border-bottom: 2px solid var(--border-color); font-size: 0.82rem;
+    }
+
+    .iot-content .score-table td {
+      padding: 0.5rem 0.5rem; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary); text-align: center; font-size: 0.85rem;
+    }
+
+    .iot-content .score-table td:first-child {
+      text-align: left; font-weight: 600; color: var(--text-primary);
+    }
+
+    .iot-content .score-cell {
+      display: inline-block; width: 28px; height: 28px; line-height: 28px;
+      border-radius: 6px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+    }
+
+    .iot-content .score-5 { background: rgba(34, 197, 94, 0.2); color: var(--highlight-green); }
+    .iot-content .score-4 { background: rgba(34, 197, 94, 0.12); color: var(--highlight-green); }
+    .iot-content .score-3 { background: rgba(245, 158, 11, 0.15); color: var(--highlight-orange); }
+    .iot-content .score-2 { background: rgba(239, 68, 68, 0.12); color: var(--highlight-red); }
+    .iot-content .score-1 { background: rgba(239, 68, 68, 0.2); color: var(--highlight-red); }
+
+    .iot-content .brand-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 1.4rem; margin: 1.2rem 0;
+      border-left: 4px solid var(--accent-cyan);
+    }
+
+    .iot-content .brand-card.tuya { border-left-color: #00b894; }
+    .iot-content .brand-card.aliyun { border-left-color: #ff6a00; }
+    .iot-content .brand-card.huawei { border-left-color: #cf0a2c; }
+    .iot-content .brand-card.aws { border-left-color: #ff9900; }
+    .iot-content .brand-card.xiaomi { border-left-color: #ff6900; }
+    .iot-content .brand-card.huawei-device { border-left-color: #cf0a2c; }
+    .iot-content .brand-card.kaadas { border-left-color: #6c5ce7; }
+    .iot-content .brand-card.dessmann { border-left-color: #0984e3; }
+    .iot-content .brand-card.lockin { border-left-color: #00cec9; }
+    .iot-content .brand-card.aqara { border-left-color: #00b894; }
+    .iot-content .brand-card.yale { border-left-color: #d4af37; }
+    .iot-content .brand-card.nest { border-left-color: #4285f4; }
+    .iot-content .brand-card.apple { border-left-color: #a8a8a8; }
+    .iot-content .brand-card.self { border-left-color: var(--accent-purple); }
+
+    .iot-content .brand-card .brand-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem;
+    }
+
+    .iot-content .brand-card .brand-name {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.15rem;
+      font-weight: 700; color: var(--text-primary);
+    }
+
+    .iot-content .brand-card .brand-type {
+      font-size: 0.72rem; padding: 0.15rem 0.6rem; border-radius: 12px;
+      background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);
+      font-family: 'JetBrains Mono', monospace; font-weight: 600;
+    }
+
+    .iot-content .brand-card .brand-section {
+      margin-top: 0.6rem;
+    }
+
+    .iot-content .brand-card .brand-section-title {
+      font-size: 0.82rem; font-weight: 600; color: var(--accent-cyan);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;
+    }
+
+    .iot-content .brand-card .pros { color: var(--highlight-green); }
+    .iot-content .brand-card .cons { color: var(--highlight-red); }
+
+    .iot-content .matrix-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem; margin: 1.2rem 0;
+    }
+
+    .iot-content .matrix-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1rem; text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .iot-content .matrix-card:hover {
+      transform: translateY(-3px); border-color: var(--accent-cyan);
+    }
+
+    .iot-content .matrix-card .mc-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+    .iot-content .matrix-card .mc-title { font-weight: 600; color: var(--text-primary); font-size: 0.92rem; margin-bottom: 0.2rem; }
+    .iot-content .matrix-card .mc-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+    .iot-content .trend-list {
+      list-style: none; padding-left: 0;
+    }
+
+    .iot-content .trend-list li {
+      padding: 0.6rem 0 0.6rem 1.8rem; position: relative;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .iot-content .trend-list li:last-child { border-bottom: none; }
+
+    .iot-content .trend-list li::before {
+      content: '▸'; position: absolute; left: 0.2rem; top: 0.6rem;
+      color: var(--accent-cyan); font-weight: 700;
+    }
+
+    .article-footer {
+      margin-top: 50px; padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+
+    .footer-nav-link {
+      color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace; transition: color 0.3s;
+    }
+    .footer-nav-link:hover { color: var(--accent-purple); }
+
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 90px; align-self: flex-start;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+      font-weight: 700; color: var(--accent-cyan); margin-bottom: 14px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+    }
+
+    .toc-nav-list { list-style: none; padding: 0; margin: 0; }
+    .toc-nav-item { margin-bottom: 0.3rem; }
+    .toc-nav-link {
+      display: block; padding: 0.35rem 0.6rem; font-size: 0.82rem;
+      color: var(--text-secondary); text-decoration: none; border-radius: 6px;
+      transition: all 0.2s ease; border-left: 2px solid transparent;
+      font-family: 'JetBrains Mono', monospace; line-height: 1.4;
+    }
+    .toc-nav-link:hover, .toc-nav-link.active {
+      color: var(--accent-cyan); background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .toc-sub-list { list-style: none; padding-left: 0.8rem; margin: 0.2rem 0; }
+    .toc-sub-item { margin-bottom: 0.15rem; }
+    .toc-sub-link {
+      display: block; padding: 0.25rem 0.5rem; font-size: 0.76rem;
+      color: var(--text-muted); text-decoration: none; border-radius: 4px;
+      transition: all 0.2s ease; font-family: 'JetBrains Mono', monospace;
+    }
+    .toc-sub-link:hover, .toc-sub-link.active {
+      color: var(--accent-purple); background: rgba(139, 92, 246, 0.06);
+    }
+
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--accent-cyan); color: #000; border: none;
+      font-size: 1.3rem; cursor: pointer; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; z-index: 999; box-shadow: 0 4px 20px var(--shadow-glow);
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .back-to-top:hover { transform: translateY(-3px); }
+
+    .site-footer {
+      text-align: center; padding: 30px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted); font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .theme-toggle {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 6px 12px; cursor: pointer;
+      color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; transition: all 0.3s ease;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    .theme-switch {
+      width: 32px; height: 16px; background: var(--bg-primary);
+      border-radius: 10px; position: relative; transition: background 0.3s ease;
+      border: 1px solid var(--border-color);
+    }
+    .theme-knob {
+      position: absolute; top: 1px; left: 1px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--accent-cyan); transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px);
+      background: var(--accent-purple);
+    }
+
+    /* ===== 竞品全景图：分层架构图 ===== */
+    .iot-content .landscape-wrap {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.6rem 1.2rem;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+    }
+
+    .iot-content .landscape-title {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.5px;
+    }
+
+    .iot-content .landscape-layer {
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      position: relative;
+    }
+
+    .iot-content .landscape-layer.self {
+      border: 2px solid var(--accent-purple);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 212, 255, 0.06));
+      box-shadow: 0 0 24px rgba(139, 92, 246, 0.15);
+    }
+
+    .iot-content .landscape-layer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .iot-content .landscape-layer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .iot-content .landscape-layer-tag {
+      font-size: 0.68rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .iot-content .landscape-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .iot-content .landscape-chip {
+      flex: 1 1 auto;
+      min-width: 130px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem 0.7rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .iot-content .landscape-chip:hover {
+      transform: translateY(-2px);
+    }
+
+    .iot-content .landscape-chip .chip-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+
+    .iot-content .landscape-chip .chip-tech {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .iot-content .landscape-chip .chip-score {
+      display: inline-block;
+      font-size: 0.62rem;
+      padding: 0.05rem 0.35rem;
+      border-radius: 8px;
+      margin-top: 0.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    .iot-content .landscape-arrow {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.25rem 0;
+      margin: 0.1rem 0;
+    }
+
+    .iot-content .landscape-arrow .arrow-icon {
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    /* 品牌主题色 */
+    .iot-content .lc-tuya { border-left: 3px solid #00b894; }
+    .iot-content .lc-tuya:hover { border-color: #00b894; }
+    .iot-content .lc-tuya .chip-score { background: rgba(0, 184, 148, 0.15); color: #00b894; }
+
+    .iot-content .lc-aliyun { border-left: 3px solid #ff6a00; }
+    .iot-content .lc-aliyun:hover { border-color: #ff6a00; }
+    .iot-content .lc-aliyun .chip-score { background: rgba(255, 106, 0, 0.15); color: #ff6a00; }
+
+    .iot-content .lc-huawei { border-left: 3px solid #cf0a2c; }
+    .iot-content .lc-huawei:hover { border-color: #cf0a2c; }
+    .iot-content .lc-huawei .chip-score { background: rgba(207, 10, 44, 0.15); color: #cf0a2c; }
+
+    .iot-content .lc-aws { border-left: 3px solid #ff9900; }
+    .iot-content .lc-aws:hover { border-color: #ff9900; }
+    .iot-content .lc-aws .chip-score { background: rgba(255, 153, 0, 0.15); color: #ff9900; }
+
+    .iot-content .lc-xiaomi { border-left: 3px solid #ff6900; }
+    .iot-content .lc-xiaomi:hover { border-color: #ff6900; }
+    .iot-content .lc-xiaomi .chip-score { background: rgba(255, 105, 0, 0.15); color: #ff6900; }
+
+    .iot-content .lc-kaadas { border-left: 3px solid #6c5ce7; }
+    .iot-content .lc-kaadas:hover { border-color: #6c5ce7; }
+    .iot-content .lc-kaadas .chip-score { background: rgba(108, 92, 231, 0.15); color: #6c5ce7; }
+
+    .iot-content .lc-dessmann { border-left: 3px solid #0984e3; }
+    .iot-content .lc-dessmann:hover { border-color: #0984e3; }
+    .iot-content .lc-dessmann .chip-score { background: rgba(9, 132, 227, 0.15); color: #0984e3; }
+
+    .iot-content .lc-lockin { border-left: 3px solid #00cec9; }
+    .iot-content .lc-lockin:hover { border-color: #00cec9; }
+    .iot-content .lc-lockin .chip-score { background: rgba(0, 206, 201, 0.15); color: #00cec9; }
+
+    .iot-content .lc-aqara { border-left: 3px solid #2ecc71; }
+    .iot-content .lc-aqara:hover { border-color: #2ecc71; }
+    .iot-content .lc-aqara .chip-score { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
+
+    .iot-content .lc-yale { border-left: 3px solid #d4af37; }
+    .iot-content .lc-yale:hover { border-color: #d4af37; }
+    .iot-content .lc-yale .chip-score { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+
+    .iot-content .lc-nest { border-left: 3px solid #4285f4; }
+    .iot-content .lc-nest:hover { border-color: #4285f4; }
+    .iot-content .lc-nest .chip-score { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
+
+    .iot-content .lc-apple { border-left: 3px solid #a8a8a8; }
+    .iot-content .lc-apple:hover { border-color: #a8a8a8; }
+    .iot-content .lc-apple .chip-score { background: rgba(168, 168, 168, 0.18); color: #c0c0c0; }
+
+    .iot-content .lc-self {
+      border-left: 3px solid var(--accent-purple);
+      background: rgba(139, 92, 246, 0.06);
+    }
+    .iot-content .lc-self:hover { border-color: var(--accent-purple); }
+    .iot-content .lc-self .chip-name { color: var(--accent-purple); }
+    .iot-content .lc-self .chip-score { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+
+    /* ===== 定位矩阵：二维象限图 ===== */
+    .iot-content .pm-wrap {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.6rem 1.2rem 1.2rem;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+    }
+
+    .iot-content .pm-chart {
+      position: relative;
+      width: 100%;
+      min-width: 640px;
+      height: 420px;
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    .iot-content .pm-grid {
+      position: absolute;
+      inset: 0;
+      border-left: 2px solid var(--border-color);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .iot-content .pm-grid-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .iot-content .pm-grid-line-v {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-left: 1px dashed var(--border-color);
+    }
+
+    .iot-content .pm-quadrant {
+      position: absolute;
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .iot-content .pm-axis-y-label {
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: rotate(-90deg) translateX(50%);
+      transform-origin: left center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      white-space: nowrap;
+    }
+
+    .iot-content .pm-axis-x-label {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      white-space: nowrap;
+    }
+
+    .iot-content .pm-axis-tick {
+      position: absolute;
+      font-size: 0.66rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .iot-content .pm-point {
+      position: absolute;
+      transform: translate(-50%, 50%);
+      cursor: default;
+      z-index: 2;
+    }
+
+    .iot-content .pm-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-secondary);
+      box-shadow: 0 0 0 1px currentColor;
+      transition: transform 0.2s ease;
+    }
+
+    .iot-content .pm-point:hover .pm-dot {
+      transform: scale(1.4);
+    }
+
+    .iot-content .pm-label {
+      position: absolute;
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .iot-content .pm-point.self .pm-dot {
+      width: 16px;
+      height: 16px;
+      box-shadow: 0 0 12px var(--accent-purple);
+    }
+
+    .iot-content .pm-point.self .pm-label {
+      background: rgba(139, 92, 246, 0.15);
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+      font-weight: 700;
+    }
+
+    .iot-content .pm-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 2.2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      justify-content: center;
+    }
+
+    .iot-content .pm-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+    }
+
+    .iot-content .pm-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .iot-content .pm-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .iot-content .pm-summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      border-left: 3px solid var(--accent-purple);
+    }
+
+    .iot-content .pm-summary-card .psc-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.2rem;
+    }
+
+    .iot-content .pm-summary-card .psc-desc {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+      .toc-sidebar { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .article-layout { padding: 20px 16px 60px; }
+      .header-nav { gap: 12px; }
+      .nav-link { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#iot-section" class="breadcrumb-link">IoT</a>
+          <span class="breadcrumb-separator"></span>
+          <span>竞品分析报告</span>
+        </div>
+
+        <div class="article-meta">
+          <span class="meta-tag">📊 ANALYSIS</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 40min</span>
+        </div>
+
+        <h1 class="article-title">📊 门锁 Token 鉴权认证体系 — 业界主流品牌竞品分析报告</h1>
+        <p class="article-subtitle">涂鸦 · 阿里云IoT · 华为云IoT · AWS IoT Core · 小米 · 华为智选 · 凯迪仕 · 德施曼 · 鹿客 · Aqara · Yale · Google Nest · Apple HomeKit — 13 家主流方案的设备身份认证、密钥存储、Token体系、MQTT安全横向对比。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <!-- ========================================================= -->
+        <!-- 报告概述 -->
+        <!-- ========================================================= -->
+        <h2 id="overview">报告概述</h2>
+
+        <h3 id="background">分析背景</h3>
+        <p>智能门锁作为家庭物理入口的第一道防线，其 Token 鉴权认证体系的安全性直接决定了用户人身与财产安全。本报告基于自研《门锁 Token 鉴权认证体系》方案（详见 <a href="doc-iot-lock-token-auth.html">全流程详解</a>），对业界主流门锁品牌与 IoT 云平台方案的认证机制进行系统性横向对比，明确各方案的技术差异、安全等级与适用场景，为技术选型与架构演进提供决策依据。</p>
+
+        <h3 id="scope">分析范围</h3>
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="mc-icon">☁️</div>
+            <div class="mc-title">IoT 云平台方案</div>
+            <div class="mc-desc">涂鸦 / 阿里云 / 华为云 / AWS</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🏠</div>
+            <div class="mc-title">国内门锁品牌</div>
+            <div class="mc-desc">小米 / 华为 / 凯迪仕 / 德施曼 / 鹿客 / Aqara</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🌍</div>
+            <div class="mc-title">国际门锁品牌</div>
+            <div class="mc-desc">Yale / Google Nest / Apple HomeKit</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🔧</div>
+            <div class="mc-title">自研体系</div>
+            <div class="mc-desc">ISNOWSOFT 门锁 Token 认证方案</div>
+          </div>
+        </div>
+
+        <h3 id="methodology">评估方法论</h3>
+        <p>本报告从 <strong>8 个核心维度</strong>对每家方案进行 1-5 分量化评估，结合公开技术文档、SDK 实现细节、安全白皮书及行业实践进行综合判定：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>评估维度</th><th>权重</th><th>评估要点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>设备身份认证强度</strong></td><td>20%</td><td>X.509证书 / 一机一密 / 一型一密 / 动态注册</td></tr>
+            <tr><td><strong>密钥存储安全性</strong></td><td>15%</td><td>SE安全芯片 / TrustZone / 加密Flash / 明文存储</td></tr>
+            <tr><td><strong>通信加密强度</strong></td><td>15%</td><td>mTLS双向 / TLS单向 / 自定义加密 / 明文</td></tr>
+            <tr><td><strong>Token体系成熟度</strong></td><td>15%</td><td>OAuth2+JWT / 自定义Token / API-KEY / 设备凭证</td></tr>
+            <tr><td><strong>MQTT安全控制</strong></td><td>10%</td><td>HTTP Auth回调 / Topic ACL / Broker类型</td></tr>
+            <tr><td><strong>多租户隔离能力</strong></td><td>10%</td><td>租户上下文 / 数据隔离 / 品牌隔离</td></tr>
+            <tr><td><strong>Token生命周期管理</strong></td><td>10%</td><td>刷新 / 吊销 / 并发控制 / 暴力破解防护</td></tr>
+            <tr><td><strong>生态开放性</strong></td><td>5%</td><td>Matter / 互联互通 / 二次开发能力</td></tr>
+          </tbody>
+        </table>
+
+        <!-- ========================================================= -->
+        <!-- 竞品全景图 -->
+        <!-- ========================================================= -->
+        <h2 id="landscape">竞品全景图</h2>
+
+        <div class="landscape-wrap">
+          <div class="landscape-title">🔐 智能门锁 Token 鉴权认证生态全景</div>
+
+          <div class="landscape-layer">
+            <div class="landscape-layer-header">
+              <span class="landscape-layer-label" style="color:#ff9900;">☁️ IoT 云平台方案</span>
+              <span class="landscape-layer-tag" style="background:rgba(255,153,0,0.15);color:#ff9900;">底层基础设施</span>
+            </div>
+            <div class="landscape-chips">
+              <div class="landscape-chip lc-tuya">
+                <div class="chip-name">涂鸦智能</div>
+                <div class="chip-tech">一机一密 · HMAC-SHA256</div>
+                <span class="chip-score">23分</span>
+              </div>
+              <div class="landscape-chip lc-aliyun">
+                <div class="chip-name">阿里云 IoT</div>
+                <div class="chip-tech">三元组/证书/ID²</div>
+                <span class="chip-score">30分</span>
+              </div>
+              <div class="landscape-chip lc-huawei">
+                <div class="chip-name">华为云 IoT</div>
+                <div class="chip-tech">密钥/X.509 mTLS</div>
+                <span class="chip-score">29分</span>
+              </div>
+              <div class="landscape-chip lc-aws">
+                <div class="chip-name">AWS IoT Core</div>
+                <div class="chip-tech">X.509 强制 mTLS</div>
+                <span class="chip-score">35分</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="landscape-arrow"><span class="arrow-icon">▲</span> 终端品牌依赖云平台基础设施 <span class="arrow-icon">▲</span></div>
+
+          <div class="landscape-layer">
+            <div class="landscape-layer-header">
+              <span class="landscape-layer-label" style="color:#00b894;">🏠 国内门锁品牌</span>
+              <span class="landscape-layer-tag" style="background:rgba(0,184,148,0.15);color:#00b894;">终端产品</span>
+            </div>
+            <div class="landscape-chips">
+              <div class="landscape-chip lc-xiaomi">
+                <div class="chip-name">小米米家</div>
+                <div class="chip-tech">自研IoT · 一机一密</div>
+                <span class="chip-score">22分</span>
+              </div>
+              <div class="landscape-chip lc-huawei">
+                <div class="chip-name">华为智选</div>
+                <div class="chip-tech">华为云IoT · 密钥/证书</div>
+                <span class="chip-score">28分</span>
+              </div>
+              <div class="landscape-chip lc-kaadas">
+                <div class="chip-name">凯迪仕</div>
+                <div class="chip-tech">自研+涂鸦 OEM</div>
+                <span class="chip-score">18分</span>
+              </div>
+              <div class="landscape-chip lc-dessmann">
+                <div class="chip-name">德施曼</div>
+                <div class="chip-tech">小嘀云 · 设备Token</div>
+                <span class="chip-score">16分</span>
+              </div>
+              <div class="landscape-chip lc-lockin">
+                <div class="chip-name">鹿客 Lockin</div>
+                <div class="chip-tech">涂鸦/自研混合</div>
+                <span class="chip-score">19分</span>
+              </div>
+              <div class="landscape-chip lc-aqara">
+                <div class="chip-name">绿米 Aqara</div>
+                <div class="chip-tech">Zigbee + 云 · Matter</div>
+                <span class="chip-score">24分</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="landscape-layer">
+            <div class="landscape-layer-header">
+              <span class="landscape-layer-label" style="color:#4285f4;">🌍 国际门锁品牌</span>
+              <span class="landscape-layer-tag" style="background:rgba(66,133,244,0.15);color:#4285f4;">终端产品</span>
+            </div>
+            <div class="landscape-chips">
+              <div class="landscape-chip lc-yale">
+                <div class="chip-name">Yale + August</div>
+                <div class="chip-tech">August平台 · BLE+WiFi</div>
+                <span class="chip-score">23分</span>
+              </div>
+              <div class="landscape-chip lc-nest">
+                <div class="chip-name">Google Nest</div>
+                <div class="chip-tech">Google云 · Thread/Weave</div>
+                <span class="chip-score">28分</span>
+              </div>
+              <div class="landscape-chip lc-apple">
+                <div class="chip-name">Apple HomeKit</div>
+                <div class="chip-tech">Ed25519 · iCloud端到端加密</div>
+                <span class="chip-score">31分</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="landscape-arrow"><span class="arrow-icon">▼</span> 自研体系：独立全栈架构，不依赖第三方云平台 <span class="arrow-icon">▼</span></div>
+
+          <div class="landscape-layer self">
+            <div class="landscape-layer-header">
+              <span class="landscape-layer-label" style="color:var(--accent-purple);">🟣 自研体系（本方案）</span>
+              <span class="landscape-layer-tag" style="background:rgba(139,92,246,0.2);color:var(--accent-purple);">企业级 B 端</span>
+            </div>
+            <div class="landscape-chips">
+              <div class="landscape-chip lc-self">
+                <div class="chip-name">ISNOWSOFT 门锁 Token 认证</div>
+                <div class="chip-tech">X.509 + 挑战应答 + mTLS + OAuth2 + EMQX + 多租户</div>
+                <span class="chip-score">38分</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 核心认证机制横向对比 -->
+        <!-- ========================================================= -->
+        <h2 id="core-comparison">核心认证机制横向对比</h2>
+
+        <h3 id="device-identity">设备身份认证机制对比</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>方案</th><th>认证机制</th><th>密钥分发</th><th>安全等级</th></tr></thead>
+          <tbody>
+            <tr><td><strong>涂鸦智能</strong></td><td>一机一密 (ProductID+DeviceID+DeviceSecret)</td><td>工厂烧录注入</td><td><span class="badge-mid">★★★☆☆</span></td></tr>
+            <tr><td><strong>阿里云IoT</strong></td><td>一机一密 / 一型一密 / X.509证书 / ID²</td><td>三元组烧录 / 证书签发 / 芯片内置</td><td><span class="badge-good">★★★★★</span></td></tr>
+            <tr><td><strong>华为云IoT</strong></td><td>密钥认证 / X.509证书 (CA+设备证书)</td><td>密钥烧录 / 证书签发</td><td><span class="badge-good">★★★★☆</span></td></tr>
+            <tr><td><strong>AWS IoT Core</strong></td><td>X.509证书强制 mTLS</td><td>证书签发 (10-20年有效期)</td><td><span class="badge-good">★★★★★</span></td></tr>
+            <tr><td><strong>小米米家</strong></td><td>一机一密 (设备ID+密钥)</td><td>工厂烧录</td><td><span class="badge-mid">★★★☆☆</span></td></tr>
+            <tr><td><strong>华为智选</strong></td><td>华为云IoT (密钥/证书)</td><td>依赖华为云</td><td><span class="badge-good">★★★★☆</span></td></tr>
+            <tr><td><strong>凯迪仕</strong></td><td>自研云 + 涂鸦OEM (一机一密)</td><td>工厂烧录</td><td><span class="badge-mid">★★★☆☆</span></td></tr>
+            <tr><td><strong>德施曼</strong></td><td>小嘀云自研 (设备ID+Token)</td><td>工厂烧录</td><td><span class="badge-mid">★★☆☆☆</span></td></tr>
+            <tr><td><strong>鹿客Lockin</strong></td><td>涂鸦OEM / 自研云 (一机一密)</td><td>工厂烧录</td><td><span class="badge-mid">★★★☆☆</span></td></tr>
+            <tr><td><strong>绿米Aqara</strong></td><td>Zigbee + Aqara Home云 (设备密钥)</td><td>网关配对绑定</td><td><span class="badge-mid">★★★☆☆</span></td></tr>
+            <tr><td><strong>Yale+August</strong></td><td>August平台 (BLE+WiFi, 设备密钥)</td><td>首次配对绑定</td><td><span class="badge-mid">★★★☆☆</span></td></tr>
+            <tr><td><strong>Google Nest</strong></td><td>Google云 + Thread/Weave (设备证书)</td><td>工厂预置</td><td><span class="badge-good">★★★★☆</span></td></tr>
+            <tr><td><strong>Apple HomeKit</strong></td><td>HomeKit框架 (Ed25519 + iCloud端到端加密)</td><td>首次配对 (Setup Code)</td><td><span class="badge-good">★★★★★</span></td></tr>
+            <tr><td><strong style="color:var(--accent-purple)">自研体系</strong></td><td>X.509证书 + 挑战-应答签名 (私钥不出SE)</td><td>工厂烧录证书到安全芯片</td><td><span class="badge-good">★★★★★</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="transport-security">通信加密与传输安全对比</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>方案</th><th>传输加密</th><th>认证方向</th><th>密钥协商</th></tr></thead>
+          <tbody>
+            <tr><td><strong>涂鸦智能</strong></td><td>TLS 1.2 (MQTT 8883)</td><td><span class="badge-mid">单向</span></td><td>HMAC-SHA256签名Token</td></tr>
+            <tr><td><strong>阿里云IoT</strong></td><td>TLS 1.2 / X.509 mTLS</td><td><span class="badge-good">双向(mTLS)</span></td><td>证书 / ID²芯片级</td></tr>
+            <tr><td><strong>华为云IoT</strong></td><td>TLS 1.2 / X.509 mTLS</td><td><span class="badge-good">双向(mTLS)</span></td><td>证书签名验证</td></tr>
+            <tr><td><strong>AWS IoT Core</strong></td><td>TLS 1.2 mTLS (ALPN 443)</td><td><span class="badge-good">双向(mTLS)</span></td><td>证书强制</td></tr>
+            <tr><td><strong>小米米家</strong></td><td>TLS 1.2 (自定义协议)</td><td><span class="badge-mid">单向</span></td><td>设备密钥签名</td></tr>
+            <tr><td><strong>Apple HomeKit</strong></td><td>SRP+ChaCha20-Poly1305</td><td><span class="badge-good">双向</span></td><td>Ed25519 + HKDF</td></tr>
+            <tr><td><strong style="color:var(--accent-purple)">自研体系</strong></td><td>TLS 1.2 mTLS + EMQX HTTP Auth</td><td><span class="badge-good">双层双向</span></td><td>证书 + 挑战应答</td></tr>
+          </tbody>
+        </table>
+
+        <!-- ========================================================= -->
+        <!-- 云平台方案深度分析 -->
+        <!-- ========================================================= -->
+        <h2 id="cloud-platforms">IoT 云平台方案深度分析</h2>
+
+        <div class="brand-card tuya">
+          <div class="brand-header">
+            <span class="brand-name">🎨 涂鸦智能 Tuya</span>
+            <span class="brand-type">云平台 · 一机一密</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>采用<strong>一机一密</strong>方案：每个设备预置 <code>ProductID + DeviceID + DeviceSecret</code> 三元组。设备连接时使用 <code>DeviceSecret</code> 参与 HMAC-SHA256 签名运算，生成临时 Token 用于 MQTT 登录认证（端口 8883）。<code>DeviceSecret</code> 通过安全烧录方式注入，严禁硬编码在固件中。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>开发门槛低，SDK 完善，OEM 接入周期短（1-2 周）</li>
+              <li>全球节点部署，海外门锁品牌常用方案</li>
+              <li>HMAC-SHA256 签名机制，每次连接 Token 动态生成</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>TLS 单向认证，设备不验证云端证书完整性（依赖系统 CA）</li>
+              <li>DeviceSecret 以软件形式存储，未强制要求 SE 安全芯片</li>
+              <li>密钥泄露后需 OTA 轮换，运维成本高</li>
+              <li>多租户能力弱，依赖涂鸦平台账号体系，无法自建租户隔离</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card aliyun">
+          <div class="brand-header">
+            <span class="brand-name">🟠 阿里云物联网平台</span>
+            <span class="brand-type">云平台 · 多模式认证</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>提供 <strong>四种认证方式</strong>，安全等级递进：</p>
+            <ul>
+              <li><strong>一机一密</strong>：三元组 <code>ProductKey + DeviceName + DeviceSecret</code>，MQTT 密码签名</li>
+              <li><strong>一型一密</strong>：设备动态注册，先获取 DeviceSecret 再连接</li>
+              <li><strong>X.509 证书</strong>：华东2（上海）地域支持，MQTT 证书认证</li>
+              <li><strong>ID² 芯片级认证</strong>：基于硬件安全芯片的国密级方案</li>
+            </ul>
+            <p>支持 <code>DeviceSecret</code> 通过 OTA 远程轮换，建议周期 90 天。X.509 证书 Subject 字段严格绑定设备身份元数据。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>认证方式最丰富，覆盖从低成本到高安全全场景</li>
+              <li>ID² 芯片级认证达到国密标准，金融级安全</li>
+              <li>X.509 证书支持 mTLS 双向认证</li>
+              <li>提供设备证书分发工具，加速量产</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>X.509 证书认证仅部分地域支持</li>
+              <li>多租户需基于实例隔离，成本较高</li>
+              <li>Token 体系为平台自有，与 OAuth2 标准不兼容</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card huawei">
+          <div class="brand-header">
+            <span class="brand-name">🔴 华为云 IoTDA</span>
+            <span class="brand-type">云平台 · 密钥+证书</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>支持 <strong>密钥认证</strong>与 <strong>X.509 证书认证</strong>双模式：</p>
+            <ul>
+              <li><strong>密钥认证</strong>：一机一密 / 一型一密，设备 ID + 密钥签名</li>
+              <li><strong>X.509 证书认证</strong>：CA 证书 + 设备证书，mTLS 双向认证</li>
+            </ul>
+            <p>关键安全环节是"私钥本地签名验证"——设备不传输私钥本身，而是通过签名操作间接证明所有权，即便通信被截获也无法获取私钥。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>X.509 证书认证支持 mTLS 双向认证，安全性高</li>
+              <li>支持设备 CA 证书批量管理，适合大规模部署</li>
+              <li>与 HarmonyOS 生态深度集成</li>
+              <li>资源空间（Resource Space）实现逻辑隔离</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>Token 体系为平台自有，非 OAuth2 标准</li>
+              <li>MQTT ACL 控制粒度依赖平台策略，灵活性一般</li>
+              <li>海外节点覆盖弱于 AWS</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card aws">
+          <div class="brand-header">
+            <span class="brand-name">🟡 AWS IoT Core</span>
+            <span class="brand-type">云平台 · X.509强制</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>采用 <strong>X.509 证书强制 mTLS 双向认证</strong>，是业界安全标杆：</p>
+            <ul>
+              <li>每个设备必须拥有唯一证书（严禁共享）</li>
+              <li>证书有效期通常 10-20 年</li>
+              <li>支持证书吊销（CRL/OCSP）与轮换</li>
+              <li>IoT Policy 控制 Topic 级权限</li>
+              <li>支持 ALPN 协议在 443 端口运行 MQTT</li>
+            </ul>
+            <p>采用 IDevID（出厂永久证书）→ LDevID（运营证书）→ Session Token（临时令牌）三级信任链架构。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>安全等级业界最高，X.509 证书强制 mTLS</li>
+              <li>IoT Policy 实现 Topic 级精细 ACL 控制</li>
+              <li>三级信任链架构（IDevID/LDevID/Session）设计成熟</li>
+              <li>全球节点覆盖，海外部署首选</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>证书管理运维复杂，成本高</li>
+              <li>不支持一机一密等轻量方案，低端设备接入门槛高</li>
+              <li>多租户需通过 IoT Policy + 账户隔离实现</li>
+              <li>国内合规性受限，数据出境问题</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 国内品牌分析 -->
+        <!-- ========================================================= -->
+        <h2 id="domestic-brands">国内门锁品牌分析</h2>
+
+        <div class="brand-card xiaomi">
+          <div class="brand-header">
+            <span class="brand-name">🟠 小米米家</span>
+            <span class="brand-type">国内品牌 · 自研IoT平台</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>基于<strong>米家自研 IoT 平台</strong>，采用一机一密方案。设备出厂预置设备 ID 与密钥，通过米家协议（基于 TLS 1.2 的自定义封装）连接。BLE+WiFi 双模网关架构，门锁通过蓝牙连接米家网关，网关再上行云端。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>米家生态完善，用户基数大，互联互通体验好</li>
+              <li>BLE+WiFi 双模，本地控制不依赖云端</li>
+              <li>支持 Matter 协议（米家 Matter 桥接）</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>TLS 单向认证，安全等级中等</li>
+              <li>密钥软件存储，未强制 SE 安全芯片</li>
+              <li>封闭生态，二次开发能力弱</li>
+              <li>无多租户能力，仅面向 C 端消费者</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card huawei-device">
+          <div class="brand-header">
+            <span class="brand-name">🔴 华为智选 / HarmonyOS Connect</span>
+            <span class="brand-type">国内品牌 · 华为云IoT</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>基于<strong>华为云 IoTDA</strong> 平台，支持密钥认证与 X.509 证书认证。HarmonyOS Connect 设备采用分布式软总线，设备间可信互连。门锁通过 HiLink/WiFi 连接华为云，认证机制继承华为云 IoT 能力。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>继承华为云 IoT 的 X.509 mTLS 能力，安全等级较高</li>
+              <li>HarmonyOS 分布式能力，多设备协同体验好</li>
+              <li>支持 Matter 协议</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>Token 体系为华为自有，非 OAuth2 标准</li>
+              <li>生态相对封闭，第三方接入受限</li>
+              <li>多租户能力依赖华为云实例</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card kaadas">
+          <div class="brand-header">
+            <span class="brand-name">🟣 凯迪仕 Kaadas</span>
+            <span class="brand-type">国内品牌 · 自研+涂鸦</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>采用<strong>自研云平台 + 涂鸦 OEM 混合方案</strong>。高端型号（如 K20 系列）使用自研云，中低端型号接入涂鸦平台。认证机制继承涂鸦一机一密方案，部分自研型号采用设备 ID + Token 模式。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>品牌知名度高，线下渠道完善</li>
+              <li>自研云型号可定制化能力强</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>认证机制依赖涂鸦，安全等级受限于涂鸦方案</li>
+              <li>自研云 Token 体系不透明，安全审计困难</li>
+              <li>无多租户能力，面向 C 端</li>
+              <li>密钥存储未公开是否使用 SE 芯片</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card dessmann">
+          <div class="brand-header">
+            <span class="brand-name">🔵 德施曼 Dessmann</span>
+            <span class="brand-type">国内品牌 · 小嘀云自研</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>基于<strong>小嘀云自研 IoT 平台</strong>，采用设备 ID + Token 模式。设备出厂烧录设备 ID，激活时云端下发 Token，后续通信携带 Token 鉴权。MQTT 通信，TLS 加密。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>自研平台，数据自主可控</li>
+              <li>高端型号（Q 系列）功能丰富</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>Token 体系简单，无 OAuth2 标准化设计</li>
+              <li>未公开使用 X.509 证书或 mTLS</li>
+              <li>密钥存储安全性存疑，未见 SE 芯片说明</li>
+              <li>无多租户能力</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card lockin">
+          <div class="brand-header">
+            <span class="brand-name">🟢 鹿客 Lockin</span>
+            <span class="brand-type">国内品牌 · 涂鸦/自研</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>采用<strong>涂鸦 OEM + 自研云混合方案</strong>。部分型号接入涂鸦平台（一机一密），高端型号（如 Classic 系列）使用自研云。与小米生态有历史渊源，部分型号支持米家接入。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>产品线丰富，覆盖各价位段</li>
+              <li>涂鸦型号接入快，生态兼容性好</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>认证机制不统一，不同型号安全等级差异大</li>
+              <li>依赖涂鸦的型号受限于涂鸦安全能力</li>
+              <li>无多租户能力</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card aqara">
+          <div class="brand-header">
+            <span class="brand-name">🟢 绿米 Aqara</span>
+            <span class="brand-type">国内品牌 · Zigbee+云</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>采用 <strong>Zigbee 3.0 + Aqara Home 云平台</strong>架构。门锁通过 Zigbee 连接 Aqara 网关，网关上行云端。设备密钥在网关配对时绑定，支持 Matter 协议（M1/M2 系列）。云端认证采用设备 ID + Token 模式。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>Zigbee 3.0 本地化能力强，断网可用</li>
+              <li>Matter 协议支持，跨生态互联互通</li>
+              <li>网关集中管理，设备功耗低</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>依赖网关，增加单点故障与成本</li>
+              <li>Zigbee 密钥协商安全性低于 mTLS</li>
+              <li>云端 Token 体系非 OAuth2 标准</li>
+              <li>无多租户能力</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 国际品牌分析 -->
+        <!-- ========================================================= -->
+        <h2 id="international-brands">国际门锁品牌分析</h2>
+
+        <div class="brand-card yale">
+          <div class="brand-header">
+            <span class="brand-name">🟡 Yale + August (Assa Abloy)</span>
+            <span class="brand-type">国际品牌 · August平台</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>Yale 智能锁采用 <strong>August 平台技术</strong>（Assa Abloy 旗下）。BLE+WiFi 双模，通过 August App 配对绑定。设备密钥在首次配对时生成，存储于设备加密 Flash。云端采用 OAuth2 类似机制，App 端 Token 鉴权。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>August 平台成熟，北美市场占有率领先</li>
+              <li>BLE 本地控制，响应快</li>
+              <li>支持 Apple HomeKit / Google Home / Alexa 多平台</li>
+              <li>OAuth2 类似 Token 机制，App 端鉴权成熟</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>设备密钥软件存储，未强制 SE 安全芯片</li>
+              <li>云端通信 TLS 单向认证，非 mTLS</li>
+              <li>无多租户能力，面向 C 端消费者</li>
+              <li>国内服务稳定性依赖海外服务器</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card nest">
+          <div class="brand-header">
+            <span class="brand-name">🔵 Google Nest x Yale</span>
+            <span class="brand-type">国际品牌 · Google云+Thread</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>Nest x Yale Lock 采用 <strong>Google 云 + Thread/Weave 协议</strong>。设备出厂预置证书，通过 Nest Connect/Weave 网关连接 Google 云。采用设备证书认证，支持 mTLS。App 端使用 Google OAuth2 Token 鉴权。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>设备证书认证，安全等级较高</li>
+              <li>Thread 协议低功耗、Mesh 自组网</li>
+              <li>Google OAuth2 Token 体系成熟</li>
+              <li>Matter over Thread 支持</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>依赖 Google 服务，国内无法使用</li>
+              <li>Thread 网关增加成本</li>
+              <li>无多租户能力</li>
+              <li>生态封闭，二次开发能力弱</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="brand-card apple">
+          <div class="brand-header">
+            <span class="brand-name">⚪ Apple HomeKit</span>
+            <span class="brand-type">国际品牌 · iCloud端到端加密</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">认证机制</div>
+            <p>Apple HomeKit 采用<strong>最高安全标准</strong>的认证体系：</p>
+            <ul>
+              <li><strong>设备身份</strong>：Ed25519 椭圆曲线密钥对（MFi 认证芯片）</li>
+              <li><strong>配对认证</strong>：SRP（Secure Remote Password）+ Setup Code</li>
+              <li><strong>通信加密</strong>：ChaCha20-Poly1305 AEAD 加密</li>
+              <li><strong>密钥协商</strong>：HKDF-SHA512</li>
+              <li><strong>云端</strong>：iCloud 端到端加密，Apple 无法解密</li>
+              <li><strong>Token</strong>：HomeKit 框架内自治，无需传统 OAuth2</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 优势</div>
+            <ul>
+              <li>安全等级业界最高，Ed25519 + 端到端加密</li>
+              <li>MFi 认证芯片强制，硬件级安全</li>
+              <li>Apple 不持有密钥，隐私保护最强</li>
+              <li>Matter 协议原生支持</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 不足</div>
+            <ul>
+              <li>需 Apple Home Hub（HomePod/Apple TV）才能远程控制</li>
+              <li>MFi 认证成本高，门锁厂商接入门槛高</li>
+              <li>仅限 Apple 生态，跨平台兼容性差</li>
+              <li>无多租户能力，面向 C 端</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 安全等级评估矩阵 -->
+        <!-- ========================================================= -->
+        <h2 id="score-matrix">安全等级评估矩阵</h2>
+
+        <p>基于 8 个核心维度，对 13 家方案进行 1-5 分量化评分（5 分为最高）：</p>
+
+        <div style="overflow-x:auto;">
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>方案</th>
+              <th>设备身份</th>
+              <th>密钥存储</th>
+              <th>通信加密</th>
+              <th>Token体系</th>
+              <th>MQTT安全</th>
+              <th>多租户</th>
+              <th>生命周期</th>
+              <th>生态开放</th>
+              <th><strong>总分</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>涂鸦智能</td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><strong>23</strong></td></tr>
+            <tr><td>阿里云IoT</td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><strong>30</strong></td></tr>
+            <tr><td>华为云IoT</td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><strong>29</strong></td></tr>
+            <tr><td>AWS IoT Core</td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-3">3</span></td><td><strong>35</strong></td></tr>
+            <tr><td>小米米家</td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><strong>22</strong></td></tr>
+            <tr><td>华为智选</td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><strong>28</strong></td></tr>
+            <tr><td>凯迪仕</td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-2">2</span></td><td><strong>18</strong></td></tr>
+            <tr><td>德施曼</td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-2">2</span></td><td><strong>16</strong></td></tr>
+            <tr><td>鹿客Lockin</td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><strong>19</strong></td></tr>
+            <tr><td>绿米Aqara</td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-5">5</span></td><td><strong>24</strong></td></tr>
+            <tr><td>Yale+August</td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-2">2</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-3">3</span></td><td><span class="score-cell score-4">4</span></td><td><strong>23</strong></td></tr>
+            <tr><td>Google Nest</td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><strong>28</strong></td></tr>
+            <tr><td>Apple HomeKit</td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-1">1</span></td><td><span class="score-cell score-4">4</span></td><td><span class="score-cell score-3">3</span></td><td><strong>31</strong></td></tr>
+            <tr style="background:rgba(139,92,246,0.08);"><td><strong style="color:var(--accent-purple)">自研体系</strong></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-5">5</span></td><td><span class="score-cell score-3">3</span></td><td><strong style="color:var(--accent-purple)">38</strong></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="highlight-box purple">
+          <div class="label">📌 评分说明</div>
+          <div class="content">评分基于公开技术文档与行业实践综合判定。满分 40 分（8 维度 × 5 分）。自研体系在多租户隔离维度具有独特优势（5 分），这是绝大多数 C 端品牌方案所缺失的 B 端能力。</div>
+        </div>
+
+        <h3 id="ranking">安全等级排名</h3>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+🥇 第1梯队 (32-40分) — 企业级/高安全
+   自研体系 (38) ████████████████████░░
+   AWS IoT Core (35) █████████████████░░░░░
+   Apple HomeKit (31) ████████████████░░░░░░
+
+🥈 第2梯队 (26-31分) — 云平台级
+   阿里云IoT (30) ████████████████░░░░░░
+   华为云IoT (29) ███████████████░░░░░░░
+   华为智选 (28) ███████████████░░░░░░░
+   Google Nest (28) ███████████████░░░░░░░
+
+🥉 第3梯队 (20-25分) — 消费级主流
+   绿米Aqara (24) █████████████░░░░░░░░░
+   涂鸦智能 (23) █████████████░░░░░░░░░
+   Yale+August (23) █████████████░░░░░░░░░
+   小米米家 (22) ████████████░░░░░░░░░░
+
+⚠️ 第4梯队 (<20分) — 基础级
+   鹿客Lockin (19) ███████████░░░░░░░░░░░
+   凯迪仕 (18) ██████████░░░░░░░░░░░░
+   德施曼 (16) █████████░░░░░░░░░░░░░</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 关键技术差异点 -->
+        <!-- ========================================================= -->
+        <h2 id="key-differences">关键技术差异点深度剖析</h2>
+
+        <h3 id="diff-key-storage">差异一：密钥存储方式</h3>
+        <table class="compare-table">
+          <thead><tr><th>存储方式</th><th>采用方案</th><th>安全等级</th><th>攻击难度</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SE安全芯片/TrustZone</strong></td><td>AWS IoT / Apple HomeKit / <span style="color:var(--accent-purple)">自研体系</span></td><td><span class="badge-good">硬件级</span></td><td>物理攻击，极难</td></tr>
+            <tr><td><strong>MFi认证芯片</strong></td><td>Apple HomeKit</td><td><span class="badge-good">硬件级</span></td><td>需破解芯片，极难</td></tr>
+            <tr><td><strong>ID²芯片级</strong></td><td>阿里云IoT</td><td><span class="badge-good">硬件级</span></td><td>国密芯片，极难</td></tr>
+            <tr><td><strong>加密Flash</strong></td><td>华为云IoT / 华为智选 / Google Nest</td><td><span class="badge-mid">软件级</span></td><td>固件提取可破解</td></tr>
+            <tr><td><strong>明文Flash</strong></td><td>涂鸦 / 小米 / 凯迪仕 / 德施曼 / 鹿客 / Yale</td><td><span class="badge-bad">基础级</span></td><td>固件提取即泄露</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 行业痛点</div>
+          <div class="content">国内多数门锁品牌（凯迪仕/德施曼/鹿客）的 DeviceSecret 以软件形式存储在 Flash 中，未使用 SE 安全芯片。攻击者通过固件提取或侧信道攻击即可获取密钥，这是当前国内门锁安全的最大短板。</div>
+        </div>
+
+        <h3 id="diff-token-system">差异二：Token 体系架构</h3>
+        <table class="compare-table">
+          <thead><tr><th>Token体系</th><th>采用方案</th><th>标准化</th><th>可扩展性</th></tr></thead>
+          <tbody>
+            <tr><td><strong>OAuth2 + JWT + Redis</strong></td><td><span style="color:var(--accent-purple)">自研体系</span></td><td><span class="badge-good">国际标准</span></td><td><span class="badge-good">高</span></td></tr>
+            <tr><td><strong>Google OAuth2</strong></td><td>Google Nest</td><td><span class="badge-good">国际标准</span></td><td><span class="badge-good">高</span></td></tr>
+            <tr><td><strong>August OAuth2-like</strong></td><td>Yale+August</td><td><span class="badge-mid">类标准</span></td><td><span class="badge-mid">中</span></td></tr>
+            <tr><td><strong>HomeKit 自治框架</strong></td><td>Apple HomeKit</td><td><span class="badge-mid">私有标准</span></td><td><span class="badge-bad">低</span></td></tr>
+            <tr><td><strong>平台自有Token</strong></td><td>阿里云/华为云/涂鸦</td><td><span class="badge-bad">私有</span></td><td><span class="badge-mid">中</span></td></tr>
+            <tr><td><strong>简单设备Token</strong></td><td>小米/凯迪仕/德施曼/鹿客/Aqara</td><td><span class="badge-bad">私有</span></td><td><span class="badge-bad">低</span></td></tr>
+            <tr><td><strong>IAM Policy + 证书</strong></td><td>AWS IoT Core</td><td><span class="badge-good">AWS标准</span></td><td><span class="badge-good">高</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="diff-mqtt-security">差异三：MQTT 安全控制</h3>
+        <table class="compare-table">
+          <thead><tr><th>方案</th><th>Broker类型</th><th>认证方式</th><th>ACL粒度</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="color:var(--accent-purple)">自研体系</strong></td><td>EMQX (自建)</td><td>HTTP Auth回调 + HMAC-SHA256</td><td><span class="badge-good">Topic级 pub/sub分离</span></td></tr>
+            <tr><td><strong>AWS IoT Core</strong></td><td>AWS托管</td><td>X.509证书 mTLS</td><td><span class="badge-good">IoT Policy Topic级</span></td></tr>
+            <tr><td><strong>阿里云IoT</strong></td><td>阿里云托管</td><td>签名/证书</td><td><span class="badge-mid">Topic级</span></td></tr>
+            <tr><td><strong>华为云IoT</strong></td><td>华为云托管</td><td>密钥/证书</td><td><span class="badge-mid">Topic级</span></td></tr>
+            <tr><td><strong>涂鸦智能</strong></td><td>涂鸦托管</td><td>签名Token</td><td><span class="badge-mid">产品级</span></td></tr>
+            <tr><td><strong>国内品牌自研</strong></td><td>自建/托管混合</td><td>设备Token</td><td><span class="badge-bad">粗粒度/无ACL</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="diff-multi-tenant">差异四：多租户隔离能力</h3>
+        <div class="highlight-box gold">
+          <div class="label">🎯 核心差异化优势</div>
+          <div class="content">多租户隔离是 B 端 SaaS 门锁管理平台的核心能力。在所有 13 家方案中，仅自研体系通过 <code>TenantBroker</code> + TTL线程传递 + SQL自动拼接实现了完整的租户上下文隔离。云平台方案（阿里云/华为云）需通过实例隔离实现，成本高；C 端品牌方案均无此能力。</div>
+        </div>
+
+        <table class="compare-table">
+          <thead><tr><th>隔离方式</th><th>采用方案</th><th>成本</th><th>灵活性</th></tr></thead>
+          <tbody>
+            <tr><td><strong>TenantBroker上下文隔离</strong></td><td><span style="color:var(--accent-purple)">自研体系</span></td><td><span class="badge-good">低</span></td><td><span class="badge-good">高</span></td></tr>
+            <tr><td><strong>实例隔离</strong></td><td>阿里云IoT / 华为云IoT</td><td><span class="badge-bad">高</span></td><td><span class="badge-mid">中</span></td></tr>
+            <tr><td><strong>IoT Policy隔离</strong></td><td>AWS IoT Core</td><td><span class="badge-mid">中</span></td><td><span class="badge-good">高</span></td></tr>
+            <tr><td><strong>无多租户</strong></td><td>所有C端品牌</td><td><span class="badge-good">-</span></td><td><span class="badge-bad">无</span></td></tr>
+          </tbody>
+        </table>
+
+        <!-- ========================================================= -->
+        <!-- 技术演进趋势 -->
+        <!-- ========================================================= -->
+        <h2 id="trends">技术演进趋势</h2>
+
+        <ul class="trend-list">
+          <li><strong>Matter 协议统一</strong>：CSA 推出的 Matter 1.3 已支持门锁品类，未来 2-3 年将成为跨品牌互联互通标准。Aqara/小米/华为/Apple/Google 均已支持，涂鸦推出 Matter 桥接方案。自研体系需评估 Matter 接入以提升生态开放性。</li>
+          <li><strong>SE 安全芯片普及</strong>：随着成本下降（&lt;$0.5），SE 安全芯片将从高端机型向中端普及。AWS/Apple 已强制，阿里云 ID² 推动国密芯片落地。国内品牌需跟进以消除"明文 Flash 存储"短板。</li>
+          <li><strong>X.509 证书成为主流</strong>：一机一密方案正逐步向 X.509 证书迁移。AWS 强制证书，阿里云/华为云均支持。证书的可吊销、可轮换特性优于固定密钥。</li>
+          <li><strong>OAuth2 标准化</strong>：设备 Token 体系正从私有协议向 OAuth2 标准靠拢。Google Nest 已采用，自研体系已领先采用 OAuth2 + JWT + Redis 架构。</li>
+          <li><strong>Thread 协议崛起</strong>：低功耗 Mesh 协议 Thread 配合 Matter，将成为门锁本地通信新标准。Google Nest 已采用，Aqara 推出 Thread 网关。</li>
+          <li><strong>端到端加密</strong>：Apple HomeKit 的 iCloud 端到端加密模式代表隐私保护最高标准，未来监管趋严下将成为高端市场差异化卖点。</li>
+          <li><strong>B 端 SaaS 化</strong>：公寓/酒店/办公场景的门锁管理需求增长，多租户隔离能力成为 B 端平台核心竞争力。自研体系已具备此能力，市场空间广阔。</li>
+        </ul>
+
+        <!-- ========================================================= -->
+        <!-- 自研体系定位对比 -->
+        <!-- ========================================================= -->
+        <h2 id="self-positioning">自研体系定位对比</h2>
+
+        <div class="brand-card self">
+          <div class="brand-header">
+            <span class="brand-name">🟣 ISNOWSOFT 自研门锁 Token 认证体系</span>
+            <span class="brand-type">自研 · 企业级B端</span>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title">技术架构</div>
+            <p><strong>X.509证书 + 挑战-应答签名 + mTLS双向认证 + OAuth2 Token + EMQX MQTT + TenantBroker多租户隔离</strong> — 端到端认证链路，从安全芯片到云端服务。</p>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title pros">✅ 核心优势</div>
+            <ul>
+              <li><strong>私钥永不离开 SE</strong>：挑战-应答签名，云端只存公钥，与 AWS/Apple 同级</li>
+              <li><strong>双层双向认证</strong>：mTLS 传输层 + EMQX HTTP Auth 应用层，纵深防御</li>
+              <li><strong>OAuth2 标准化</strong>：JWT + Redis 多维索引，与 Google Nest 同级，可扩展性强</li>
+              <li><strong>多租户隔离</strong>：TenantBroker 上下文隔离，<strong>13 家方案中唯一原生支持</strong></li>
+              <li><strong>ACL 最小权限</strong>：Topic 级 pub/sub 分离，与 AWS IoT Policy 同级</li>
+              <li><strong>Token 生命周期完整</strong>：刷新/吊销/并发控制/暴力破解防护全覆盖</li>
+              <li><strong>HMAC-SHA256</strong>：替代 MD5，MQTT 密码哈希安全</li>
+            </ul>
+          </div>
+          <div class="brand-section">
+            <div class="brand-section-title cons">⚠️ 待提升</div>
+            <ul>
+              <li><strong>生态开放性</strong>：暂未接入 Matter 协议，跨品牌互联互通能力弱（评分 3 分）</li>
+              <li><strong>市场验证</strong>：自研方案需大规模部署验证，成熟度不及 AWS/涂鸦</li>
+              <li><strong>海外节点</strong>：需自建全球节点，成本高于 AWS/涂鸦托管</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 id="positioning-matrix">定位矩阵</h3>
+
+        <div class="pm-wrap">
+          <div class="pm-chart">
+            <span class="pm-axis-y-label">安全等级（评分）</span>
+            <span class="pm-axis-x-label">市场覆盖 →</span>
+
+            <div class="pm-grid">
+              <div class="pm-grid-line" style="bottom:25%;"></div>
+              <div class="pm-grid-line" style="bottom:50%;"></div>
+              <div class="pm-grid-line" style="bottom:75%;"></div>
+              <div class="pm-grid-line-v" style="left:33%;"></div>
+              <div class="pm-grid-line-v" style="left:66%;"></div>
+            </div>
+
+            <span class="pm-axis-tick" style="bottom:-18px;left:0;">C端消费</span>
+            <span class="pm-axis-tick" style="bottom:-18px;left:33%;transform:translateX(-50%);">B端企业</span>
+            <span class="pm-axis-tick" style="bottom:-18px;left:66%;transform:translateX(-50%);">全球平台</span>
+            <span class="pm-axis-tick" style="bottom:-18px;right:0;">全球</span>
+
+            <span class="pm-axis-tick" style="left:-32px;bottom:0;transform:translateY(50%);">16</span>
+            <span class="pm-axis-tick" style="left:-32px;bottom:25%;transform:translateY(50%);">22</span>
+            <span class="pm-axis-tick" style="left:-32px;bottom:50%;transform:translateY(50%);">28</span>
+            <span class="pm-axis-tick" style="left:-32px;bottom:75%;transform:translateY(50%);">34</span>
+            <span class="pm-axis-tick" style="left:-32px;top:0;">40</span>
+
+            <span class="pm-quadrant" style="top:8px;left:8px;color:var(--highlight-green);">高安全 · C端</span>
+            <span class="pm-quadrant" style="top:8px;right:8px;color:var(--highlight-green);">高安全 · 全球</span>
+            <span class="pm-quadrant" style="bottom:8px;left:8px;color:var(--highlight-red);">基础级 · C端</span>
+            <span class="pm-quadrant" style="bottom:8px;right:8px;color:var(--highlight-orange);">基础级 · 全球</span>
+
+              <div class="pm-point self" style="left:48%;bottom:92%;">
+                <div class="pm-dot" style="color:var(--accent-purple);background:var(--accent-purple);"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">自研体系 38</span>
+              </div>
+
+              <div class="pm-point" style="left:82%;bottom:85%;">
+                <div class="pm-dot" style="color:#ff9900;background:#ff9900;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">AWS IoT 35</span>
+              </div>
+
+              <div class="pm-point" style="left:75%;bottom:75%;">
+                <div class="pm-dot" style="color:#a8a8a8;background:#a8a8a8;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">Apple 31</span>
+              </div>
+
+              <div class="pm-point" style="left:62%;bottom:72%;">
+                <div class="pm-dot" style="color:#ff6a00;background:#ff6a00;"></div>
+                <span class="pm-label" style="top:16px;left:50%;transform:translateX(-50%);">阿里云 30</span>
+              </div>
+
+              <div class="pm-point" style="left:55%;bottom:66%;">
+                <div class="pm-dot" style="color:#cf0a2c;background:#cf0a2c;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">华为云 29</span>
+              </div>
+
+              <div class="pm-point" style="left:38%;bottom:66%;">
+                <div class="pm-dot" style="color:#cf0a2c;background:#cf0a2c;"></div>
+                <span class="pm-label" style="top:16px;left:50%;transform:translateX(-50%);">华为智选 28</span>
+              </div>
+
+              <div class="pm-point" style="left:88%;bottom:62%;">
+                <div class="pm-dot" style="color:#4285f4;background:#4285f4;"></div>
+                <span class="pm-label" style="top:16px;left:50%;transform:translateX(-50%);">Nest 28</span>
+              </div>
+
+              <div class="pm-point" style="left:32%;bottom:54%;">
+                <div class="pm-dot" style="color:#2ecc71;background:#2ecc71;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">Aqara 24</span>
+              </div>
+
+              <div class="pm-point" style="left:70%;bottom:50%;">
+                <div class="pm-dot" style="color:#00b894;background:#00b894;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">涂鸦 23</span>
+              </div>
+
+              <div class="pm-point" style="left:80%;bottom:46%;">
+                <div class="pm-dot" style="color:#d4af37;background:#d4af37;"></div>
+                <span class="pm-label" style="top:16px;left:50%;transform:translateX(-50%);">Yale 23</span>
+              </div>
+
+              <div class="pm-point" style="left:25%;bottom:46%;">
+                <div class="pm-dot" style="color:#ff6900;background:#ff6900;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">小米 22</span>
+              </div>
+
+              <div class="pm-point" style="left:20%;bottom:36%;">
+                <div class="pm-dot" style="color:#00cec9;background:#00cec9;"></div>
+                <span class="pm-label" style="top:16px;left:50%;transform:translateX(-50%);">鹿客 19</span>
+              </div>
+
+              <div class="pm-point" style="left:30%;bottom:30%;">
+                <div class="pm-dot" style="color:#6c5ce7;background:#6c5ce7;"></div>
+                <span class="pm-label" style="top:-26px;left:50%;transform:translateX(-50%);">凯迪仕 18</span>
+              </div>
+
+              <div class="pm-point" style="left:15%;bottom:26%;">
+                <div class="pm-dot" style="color:#0984e3;background:#0984e3;"></div>
+                <span class="pm-label" style="top:16px;left:50%;transform:translateX(-50%);">德施曼 16</span>
+              </div>
+          </div>
+
+          <div class="pm-legend">
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:var(--accent-purple);"></span>自研体系</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#ff9900;"></span>AWS</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#a8a8a8;"></span>Apple</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#ff6a00;"></span>阿里云</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#cf0a2c;"></span>华为</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#4285f4;"></span>Google</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#00b894;"></span>涂鸦</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#2ecc71;"></span>Aqara</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#ff6900;"></span>小米</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#d4af37;"></span>Yale</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#00cec9;"></span>鹿客</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#6c5ce7;"></span>凯迪仕</div>
+            <div class="pm-legend-item"><span class="pm-legend-dot" style="background:#0984e3;"></span>德施曼</div>
+          </div>
+
+          <div class="pm-summary">
+            <div class="pm-summary-card">
+              <div class="psc-title">🎯 自研体系定位</div>
+              <div class="psc-desc">B端 SaaS + 高安全 + 自主可控，位于矩阵<strong style="color:var(--accent-purple);">右上象限</strong>，安全等级领先。</div>
+            </div>
+            <div class="pm-summary-card">
+              <div class="psc-title">💎 差异化竞争力</div>
+              <div class="psc-desc">多租户隔离 + OAuth2 标准化 + SE 芯片级安全，<strong>13 家方案中唯一</strong>原生支持多租户。</div>
+            </div>
+            <div class="pm-summary-card">
+              <div class="psc-title">📊 竞争空白区</div>
+              <div class="psc-desc">B 端高安全象限无直接竞品，云平台方案多租户成本高，C 端品牌无 B 端能力。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 结论与建议 -->
+        <!-- ========================================================= -->
+        <h2 id="conclusion">结论与建议</h2>
+
+        <h3 id="market-status">市场现状结论</h3>
+        <div class="highlight-box green">
+          <div class="label">✅ 总体判断</div>
+          <div class="content">当前门锁 Token 鉴权认证体系呈现<strong>"云平台高安全、消费品牌中等、自研体系领先"</strong>的格局。AWS IoT Core 与 Apple HomeKit 代表业界安全最高水平（35/31分），但均面向 C 端或海外市场；国内云平台（阿里云/华为云）安全能力扎实（29-30分）但多租户能力弱；国内消费品牌（凯迪仕/德施曼/鹿客）安全等级偏低（16-19分），密钥存储是最大短板。</div>
+        </div>
+
+        <h3 id="self-assessment">自研体系评估</h3>
+        <table class="compare-table">
+          <thead><tr><th>维度</th><th>自研体系</th><th>业界对标</th><th>结论</th></tr></thead>
+          <tbody>
+            <tr><td><strong>设备身份认证</strong></td><td>X.509 + 挑战应答 (5分)</td><td>AWS/Apple 同级</td><td><span class="badge-good">领先</span></td></tr>
+            <tr><td><strong>密钥存储</strong></td><td>SE安全芯片 (5分)</td><td>AWS/Apple 同级</td><td><span class="badge-good">领先</span></td></tr>
+            <tr><td><strong>通信加密</strong></td><td>mTLS + HTTP Auth双层 (5分)</td><td>超越 AWS 单层 mTLS</td><td><span class="badge-good">领先</span></td></tr>
+            <tr><td><strong>Token体系</strong></td><td>OAuth2 + JWT + Redis (5分)</td><td>Google Nest 同级</td><td><span class="badge-good">领先</span></td></tr>
+            <tr><td><strong>MQTT安全</strong></td><td>EMQX + ACL pub/sub分离 (5分)</td><td>AWS IoT Policy 同级</td><td><span class="badge-good">领先</span></td></tr>
+            <tr><td><strong>多租户隔离</strong></td><td>TenantBroker (5分)</td><td><strong>业界唯一</strong></td><td><span class="badge-good">独有</span></td></tr>
+            <tr><td><strong>Token生命周期</strong></td><td>刷新/吊销/并发/防暴 (5分)</td><td>AWS 同级</td><td><span class="badge-good">领先</span></td></tr>
+            <tr><td><strong>生态开放性</strong></td><td>暂无Matter (3分)</td><td>Aqara/Apple 已支持</td><td><span class="badge-mid">待提升</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="recommendations">演进建议</h3>
+        <div class="highlight-box orange">
+          <div class="label">🎯 优先级建议</div>
+          <div class="content">
+            <strong>P0（短期）</strong>：保持 SE 芯片 + mTLS + OAuth2 核心架构优势，完善大规模部署稳定性验证。<br>
+            <strong>P1（中期）</strong>：接入 Matter 1.3 协议，提升生态开放性，支持跨品牌互联互通。<br>
+            <strong>P2（中期）</strong>：评估 Thread 协议支持，降低门锁功耗，增强本地 Mesh 能力。<br>
+            <strong>P3（长期）</strong>：探索端到端加密模式（参考 Apple HomeKit），强化隐私保护，布局高端市场。
+          </div>
+        </div>
+
+        <h3 id="competitive-strategy">竞争策略</h3>
+        <p>自研体系应聚焦 <strong>B 端 SaaS 门锁管理平台</strong>市场（公寓/酒店/办公/长短租），以<strong>多租户隔离 + OAuth2标准化 + SE芯片级安全</strong>三大差异化能力构建竞争壁垒：</p>
+        <ul>
+          <li><strong>vs 涂鸦</strong>：安全等级更高（38 vs 23），多租户原生支持，适合对数据自主可控的 B 端客户</li>
+          <li><strong>vs 阿里云/华为云</strong>：多租户成本更低（TenantBroker vs 实例隔离），Token 体系标准化（OAuth2 vs 私有）</li>
+          <li><strong>vs AWS IoT Core</strong>：国内合规无数据出境问题，多租户原生支持，运维成本更低</li>
+          <li><strong>vs 消费品牌</strong>：安全等级碾压（38 vs 16-24），B 端能力完备，适合企业级客户</li>
+        </ul>
+
+        <div style="margin-top:1.5rem;padding:1rem 0;border-top:2px solid var(--code-border-subtle);text-align:center;color:var(--text-muted);font-size:0.9rem;">
+            📊 门锁 Token 鉴权认证体系 · 业界主流品牌竞品分析报告 · 完整版
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="index.html" class="footer-nav-link">← 返回文档列表</a>
+        <a href="doc-iot-lock-token-auth.html" class="footer-nav-link">关联文档: 门锁 Token 鉴权认证体系全流程详解 →</a>
+      </footer>
+
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">报告概述</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#background" class="toc-sub-link">分析背景</a></li>
+              <li class="toc-sub-item"><a href="#scope" class="toc-sub-link">分析范围</a></li>
+              <li class="toc-sub-item"><a href="#methodology" class="toc-sub-link">评估方法论</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#landscape" class="toc-nav-link">竞品全景图</a></li>
+          <li class="toc-nav-item"><a href="#core-comparison" class="toc-nav-link">核心认证机制横向对比</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#device-identity" class="toc-sub-link">设备身份认证机制</a></li>
+              <li class="toc-sub-item"><a href="#transport-security" class="toc-sub-link">通信加密与传输安全</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#cloud-platforms" class="toc-nav-link">IoT 云平台方案深度分析</a></li>
+          <li class="toc-nav-item"><a href="#domestic-brands" class="toc-nav-link">国内门锁品牌分析</a></li>
+          <li class="toc-nav-item"><a href="#international-brands" class="toc-nav-link">国际门锁品牌分析</a></li>
+          <li class="toc-nav-item"><a href="#score-matrix" class="toc-nav-link">安全等级评估矩阵</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#ranking" class="toc-sub-link">安全等级排名</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#key-differences" class="toc-nav-link">关键技术差异点剖析</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#diff-key-storage" class="toc-sub-link">密钥存储方式</a></li>
+              <li class="toc-sub-item"><a href="#diff-token-system" class="toc-sub-link">Token 体系架构</a></li>
+              <li class="toc-sub-item"><a href="#diff-mqtt-security" class="toc-sub-link">MQTT 安全控制</a></li>
+              <li class="toc-sub-item"><a href="#diff-multi-tenant" class="toc-sub-link">多租户隔离能力</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#trends" class="toc-nav-link">技术演进趋势</a></li>
+          <li class="toc-nav-item"><a href="#self-positioning" class="toc-nav-link">自研体系定位对比</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#positioning-matrix" class="toc-sub-link">定位矩阵</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#conclusion" class="toc-nav-link">结论与建议</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#market-status" class="toc-sub-link">市场现状结论</a></li>
+              <li class="toc-sub-item"><a href="#self-assessment" class="toc-sub-link">自研体系评估</a></li>
+              <li class="toc-sub-item"><a href="#recommendations" class="toc-sub-link">演进建议</a></li>
+              <li class="toc-sub-item"><a href="#competitive-strategy" class="toc-sub-link">竞争策略</a></li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </aside>
+
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.iot-content h2[id], .iot-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link, .toc-sub-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.iot-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) { btn.classList.add('visible'); }
+      else { btn.classList.remove('visible'); }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
