@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI Agent 工程实战 — 从 ReAct 推理到多智能体协同的完整构建指南">
+  <title>AI Agent 工程实战 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-gold: #eab308;
+      --accent-red: #ef4444;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-gold: #ca8a04;
+      --accent-red: #dc2626;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.95);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+
+    .brand-text-accent {
+      color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex; align-items: center; gap: 24px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      transition: color 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-link:hover, .nav-link:focus-visible { color: var(--accent-cyan); }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 9999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .article-layout {
+      display: flex; max-width: 1400px; margin: 0 auto;
+      gap: 40px; padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    .article-main {
+      flex: 1; min-width: 0; max-width: 900px;
+    }
+
+    .article-header {
+      margin-bottom: 40px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .article-breadcrumb {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+      font-size: 0.85rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .breadcrumb-link { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumb-link:hover, .breadcrumb-link:focus-visible { color: var(--accent-cyan); }
+    .breadcrumb-separator::before { content: '/'; opacity: 0.5; }
+
+    .article-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);
+    }
+
+    .meta-date {
+      font-size: 0.84rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 700;
+      line-height: 1.3; color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .article-subtitle {
+      font-size: 1.08rem; color: var(--text-secondary); line-height: 1.6;
+    }
+
+    /* ===== CI/CD 内容样式适配 ===== */
+    .cicd-content {
+      font-size: 1.01rem; line-height: 1.9;
+    }
+
+    .cicd-content .card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px; margin-bottom: 24px;
+    }
+
+    .cicd-content .card-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.22rem;
+      font-weight: 600; color: var(--accent-cyan); margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--border-color);
+      scroll-margin-top: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .cicd-content .card-title i {
+      color: var(--accent-purple); font-size: 1rem;
+    }
+
+    .cicd-content .badge {
+      display: inline-block; background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);
+      padding: 2px 10px; border-radius: 12px; font-size: 0.72rem;
+      font-weight: 600; margin-left: auto;
+    }
+
+    .cicd-content p { margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .cicd-content strong { color: var(--text-primary); font-weight: 600; }
+    .cicd-content ul, .cicd-content ol { padding-left: 1.8rem; margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .cicd-content li { margin-bottom: 0.2rem; }
+    .cicd-content code { background: var(--bg-secondary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+
+    /* 能力网格 */
+    .cicd-content .cap-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin: 12px 0;
+    }
+
+    .cicd-content .cap-item {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 16px; text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .cicd-content .cap-item:hover { border-color: var(--accent-cyan); }
+
+    .cicd-content .cap-item .icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .cicd-content .cap-item .name { font-weight: 600; color: var(--text-primary); font-size: 0.92rem; margin-bottom: 4px; }
+    .cicd-content .cap-item .desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* 构建参数表 */
+    .cicd-content .param-table {
+      width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0;
+    }
+
+    .cicd-content .param-table th {
+      background: var(--bg-secondary); text-align: left;
+      padding: 10px 14px; font-weight: 600; color: var(--accent-purple);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .cicd-content .param-table td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .cicd-content .param-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
+
+    .cicd-content .param-name {
+      font-family: 'JetBrains Mono', monospace; font-weight: 600;
+      color: var(--accent-cyan); font-size: 0.82rem;
+    }
+
+    .cicd-content .param-type {
+      display: inline-block; background: rgba(234, 179, 8, 0.12); color: var(--accent-gold);
+      padding: 1px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600;
+    }
+
+    /* 流水线阶段 */
+    .cicd-content .phase-group {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
+      font-weight: 600; color: var(--accent-gold); margin-top: 18px; margin-bottom: 8px;
+      padding: 8px 14px; background: rgba(234, 179, 8, 0.06);
+      border-left: 3px solid var(--accent-gold); border-radius: 0 8px 8px 0;
+    }
+
+    .cicd-content .phase-group i { margin-right: 6px; }
+
+    .cicd-content .pipeline-flow {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;
+    }
+
+    .cicd-content .pipeline-step {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: 8px;
+      font-size: 0.85rem; color: var(--text-secondary); flex: 1; min-width: 220px;
+    }
+
+    .cicd-content .pipeline-step .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+      font-weight: 700; font-size: 0.75rem; flex-shrink: 0;
+    }
+
+    .cicd-content .pipeline-step .icon { color: var(--accent-purple); font-size: 0.9rem; }
+    .cicd-content .pipeline-step .desc { flex: 1; }
+
+    .cicd-content .badge-step {
+      display: inline-block; background: rgba(34, 197, 94, 0.12); color: var(--accent-green);
+      padding: 1px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Pipeline代码块 */
+    .cicd-content .pipeline-code {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 22px; margin: 12px 0; overflow-x: auto;
+    }
+
+    .cicd-content .pipeline-code pre {
+      margin: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; line-height: 1.7; color: var(--text-primary);
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    .cicd-content .pipeline-code .kw { color: #c084fc; }
+    .cicd-content .pipeline-code .fn { color: #22d3ee; }
+    .cicd-content .pipeline-code .str { color: #4ade80; }
+    .cicd-content .pipeline-code .cls { color: #eab308; }
+    .cicd-content .pipeline-code .num { color: #fb923c; }
+    .cicd-content .pipeline-code .cmt { color: var(--text-muted); }
+
+    /* 技术栈 */
+    .cicd-content .tech-stack-row {
+      display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    .cicd-content .tech-stack-row strong { color: var(--accent-cyan); }
+
+    /* 架构图ASCII */
+    .cicd-content .arch-diagram {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 20px; margin: 12px 0;
+      overflow-x: auto; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; line-height: 1.6; color: var(--text-secondary);
+      white-space: pre;
+    }
+
+    .cicd-content .arch-diagram .arch-highlight { color: var(--accent-cyan); font-weight: 600; }
+    .cicd-content .arch-diagram .arch-arrow { color: var(--accent-purple); }
+    .cicd-content .arch-diagram .arch-label { color: var(--accent-gold); }
+
+    /* 文章底部 */
+    .article-footer {
+      margin-top: 56px; padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; flex-wrap: wrap;
+    }
+
+    .footer-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px; background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 10px;
+      text-decoration: none; color: var(--text-secondary); font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-nav-link:hover, .footer-nav-link:focus-visible {
+      border-color: var(--accent-cyan); color: var(--accent-cyan);
+      transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-glow);
+    }
+
+    /* ===== 右侧：目录索引 (TOC) ===== */
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .site-footer {
+      text-align: center; padding: 36px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted); font-size: 0.87rem;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .article-layout { padding: 32px 20px 70px; gap: 0; }
+      .article-main { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav { gap: 12px; flex-wrap: wrap; }
+      .article-footer { flex-direction: column; }
+      .article-title { font-size: 1.55rem; }
+      .cicd-content .cap-grid { grid-template-columns: 1fr; }
+      .cicd-content .param-table { font-size: 0.8rem; }
+      .cicd-content .param-table th, .cicd-content .param-table td { padding: 8px 6px; }
+      .cicd-content .pipeline-step { min-width: 100%; }
+      .cicd-content .pipeline-flow { flex-direction: column; }
+    }
+  
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px; position: relative;
+      transition: background 0.3s ease;
+    }
+    .theme-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px);
+      background: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#tech-section" class="breadcrumb-link">技术文档</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+
+        <div class="article-meta">
+          <span class="meta-tag">TECH DOC</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-date">阅读时长: 30min</span>
+        </div>
+
+        <h1 class="article-title">🤖 AI Agent 工程实战</h1>
+        <p class="article-subtitle">系统讲解 AI Agent 核心架构、ReAct 推理范式、Function Calling 工具调用、记忆系统、多 Agent 协同与 MCP 协议，结合 LangChain/LangGraph 提供生产级 Agent 构建指南。</p>
+      </header>
+
+      <div class="cicd-content">
+        <div class="container">
+
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回文档列表</a>
+
+﻿    <section class="card">
+        <div class="card-title" id="overview">
+            <i class="fas fa-robot"></i> AI Agent 工程概述
+            <span class="badge">核心概念</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 1.05rem;">
+            <strong>AI Agent（智能体）</strong> 是以大语言模型（LLM）为大脑，结合感知、规划、记忆与工具调用能力，能够自主完成复杂任务的智能系统。相比传统的对话式 LLM，Agent 具备<strong>自主决策</strong>、<strong>多步推理</strong>、<strong>工具编排</strong>与<strong>环境交互</strong>四大核心能力，是构建企业级 AI 应用的关键范式。
+        </p>
+        <div class="cap-grid">
+            <div class="cap-item">
+                <span class="icon">🧠</span>
+                <span class="name">LLM 大脑</span>
+                <span class="desc">GPT-4 / Claude / Qwen 等大模型作为推理核心</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🎯</span>
+                <span class="name">目标规划</span>
+                <span class="desc">ReAct / Plan-and-Execute 任务分解与规划</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">💾</span>
+                <span class="name">记忆系统</span>
+                <span class="desc">短期上下文 + 长期向量记忆（RAG）</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🔧</span>
+                <span class="name">工具调用</span>
+                <span class="desc">Function Calling / MCP 协议集成外部能力</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">👁️</span>
+                <span class="name">环境感知</span>
+                <span class="desc">多模态输入：文本、图像、语音、结构化数据</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🔄</span>
+                <span class="name">反思迭代</span>
+                <span class="desc">Self-Reflection 自我评估与策略调整</span>
+            </div>
+        </div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 核心理念：</strong>Agent = LLM + 规划 + 记忆 + 工具 + 反思。单一 LLM 只能"回答问题"，而 Agent 能够"解决问题"——它将模糊需求拆解为可执行步骤，调用工具与环境交互，并根据反馈迭代优化。
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="architecture">
+            <i class="fas fa-sitemap"></i> Agent 架构设计
+            <span class="badge">分层架构</span>
+        </div>
+        <p style="color: var(--text-secondary);">一个完整的 AI Agent 系统采用分层架构，各层职责清晰、解耦设计。以下为生产级 Agent 的标准架构：</p>
+        <table class="param-table">
+            <thead>
+                <tr><th>层级</th><th>组件</th><th>职责</th><th>技术选型</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>感知层</strong></td><td>Input Parser</td><td>多模态输入解析与预处理</td><td>LangChain / LlamaIndex</td></tr>
+                <tr><td><strong>认知层</strong></td><td>LLM Core</td><td>推理、决策、自然语言理解</td><td>GPT-4o / Claude 3.5 / Qwen2</td></tr>
+                <tr><td><strong>规划层</strong></td><td>Planner</td><td>任务分解、步骤规划、策略选择</td><td>ReAct / Plan-and-Execute</td></tr>
+                <tr><td><strong>记忆层</strong></td><td>Memory</td><td>短期对话 + 长期向量存储</td><td>Redis + Milvus / Chroma</td></tr>
+                <tr><td><strong>工具层</strong></td><td>Tool Hub</td><td>外部 API、数据库、代码执行</td><td>Function Calling / MCP</td></tr>
+                <tr><td><strong>执行层</strong></td><td>Executor</td><td>动作执行与结果回传</td><td>异步任务队列 / 沙箱</td></tr>
+                <tr><td><strong>反思层</strong></td><td>Reflector</td><td>结果评估、错误纠正、策略优化</td><td>Self-Reflection / CRITIC</td></tr>
+                <tr><td><strong>编排层</strong></td><td>Orchestrator</td><td>多 Agent 协同与流程控制</td><td>LangGraph / AutoGen</td></tr>
+            </tbody>
+        </table>
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">Agent 工作流程</h3>
+        <div class="code-block"><pre><span class="cmt">// Agent 核心执行循环（ReAct 模式）</span>
+<span class="kw">while</span> (!taskCompleted) {
+    <span class="cmt">// 1. 感知：接收用户输入或环境反馈</span>
+    observation = <span class="fn">perceive</span>(input)
+
+    <span class="cmt">// 2. 思考：LLM 推理下一步行动</span>
+    thought = <span class="fn">llm.reason</span>(observation, memory, tools)
+
+    <span class="cmt">// 3. 行动：选择并调用工具</span>
+    action = <span class="fn">planner.selectAction</span>(thought)
+    result = <span class="fn">executor.execute</span>(action)
+
+    <span class="cmt">// 4. 记忆：存储中间结果到上下文</span>
+    <span class="fn">memory.store</span>({ observation, thought, action, result })
+
+    <span class="cmt">// 5. 反思：评估是否完成或需调整</span>
+    <span class="kw">if</span> (<span class="fn">reflector.shouldStop</span>(result)) {
+        taskCompleted = <span class="kw">true</span>
+    }
+}
+            </pre></div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="environment">
+            <i class="fas fa-cog"></i> 开发环境搭建
+            <span class="badge">快速开始</span>
+        </div>
+        <p style="color: var(--text-secondary);">基于 Python + LangChain 构建 Agent 开发环境，推荐使用虚拟环境隔离依赖：</p>
+        <div class="code-block"><pre><span class="cmt"># 1. 创建虚拟环境</span>
+python -m venv agent-env
+source agent-env/bin/activate    <span class="cmt"># Linux/Mac</span>
+agent-env\Scripts\activate       <span class="cmt"># Windows</span>
+
+<span class="cmt"># 2. 安装核心依赖</span>
+pip install langchain==0.3.0 langchain-openai langchain-community
+pip install langgraph chromadb redis pydantic
+
+<span class="cmt"># 3. 配置 API 密钥</span>
+export OPENAI_API_KEY=<span class="str">"sk-xxx"</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-xxx"</span>
+
+<span class="cmt"># 4. 验证安装</span>
+python -c <span class="str">"from langchain_openai import ChatOpenAI; print('OK')"</span>
+            </pre></div>
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">项目目录结构</h3>
+        <div class="code-block"><pre>ai-agent-project/
+├── agents/                    <span class="cmt"># Agent 定义</span>
+│   ├── __init__.py
+│   ├── base_agent.py          <span class="cmt"># Agent 基类</span>
+│   ├── planner_agent.py       <span class="cmt"># 规划 Agent</span>
+│   └── executor_agent.py      <span class="cmt"># 执行 Agent</span>
+├── tools/                     <span class="cmt"># 工具集</span>
+│   ├── search_tool.py         <span class="cmt"># 搜索工具</span>
+│   ├── code_interpreter.py    <span class="cmt"># 代码执行</span>
+│   └── database_tool.py       <span class="cmt"># 数据库查询</span>
+├── memory/                    <span class="cmt"># 记忆模块</span>
+│   ├── short_term.py          <span class="cmt"># 短期记忆</span>
+│   └── long_term.py           <span class="cmt"># 长期向量记忆</span>
+├── prompts/                   <span class="cmt"># 提示词模板</span>
+│   └── react_prompt.py
+├── config/
+│   └── settings.py            <span class="cmt"># 配置管理</span>
+├── main.py                    <span class="cmt"># 入口</span>
+└── requirements.txt
+            </pre></div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 版本提示：</strong>LangChain 0.3+ 重构了包结构，<code>langchain-community</code> 需单独安装。生产环境建议锁定版本号，避免 API 变更导致故障。
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="react-pattern">
+            <i class="fas fa-sync-alt"></i> ReAct 推理模式
+            <span class="badge">核心范式</span>
+        </div>
+        <p style="color: var(--text-secondary);">ReAct（Reasoning + Acting）是 Agent 最经典的推理范式，交替进行"思考"与"行动"，将复杂任务分解为可执行步骤。</p>
+        <h3 style="color:var(--text-primary);">ReAct 提示词模板</h3>
+        <div class="code-block"><pre><span class="cmt"># prompts/react_prompt.py</span>
+
+REACT_PROMPT = <span class="str">"""你是一个智能助手，使用以下工具完成任务。
+
+可用工具：
+{tools}
+
+工具使用格式：
+Thought: 我需要思考下一步做什么
+Action: 工具名称
+Action Input: 工具输入参数
+Observation: 工具返回结果
+... (重复 Thought/Action/Observation)
+Thought: 我已经知道最终答案
+Final Answer: 最终回答
+
+任务: {input}
+{agent_scratchpad}
+"""</span>
+            </pre></div>
+        <h3 style="color:var(--text-primary);">ReAct Agent 实现</h3>
+        <div class="code-block"><pre><span class="kw">from</span> langchain.agents <span class="kw">import</span> create_react_agent, AgentExecutor
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain.tools <span class="kw">import</span> Tool
+
+<span class="cmt"># 1. 初始化 LLM</span>
+llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>, temperature=<span class="num">0</span>)
+
+<span class="cmt"># 2. 定义工具集</span>
+<span class="kw">def</span> <span class="fn">search_web</span>(query: <span class="kw">str</span>) -> <span class="kw">str</span>:
+    <span class="str">"""搜索网络获取最新信息"""</span>
+    <span class="kw">return</span> <span class="fn">web_search</span>(query)
+
+<span class="kw">def</span> <span class="fn">calculate</span>(expression: <span class="kw">str</span>) -> <span class="kw">str</span>:
+    <span class="str">"""执行数学计算"""</span>
+    <span class="kw">return</span> <span class="fn">str</span>(<span class="fn">eval</span>(expression))
+
+tools = [
+    <span class="fn">Tool</span>(name=<span class="str">"Search"</span>, func=search_web, description=<span class="str">"搜索网络信息"</span>),
+    <span class="fn">Tool</span>(name=<span class="str">"Calculator"</span>, func=calculate, description=<span class="str">"数学计算"</span>),
+]
+
+<span class="cmt"># 3. 创建 ReAct Agent</span>
+agent = <span class="fn">create_react_agent</span>(llm, tools, REACT_PROMPT)
+executor = <span class="fn">AgentExecutor</span>(agent=agent, tools=tools, verbose=<span class="kw">True</span>, max_iterations=<span class="num">5</span>)
+
+<span class="cmt"># 4. 执行任务</span>
+result = executor.<span class="fn">invoke</span>({<span class="str">"input"</span>: <span class="str">"2024年GDP排名前十的国家及其总和"</span>})
+<span class="fn">print</span>(result[<span class="str">"output"</span>])
+            </pre></div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 关键参数：</strong><code>max_iterations</code> 控制 Agent 最大迭代次数，防止无限循环；<code>verbose=True</code> 打印思考过程便于调试。生产环境建议设置 <code>early_stopping_method="generate"</code> 优雅终止。
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="function-calling">
+            <i class="fas fa-plug"></i> Function Calling 工具调用
+            <span class="badge">OpenAI 标准</span>
+        </div>
+        <p style="color: var(--text-secondary);">Function Calling 是 OpenAI 提出的标准化工具调用协议，LLM 根据函数描述自动选择并生成调用参数，是 Agent 工具层的核心实现。</p>
+        <h3 style="color:var(--text-primary);">工具定义（JSON Schema）</h3>
+        <div class="code-block"><pre><span class="cmt"># tools/database_tool.py</span>
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field
+<span class="kw">from</span> langchain.tools <span class="kw">import</span> tool
+
+<span class="kw">class</span> <span class="fn">QueryDBInput</span>(BaseModel):
+    <span class="str">"""数据库查询输入参数"""</span>
+    table_name: <span class="kw">str</span> = <span class="fn">Field</span>(description=<span class="str">"表名，如 users, orders"</span>)
+    conditions: <span class="kw">str</span> = <span class="fn">Field</span>(description=<span class="str">"查询条件，SQL WHERE 子句"</span>)
+    limit: <span class="kw">int</span> = <span class="fn">Field</span>(default=<span class="num">10</span>, description=<span class="str">"返回记录数"</span>)
+
+<span class="kw">@tool</span>(args_schema=QueryDBInput)
+<span class="kw">def</span> <span class="fn">query_database</span>(table_name: <span class="kw">str</span>, conditions: <span class="kw">str</span>, limit: <span class="kw">int</span> = <span class="num">10</span>) -> <span class="kw">str</span>:
+    <span class="str">"""查询业务数据库，返回 JSON 格式结果"""</span>
+    sql = <span class="fn">f</span><span class="str">"SELECT * FROM {table_name} WHERE {conditions} LIMIT {limit}"</span>
+    <span class="kw">return</span> db.<span class="fn">execute</span>(sql).<span class="fn">to_json</span>()
+            </pre></div>
+        <h3 style="color:var(--text-primary);">原生 Function Calling 调用</h3>
+        <div class="code-block"><pre><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+client = <span class="fn">OpenAI</span>()
+
+<span class="cmt"># 1. 定义函数描述</span>
+tools = [{
+    <span class="str">"type"</span>: <span class="str">"function"</span>,
+    <span class="str">"function"</span>: {
+        <span class="str">"name"</span>: <span class="str">"get_weather"</span>,
+        <span class="str">"description"</span>: <span class="str">"获取指定城市的天气"</span>,
+        <span class="str">"parameters"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"city"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"description"</span>: <span class="str">"城市名"</span>},
+                <span class="str">"unit"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"enum"</span>: [<span class="str">"celsius"</span>, <span class="str">"fahrenheit"</span>]}
+            },
+            <span class="str">"required"</span>: [<span class="str">"city"</span>]
+        }
+    }
+}]
+
+<span class="cmt"># 2. 第一次调用：LLM 决定调用哪个函数</span>
+response = client.chat.completions.<span class="fn">create</span>(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"北京今天多少度？"</span>}],
+    tools=tools
+)
+
+<span class="cmt"># 3. 执行函数并回传结果</span>
+<span class="kw">if</span> response.choices[<span class="num">0</span>].message.tool_calls:
+    tool_call = response.choices[<span class="num">0</span>].message.tool_calls[<span class="num">0</span>]
+    args = <span class="fn">json</span>.<span class="fn">loads</span>(tool_call.function.arguments)
+    result = <span class="fn">get_weather</span>(**args)
+
+    <span class="cmt"># 4. 第二次调用：LLM 基于结果生成最终回答</span>
+    final = client.chat.completions.<span class="fn">create</span>(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=[
+            {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"北京今天多少度？"</span>},
+            response.choices[<span class="num">0</span>].message,
+            {<span class="str">"role"</span>: <span class="str">"tool"</span>, <span class="str">"tool_call_id"</span>: tool_call.id, <span class="str">"content"</span>: <span class="fn">str</span>(result)}
+        ]
+    )
+            </pre></div>
+        <div class="warning-box" style="margin: 1rem 0;">
+            <strong>⚠️ 安全警告：</strong>工具执行涉及数据库或代码运行时，必须进行参数校验与沙箱隔离。禁止直接执行 LLM 生成的 SQL 或代码，应使用参数化查询与受限执行环境。
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="memory">
+            <i class="fas fa-database"></i> 记忆系统设计
+            <span class="badge">RAG 检索增强</span>
+        </div>
+        <p style="color: var(--text-secondary);">Agent 的记忆系统分为短期记忆（对话上下文）与长期记忆（向量存储），是处理长任务与个性化交互的关键。</p>
+        <table class="param-table">
+            <thead>
+                <tr><th>记忆类型</th><th>存储介质</th><th>容量</th><th>用途</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>短期记忆</td><td>内存 / Redis</td><td>有限（Token 限制）</td><td>当前对话上下文</td></tr>
+                <tr><td>工作记忆</td><td>Redis Hash</td><td>中</td><td>任务中间状态</td></tr>
+                <tr><td>长期记忆</td><td>向量数据库</td><td>无限</td><td>历史经验、用户偏好</td></tr>
+                <tr><td>情景记忆</td><td>向量 + 时间戳</td><td>无限</td><td>特定事件回忆</td></tr>
+                <tr><td>语义记忆</td><td>知识图谱</td><td>无限</td><td>结构化知识</td></tr>
+            </tbody>
+        </table>
+        <h3 style="color:var(--text-primary);">长期记忆实现（向量存储）</h3>
+        <div class="code-block"><pre><span class="kw">from</span> langchain_chroma <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> OpenAIEmbeddings
+<span class="kw">from</span> langchain.memory <span class="kw">import</span> ConversationBufferMemory
+
+<span class="cmt"># 1. 短期记忆：对话缓冲</span>
+short_term = <span class="fn">ConversationBufferMemory</span>(
+    memory_key=<span class="str">"chat_history"</span>,
+    return_messages=<span class="kw">True</span>,
+    max_token_limit=<span class="num">2000</span>  <span class="cmt"># 超出自动摘要</span>
+)
+
+<span class="cmt"># 2. 长期记忆：向量数据库</span>
+embeddings = <span class="fn">OpenAIEmbeddings</span>(model=<span class="str">"text-embedding-3-small"</span>)
+vector_store = <span class="fn">Chroma</span>(
+    collection_name=<span class="str">"agent_memory"</span>,
+    embedding_function=embeddings,
+    persist_directory=<span class="str">"./chroma_db"</span>
+)
+
+<span class="cmt"># 3. 存储经验</span>
+<span class="kw">def</span> <span class="fn">save_experience</span>(content: <span class="kw">str</span>, metadata: <span class="kw">dict</span>):
+    <span class="str">"""将重要经验存入长期记忆"""</span>
+    vector_store.<span class="fn">add_texts</span>(
+        texts=[content],
+        metadatas=[metadata],
+        ids=[<span class="fn">str</span>(<span class="fn">uuid4</span>())]
+    )
+
+<span class="cmt"># 4. 检索相关记忆</span>
+<span class="kw">def</span> <span class="fn">recall_memory</span>(query: <span class="kw">str</span>, k: <span class="kw">int</span> = <span class="num">3</span>):
+    <span class="str">"""检索与当前任务相关的历史经验"""</span>
+    docs = vector_store.<span class="fn">similarity_search</span>(query, k=k)
+    <span class="kw">return</span> [<span class="fn">f</span><span class="str">"[{d.metadata}]: {d.page_content}"</span> <span class="kw">for</span> d <span class="kw">in</span> docs]
+            </pre></div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 优化技巧：</strong>长期记忆应结合"时间衰减"权重，近期经验优先召回。可使用 <code>metadata</code> 存储时间戳、任务类型等标签，实现多维度过滤检索。
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="multi-agent">
+            <i class="fas fa-users"></i> 多 Agent 协同
+            <span class="badge">LangGraph 编排</span>
+        </div>
+        <p style="color: var(--text-secondary);">复杂任务需要多个专业 Agent 协同完成。LangGraph 基于图结构编排 Agent 工作流，支持条件分支、循环与人工介入。</p>
+        <h3 style="color:var(--text-primary);">多 Agent 协作模式</h3>
+        <table class="param-table">
+            <thead>
+                <tr><th>协作模式</th><th>说明</th><th>适用场景</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>层级式</strong></td><td>主 Agent 分配子任务给下属</td><td>复杂任务分解</td></tr>
+                <tr><td><strong>顺序式</strong></td><td>Agent 依次处理，传递结果</td><td>流水线作业</td></tr>
+                <tr><td><strong>并行式</strong></td><td>多 Agent 同时执行不同子任务</td><td>加速处理</td></tr>
+                <tr><td><strong>辩论式</strong></td><td>多 Agent 观点对抗与融合</td><td>决策优化</td></tr>
+                <tr><td><strong>竞争式</strong></td><td>多 Agent 提交方案，择优</td><td>创意生成</td></tr>
+            </tbody>
+        </table>
+        <h3 style="color:var(--text-primary);">LangGraph 多 Agent 编排</h3>
+        <div class="code-block"><pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, END
+<span class="kw">from</span> typing <span class="kw">import</span> TypedDict, Annotated
+<span class="kw">import</span> operator
+
+<span class="cmt"># 1. 定义共享状态</span>
+<span class="kw">class</span> <span class="fn">AgentState</span>(TypedDict):
+    task: <span class="kw">str</span>
+    plan: <span class="kw">str</span>
+    results: <span class="fn">Annotated</span>[<span class="kw">list</span>, operator.add]
+    final_answer: <span class="kw">str</span>
+
+<span class="cmt"># 2. 定义各 Agent 节点</span>
+<span class="kw">def</span> <span class="fn">planner_node</span>(state: AgentState):
+    <span class="str">"""规划 Agent：分解任务"""</span>
+    plan = planner_llm.<span class="fn">invoke</span>(state[<span class="str">"task"</span>])
+    <span class="kw">return</span> {<span class="str">"plan"</span>: plan}
+
+<span class="kw">def</span> <span class="fn">researcher_node</span>(state: AgentState):
+    <span class="str">"""研究 Agent：信息检索"""</span>
+    result = researcher.<span class="fn">run</span>(state[<span class="str">"plan"</span>])
+    <span class="kw">return</span> {<span class="str">"results"</span>: [result]}
+
+<span class="kw">def</span> <span class="fn">writer_node</span>(state: AgentState):
+    <span class="str">"""写作 Agent：生成报告"""</span>
+    answer = writer.<span class="fn">run</span>(state[<span class="str">"results"</span>])
+    <span class="kw">return</span> {<span class="str">"final_answer"</span>: answer}
+
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: AgentState):
+    <span class="str">"""条件路由：判断是否需要更多研究"""</span>
+    <span class="kw">if</span> <span class="fn">len</span>(state[<span class="str">"results"</span>]) &lt; <span class="num">3</span>:
+        <span class="kw">return</span> <span class="str">"researcher"</span>
+    <span class="kw">return</span> <span class="str">"writer"</span>
+
+<span class="cmt"># 3. 构建工作流图</span>
+workflow = <span class="fn">StateGraph</span>(AgentState)
+workflow.<span class="fn">add_node</span>(<span class="str">"planner"</span>, planner_node)
+workflow.<span class="fn">add_node</span>(<span class="str">"researcher"</span>, researcher_node)
+workflow.<span class="fn">add_node</span>(<span class="str">"writer"</span>, writer_node)
+
+workflow.<span class="fn">set_entry_point</span>(<span class="str">"planner"</span>)
+workflow.<span class="fn">add_edge</span>(<span class="str">"planner"</span>, <span class="str">"researcher"</span>)
+workflow.<span class="fn">add_conditional_edges</span>(<span class="str">"researcher"</span>, should_continue)
+workflow.<span class="fn">add_edge</span>(<span class="str">"writer"</span>, END)
+
+<span class="cmt"># 4. 编译并执行</span>
+app = workflow.<span class="fn">compile</span>()
+result = app.<span class="fn">invoke</span>({<span class="str">"task"</span>: <span class="str">"撰写2024年AI行业分析报告"</span>})
+            </pre></div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="mcp-protocol">
+            <i class="fas fa-project-diagram"></i> MCP 协议集成
+            <span class="badge">Model Context Protocol</span>
+        </div>
+        <p style="color: var(--text-secondary);">MCP（Model Context Protocol）是 Anthropic 提出的开放协议，标准化 LLM 与外部工具/数据源的连接方式，实现"一次集成，处处可用"。</p>
+        <h3 style="color:var(--text-primary);">MCP 架构组件</h3>
+        <table class="param-table">
+            <thead>
+                <tr><th>组件</th><th>角色</th><th>说明</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>MCP Host</strong></td><td>宿主应用</td><td>如 Claude Desktop、IDE 插件</td></tr>
+                <tr><td><strong>MCP Client</strong></td><td>协议客户端</td><td>连接 Server 并转发请求</td></tr>
+                <tr><td><strong>MCP Server</strong></td><td>能力提供方</td><td>暴露工具、资源、提示词</td></tr>
+                <tr><td><strong>Transport</strong></td><td>传输层</td><td>stdio / SSE / WebSocket</td></tr>
+            </tbody>
+        </table>
+        <h3 style="color:var(--text-primary);">MCP Server 实现</h3>
+        <div class="code-block"><pre><span class="cmt"># mcp_server.py - 自定义 MCP 服务器</span>
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Tool, TextContent
+
+server = <span class="fn">Server</span>(<span class="str">"custom-tools"</span>)
+
+<span class="kw">@server.list_tools</span>()
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_tools</span>() -> <span class="kw">list</span>[Tool]:
+    <span class="kw">return</span> [
+        <span class="fn">Tool</span>(
+            name=<span class="str">"query_inventory"</span>,
+            description=<span class="str">"查询库存系统商品信息"</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"sku"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"description"</span>: <span class="str">"商品SKU"</span>}
+                },
+                <span class="str">"required"</span>: [<span class="str">"sku"</span>]
+            }
+        )
+    ]
+
+<span class="kw">@server.call_tool</span>()
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="kw">str</span>, arguments: <span class="kw">dict</span>) -> <span class="kw">list</span>[TextContent]:
+    <span class="kw">if</span> name == <span class="str">"query_inventory"</span>:
+        result = <span class="kw">await</span> <span class="fn">fetch_inventory</span>(arguments[<span class="str">"sku"</span>])
+        <span class="kw">return</span> [<span class="fn">TextContent</span>(type=<span class="str">"text"</span>, text=<span class="fn">str</span>(result))]
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="kw">import</span> mcp.server.stdio
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+        <span class="kw">async</span> <span class="kw">with</span> mcp.server.stdio.<span class="fn">stdio_server</span>() <span class="kw">as</span> (r, w):
+            <span class="kw">await</span> server.<span class="fn">run</span>(r, w, server.<span class="fn">create_initialization_options</span>())
+    <span class="fn">asyncio</span>.<span class="fn">run</span>(<span class="fn">main</span>())
+            </pre></div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 MCP 优势：</strong>相比私有 Function Calling，MCP 实现了工具的"即插即用"——同一 Server 可被 Claude、Cursor、Windsurf 等所有支持 MCP 的客户端复用，大幅降低集成成本。
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="observability">
+            <i class="fas fa-chart-line"></i> 可观测性与评估
+            <span class="badge">LangSmith 监控</span>
+        </div>
+        <p style="color: var(--text-secondary);">Agent 的非确定性使其调试与监控极具挑战。LangSmith 提供全链路追踪、Token 成本分析与质量评估能力。</p>
+        <h3 style="color:var(--text-primary);">关键监控指标</h3>
+        <table class="param-table">
+            <thead>
+                <tr><th>指标类别</th><th>具体指标</th><th>告警阈值</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>性能</strong></td><td>平均响应时间</td><td>&gt; 30s</td></tr>
+                <tr><td><strong>成本</strong></td><td>单次任务 Token 消耗</td><td>&gt; 10K tokens</td></tr>
+                <tr><td><strong>质量</strong></td><td>任务成功率</td><td>&lt; 85%</td></tr>
+                <tr><td><strong>稳定性</strong></td><td>工具调用失败率</td><td>&gt; 5%</td></tr>
+                <tr><td><strong>循环</strong></td><td>平均迭代次数</td><td>&gt; 8 次</td></tr>
+                <tr><td><strong>幻觉</strong></td><td>事实错误率</td><td>&gt; 3%</td></tr>
+            </tbody>
+        </table>
+        <h3 style="color:var(--text-primary);">LangSmith 集成</h3>
+        <div class="code-block"><pre><span class="kw">import</span> os
+<span class="kw">from</span> langsmith <span class="kw">import</span> Client
+
+<span class="cmt"># 1. 配置环境变量</span>
+os.environ[<span class="str">"LANGCHAIN_TRACING_V2"</span>] = <span class="str">"true"</span>
+os.environ[<span class="str">"LANGCHAIN_API_KEY"</span>] = <span class="str">"ls-xxx"</span>
+os.environ[<span class="str">"LANGCHAIN_PROJECT"</span>] = <span class="str">"agent-prod"</span>
+
+<span class="cmt"># 2. 自动追踪所有 LLM 调用</span>
+<span class="cmt"># 无需修改代码，LangSmith 自动记录：</span>
+<span class="cmt"># - 每次推理的输入输出</span>
+<span class="cmt"># - 工具调用链路</span>
+<span class="cmt"># - Token 消耗与延迟</span>
+<span class="cmt"># - 错误堆栈</span>
+
+<span class="cmt"># 3. 自定义评估器</span>
+<span class="kw">from</span> langsmith.evaluation <span class="kw">import</span> RunEvaluator
+
+<span class="kw">class</span> <span class="fn">TaskSuccessEvaluator</span>(RunEvaluator):
+    <span class="kw">def</span> <span class="fn">evaluate_run</span>(self, run, example):
+        <span class="cmt"># 检查是否达成任务目标</span>
+        output = run.outputs.get(<span class="str">"output"</span>, <span class="str">""</span>)
+        expected = example.outputs.get(<span class="str">"expected"</span>, <span class="str">""</span>)
+        score = <span class="num">1.0</span> <span class="kw">if</span> expected <span class="kw">in</span> output <span class="kw">else</span> <span class="num">0.0</span>
+        <span class="kw">return</span> {<span class="str">"key"</span>: <span class="str">"task_success"</span>, <span class="str">"score"</span>: score}
+
+<span class="cmt"># 4. 批量评估数据集</span>
+client = <span class="fn">Client</span>()
+dataset_name = <span class="str">"agent-test-cases"</span>
+client.<span class="fn">run_on_dataset</span>(
+    dataset_name=dataset_name,
+    llm_or_chain_factory=agent_executor,
+    evaluation=<span class="fn">RunEvalConfig</span>(
+        custom_evaluators=[<span class="fn">TaskSuccessEvaluator</span>()],
+        evaluators=[<span class="str">"criteria"</span>],
+        criteria=<span class="str">"helpfulness"</span>
+    )
+)
+            </pre></div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="best-practices">
+            <i class="fas fa-award"></i> 生产最佳实践
+            <span class="badge">经验总结</span>
+        </div>
+        <div class="cap-grid">
+            <div class="cap-item">
+                <span class="icon">🎯</span>
+                <span class="name">明确系统提示</span>
+                <span class="desc">System Prompt 清晰定义角色、约束与输出格式</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">⏱️</span>
+                <span class="name">设置迭代上限</span>
+                <span class="desc">max_iterations 防止无限循环消耗 Token</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🛡️</span>
+                <span class="name">工具沙箱化</span>
+                <span class="desc">代码执行、文件操作必须在隔离环境</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">💰</span>
+                <span class="name">成本控制</span>
+                <span class="desc">缓存常见查询、分级模型（简单任务用小模型）</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">📝</span>
+                <span class="name">全链路日志</span>
+                <span class="desc">记录每次推理、工具调用便于复盘</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🧪</span>
+                <span class="name">回归测试</span>
+                <span class="desc">建立测试数据集，版本升级前回归</span>
+            </div>
+        </div>
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">生产级 Agent 完整模板</h3>
+        <div class="code-block"><pre><span class="kw">from</span> langchain.agents <span class="kw">import</span> AgentExecutor
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain.globals <span class="kw">import</span> set_llm_cache
+<span class="kw">from</span> langchain.cache <span class="kw">import</span> RedisCache
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> SystemMessage
+
+<span class="cmt"># 1. 配置缓存降低成本</span>
+<span class="kw">import</span> redis
+set_llm_cache(<span class="fn">RedisCache</span>(redis.<span class="fn">Redis</span>(host=<span class="str">"localhost"</span>, port=<span class="num">6379</span>)))
+
+<span class="cmt"># 2. 分级模型策略</span>
+fast_llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o-mini"</span>, temperature=<span class="num">0</span>)   <span class="cmt"># 简单任务</span>
+smart_llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>, temperature=<span class="num">0</span>)       <span class="cmt"># 复杂推理</span>
+
+<span class="cmt"># 3. 系统提示词</span>
+SYSTEM_PROMPT = <span class="fn">SystemMessage</span>(content=<span class="str">"""你是一个企业级 AI 助手。
+规则：
+1. 只使用提供的工具完成任务，禁止编造信息
+2. 每次只执行一个动作，等待结果后再决策
+3. 遇到错误时，分析原因并调整策略，最多重试 2 次
+4. 涉及敏感操作（删除/支付）必须请求用户确认
+5. 输出格式：Thought → Action → Observation → Final Answer
+"""</span>)
+
+<span class="cmt"># 4. 构建 Agent</span>
+agent = <span class="fn">create_react_agent</span>(
+    llm=smart_llm,
+    tools=tool_set,
+    prompt=SYSTEM_PROMPT,
+    stop_sequence=[<span class="str">"Observation:"</span>]
+)
+
+executor = <span class="fn">AgentExecutor</span>(
+    agent=agent,
+    tools=tool_set,
+    max_iterations=<span class="num">8</span>,
+    early_stopping_method=<span class="str">"generate"</span>,
+    handle_parsing_errors=<span class="kw">True</span>,
+    return_intermediate_steps=<span class="kw">True</span>,  <span class="cmt"># 便于调试</span>
+    verbose=<span class="kw">False</span>  <span class="cmt"># 生产环境关闭</span>
+)
+
+<span class="cmt"># 5. 异步执行与超时控制</span>
+<span class="kw">import</span> asyncio
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">run_agent</span>(task: <span class="kw">str</span>):
+    <span class="kw">try</span>:
+        result = <span class="kw">await</span> asyncio.<span class="fn">wait_for</span>(
+            executor.<span class="fn">ainvoke</span>({<span class="str">"input"</span>: task}),
+            timeout=<span class="num">120</span>
+        )
+        <span class="kw">return</span> result
+    <span class="kw">except</span> asyncio.TimeoutError:
+        <span class="kw">return</span> {<span class="str">"output"</span>: <span class="str">"任务超时，请简化需求"</span>}
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">return</span> {<span class="str">"output"</span>: <span class="fn">f</span><span class="str">"执行异常: {e}"</span>}
+            </pre></div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>✅ 检查清单：</strong>
+            <ul style="margin: 0.5rem 0 0 1.5rem;">
+                <li>System Prompt 明确角色、规则与输出格式</li>
+                <li>max_iterations 设置合理上限（建议 5-10）</li>
+                <li>工具执行具备参数校验与沙箱隔离</li>
+                <li>启用 LLM 缓存降低重复查询成本</li>
+                <li>分级模型策略：简单任务用小模型</li>
+                <li>全链路追踪接入 LangSmith / Langfuse</li>
+                <li>建立回归测试数据集，版本升级前验证</li>
+                <li>敏感操作需人工确认（Human-in-the-loop）</li>
+            </ul>
+        </div>
+    </section>
+
+
+    <section class="card">
+        <div class="card-title" id="summary">
+            <i class="fas fa-flag-checkered"></i> 总结与展望
+            <span class="badge">核心要点</span>
+        </div>
+        <p style="color: var(--text-secondary);">
+            AI Agent 工程是 LLM 从"对话工具"走向"生产力工具"的关键跃迁。通过 ReAct 推理、Function Calling 工具调用、RAG 记忆系统与多 Agent 协同，Agent 能够自主完成复杂业务任务。掌握 LangChain/LangGraph 框架、MCP 协议与可观测性体系，是构建企业级 Agent 应用的基础。未来，随着模型能力提升与协议标准化，Agent 将成为软件交互的新范式。
+        </p>
+        <div class="cap-grid">
+            <div class="cap-item">
+                <span class="icon">🧠</span>
+                <span class="name">推理为核心</span>
+                <span class="desc">ReAct/Plan-Execute 范式驱动任务分解</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🔧</span>
+                <span class="name">工具即能力</span>
+                <span class="desc">Function Calling/MCP 扩展 Agent 边界</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">💾</span>
+                <span class="name">记忆即经验</span>
+                <span class="desc">向量存储实现长期记忆与个性化</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">👥</span>
+                <span class="name">协同即智能</span>
+                <span class="desc">多 Agent 编排处理复杂业务场景</span>
+            </div>
+        </div>
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">技术栈速查</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:10px 20px; font-size:0.95rem; color:var(--text-primary);">
+            <span><strong>框架：</strong>LangChain / LangGraph / LlamaIndex</span>
+            <span><strong>模型：</strong>GPT-4o / Claude 3.5 / Qwen2</span>
+            <span><strong>向量库：</strong>Chroma / Milvus / Pinecone</span>
+            <span><strong>协议：</strong>Function Calling / MCP</span>
+            <span><strong>监控：</strong>LangSmith / Langfuse</span>
+            <span><strong>编排：</strong>LangGraph / AutoGen / CrewAI</span>
+            <span><strong>语言：</strong>Python / TypeScript</span>
+        </div>
+    </section>
+
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="index.html" class="footer-nav-link">← 返回文档列表</a>
+        <a href="doc-spring-boot-principles.html" class="footer-nav-link">上一篇: AI 智能库存管理 →</a>
+      </footer>
+
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+﻿          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">AI Agent 工程概述</a></li>
+          <li class="toc-nav-item"><a href="#architecture" class="toc-nav-link">Agent 架构设计</a></li>
+          <li class="toc-nav-item"><a href="#environment" class="toc-nav-link">开发环境搭建</a></li>
+          <li class="toc-nav-item"><a href="#react-pattern" class="toc-nav-link">ReAct 推理模式</a></li>
+          <li class="toc-nav-item"><a href="#function-calling" class="toc-nav-link">Function Calling 工具调用</a></li>
+          <li class="toc-nav-item"><a href="#memory" class="toc-nav-link">记忆系统设计</a></li>
+          <li class="toc-nav-item"><a href="#multi-agent" class="toc-nav-link">多 Agent 协同</a></li>
+          <li class="toc-nav-item"><a href="#mcp-protocol" class="toc-nav-link">MCP 协议集成</a></li>
+          <li class="toc-nav-item"><a href="#observability" class="toc-nav-link">可观测性与评估</a></li>
+          <li class="toc-nav-item"><a href="#best-practices" class="toc-nav-link">生产最佳实践</a></li>
+          <li class="toc-nav-item"><a href="#summary" class="toc-nav-link">总结与展望</a></li>
+
+        </ol>
+      </div>
+    </aside>
+
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.cicd-content .card-title[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.cicd-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) { btn.classList.add('visible'); }
+      else { btn.classList.remove('visible'); }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

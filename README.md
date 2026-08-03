@@ -2,7 +2,7 @@
 
 > LI XUBIN — 架构师 & 技术主管 | 个人作品集与技术文档站
 
-纯静态前端站点，零构建依赖，双主题自适应，涵盖 12 个项目展示与 8 篇深度技术文档。
+纯静态前端站点，零构建依赖，双主题自适应，涵盖 12 个项目展示与 13 篇深度技术文档。
 
 ---
 
@@ -18,14 +18,19 @@ portfolio-site/
 │   └── images/
 ├── docs/                   # 技术文档中心
 │   ├── index.html
-│   ├── article-spring-cloud-alibaba.html
-│   ├── doc-ai-inventory-management.html
-│   ├── doc-cicd.html
-│   ├── doc-ecommerce-skills.html
-│   ├── doc-harness-engineering.html
-│   ├── doc-iot-architecture.html
-│   ├── doc-msa-framework-guide.html
-│   └── doc-spring-boot-principles.html
+│   ├── article-distributed-transaction.html   # 分布式事务实战
+│   ├── article-docker-best-practices.html     # Docker 最佳实践
+│   ├── article-kubernetes-deployment.html     # Kubernetes 部署实战
+│   ├── article-spring-cloud-alibaba.html      # Spring Cloud Alibaba 实战
+│   ├── doc-ai-agent-engineering.html          # AI Agent 工程实战
+│   ├── doc-ai-inventory-management.html       # AI 智能库存管理
+│   ├── doc-cicd.html                          # CI/CD 自动化部署
+│   ├── doc-ecommerce-skills.html              # 全渠道零售架构
+│   ├── doc-harness-engineering.html           # Harness Engineering
+│   ├── doc-iot-architecture.html              # IoT 架构设计
+│   ├── doc-jenkins-pipeline-guide.html        # Jenkins Pipeline 指南
+│   ├── doc-msa-framework-guide.html           # MSA Framework 手册
+│   └── doc-spring-boot-principles.html        # Spring Boot 核心原理
 └── projects/               # 项目详情页
     ├── index.html
     ├── project-common.css
@@ -140,6 +145,11 @@ npx serve -l 8080
 | Harness Engineering | 工程化实践 / 评分体系 / 最佳实践 |
 | MSA Framework 手册 | 微服务框架组件 / 配置中心 / 服务治理 |
 | AI 智能库存管理 | 多智能体协同 / 分布式决策 / 库存优化 |
+| Kubernetes 部署实战 | 集群搭建 / Deployment / 服务网络 / 持久化存储 / 监控运维 |
+| Jenkins Pipeline 指南 | 声明式/脚本式语法 / 共享库 / 多分支策略 / 凭据管理 |
+| AI Agent 工程实战 | ReAct 推理 / Function Calling / 记忆系统 / 多 Agent 协同 / MCP 协议 |
+| Docker 最佳实践 | Dockerfile 编写 / 镜像优化 / 安全加固 / Compose 编排 / 监控日志 |
+| 分布式事务实战 | CAP/BASE 理论 / 2PC/XA / TCC / Saga / 消息事务 / Seata 框架 |
 
 每篇文档均包含：
 - 左侧：文章正文（代码块 + 架构图 + 对比表格 + 高亮提示框）

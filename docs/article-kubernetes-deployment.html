@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kubernetes 部署实战：从集群搭建到生产级应用发布 — 系统讲解 K8s 核心概念、部署策略、服务网络、持久化存储、监控运维等关键技术细节">
+  <title>Kubernetes 部署实战 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.95);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+
+    .brand-text-accent {
+      color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex; align-items: center; gap: 24px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      transition: color 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-link:hover, .nav-link:focus-visible { color: var(--accent-cyan); }
+
+    /* ===== 文章页布局：左侧内容 + 右侧TOC ===== */
+    .article-layout {
+      display: flex; max-width: 1400px; margin: 0 auto;
+      gap: 40px; padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    /* ===== 左侧：主内容区 ===== */
+    .article-main {
+      flex: 1; min-width: 0; max-width: 900px;
+    }
+
+    .article-header {
+      margin-bottom: 40px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .article-breadcrumb {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+      font-size: 0.85rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .breadcrumb-link { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumb-link:hover, .breadcrumb-link:focus-visible { color: var(--accent-cyan); }
+
+    .breadcrumb-separator::before { content: '/'; opacity: 0.5; }
+
+    .article-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+    }
+
+    .meta-date {
+      font-size: 0.84rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .meta-read-time {
+      font-size: 0.82rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 700;
+      line-height: 1.3; color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .article-subtitle {
+      font-size: 1.08rem; color: var(--text-secondary); line-height: 1.6;
+    }
+
+    .article-content {
+      font-size: 1.01rem; line-height: 1.9;
+    }
+
+    .article-content h2 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.5rem;
+      font-weight: 600; color: var(--accent-cyan); margin-top: 44px;
+      margin-bottom: 18px; padding-bottom: 11px;
+      border-bottom: 2px solid var(--border-color);
+      scroll-margin-top: 20px;
+    }
+
+    .article-content h3 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.22rem;
+      font-weight: 600; color: var(--text-primary); margin-top: 32px;
+      margin-bottom: 14px;
+    }
+
+    .article-content p { margin-bottom: 17px; color: var(--text-secondary); }
+
+    .article-content strong { color: var(--text-primary); font-weight: 600; }
+
+    .article-content ul, .article-content ol {
+      margin-bottom: 19px; padding-left: 26px; color: var(--text-secondary);
+    }
+
+    .article-content li { margin-bottom: 9px; }
+
+    .code-block {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 22px; margin: 22px 0; overflow-x: auto;
+      position: relative;
+    }
+
+    .code-block::before {
+      content: attr(data-lang); position: absolute; top: 11px; right: 15px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    .code-block pre {
+      margin: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.7; color: var(--text-primary);
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(139, 92, 246, 0.07));
+      border-left: 4px solid var(--accent-cyan); border-radius: 8px;
+      padding: 22px; margin: 26px 0;
+    }
+
+    .highlight-box h4 {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.97rem;
+      font-weight: 600; color: var(--accent-cyan); margin-bottom: 11px;
+    }
+
+    .highlight-box p { margin-bottom: 0; color: var(--text-secondary); }
+
+    .warning-box {
+      background: rgba(234, 179, 8, 0.07); border-left: 4px solid #eab308;
+      border-radius: 8px; padding: 22px; margin: 26px 0;
+    }
+
+    .warning-box h4 {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.97rem;
+      font-weight: 600; color: #eab308; margin-bottom: 11px;
+    }
+
+    .info-table {
+      width: 100%; border-collapse: collapse; margin: 22px 0; font-size: 0.91rem;
+    }
+
+    .info-table th, .info-table td {
+      padding: 13px 15px; text-align: left; border: 1px solid var(--border-color);
+    }
+
+    .info-table th {
+      background: var(--bg-secondary); font-family: 'JetBrains Mono', monospace;
+      font-weight: 600; color: var(--accent-purple); font-size: 0.83rem;
+    }
+
+    .info-table td { color: var(--text-secondary); }
+
+    .article-footer {
+      margin-top: 56px; padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; flex-wrap: wrap;
+    }
+
+    .footer-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px; background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 10px;
+      text-decoration: none; color: var(--text-secondary); font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-nav-link:hover, .footer-nav-link:focus-visible {
+      border-color: var(--accent-cyan); color: var(--accent-cyan);
+      transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-glow);
+    }
+
+    /* ===== 右侧：目录索引 (TOC) ===== */
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    /* 阅读进度条 */
+    .reading-progress {
+      position: fixed; top: 72px; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible {
+      opacity: 1; visibility: visible;
+    }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .site-footer {
+      text-align: center; padding: 36px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted); font-size: 0.87rem;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      
+      .article-layout { padding: 32px 20px 70px; gap: 0; }
+      
+      .article-main { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav { gap: 12px; flex-wrap: wrap; }
+      .article-footer { flex-direction: column; }
+      .article-title { font-size: 1.55rem; }
+      .article-content h2 { font-size: 1.3rem; }
+      .info-table { font-size: 0.82rem; }
+      .info-table th, .info-table td { padding: 10px 8px; }
+    }
+  
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px; position: relative;
+      transition: background 0.3s ease;
+    }
+    .theme-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px);
+      background: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <!-- 阅读进度条 -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+            <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+        <span aria-hidden="true">REALITY</span>
+        <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+        <span aria-hidden="true">SIM</span>
+      </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+
+    <!-- ===== 左侧：主内容区 ===== -->
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#blog-section" class="breadcrumb-link">技术博客</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+
+        <div class="article-meta">
+          <span class="meta-tag">BLOG</span>
+          <time class="meta-date" datetime="2026-07-20">2026-07-20</time>
+          <span class="meta-read-time">阅读时长: 28min</span>
+        </div>
+
+        <h1 class="article-title">Kubernetes 部署实战：从集群搭建到生产级应用发布</h1>
+        <p class="article-subtitle">系统讲解 K8s 核心概念、集群环境搭建、应用部署策略、服务网络、持久化存储、配置管理、监控运维与 CI/CD 自动化，结合真实项目案例提供生产级最佳实践。</p>
+      </header>
+
+      <div class="article-content">
+        <section id="intro">
+          <h2>为什么选择 Kubernetes？</h2>
+          <p>在云原生时代，<strong>Kubernetes</strong>（简称 K8s）已成为容器编排的事实标准。它最初由 Google 基于内部 Borg 系统的设计理念开源，现由 CNCF 维护，全球拥有最活跃的开源社区之一。K8s 提供了自动化部署、弹性伸缩、负载均衡、服务发现、滚动更新、自愈恢复等核心能力，让企业能够以声明式方式管理大规模容器化应用。</p>
+          <div class="highlight-box">
+            <h4>核心优势</h4>
+            <p><strong>声明式配置</strong>：通过 YAML 清单描述期望状态，K8s 自动驱动实际状态趋近期望状态，无需手动干预<br>
+            <strong>自愈能力</strong>：节点故障时自动迁移 Pod，容器崩溃时自动重启，保障服务高可用<br>
+            <strong>弹性伸缩</strong>：基于 CPU/内存/自定义指标的 HPA 自动扩缩容，从容应对流量波动<br>
+            <strong>生态丰富</strong>：Helm 包管理、Istio 服务网格、Prometheus 监控、ArgoCD GitOps 等成熟生态</p>
+          </div>
+          <table class="info-table">
+            <thead><tr><th>能力维度</th><th>Kubernetes 原生支持</th><th>生态扩展方案</th></tr></thead>
+            <tbody>
+              <tr><td>容器编排</td><td>Deployment / StatefulSet / DaemonSet</td><td>Argo Workflows / Tekton</td></tr>
+              <tr><td>服务发现</td><td>Service / CoreDNS / Ingress</td><td>Istio / Linkerd 服务网格</td></tr>
+              <tr><td>配置管理</td><td>ConfigMap / Secret</td><td>Vault / External Secrets</td></tr>
+              <tr><td>持久化存储</td><td>PV / PVC / StorageClass</td><td>Rook / Longhorn / OpenEBS</td></tr>
+              <tr><td>监控运维</td><td>Metrics Server / Events</td><td>Prometheus + Grafana</td></tr>
+              <tr><td>包管理</td><td>kubectl apply</td><td>Helm / Kustomize</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="cluster-setup">
+          <h2>集群环境搭建</h2>
+          <h3>1. 基础环境准备</h3>
+          <p>生产环境推荐使用 <strong>kubeadm</strong> 初始化集群，它是 Kubernetes 官方维护的引导工具，支持从零搭建符合最佳实践的多节点集群。以下以 Ubuntu 22.04 为例，搭建 1 Master + 2 Worker 的标准集群。</p>
+          <h4>步骤 1.1：系统内核与基础配置</h4>
+          <p>所有节点需执行以下系统级配置，确保内核参数、防火墙、SELinux 满足 K8s 运行要求：</p>
+          <div class="code-block" data-lang="bash"><pre># 关闭 swap（K8s 强制要求）
+sudo swapoff -a
+sudo sed -i "/ swap / s/^\(.*\)$/#\1/g" /etc/fstab
+
+# 加载必要的内核模块
+sudo modprobe br_netfilter
+sudo modprobe overlay
+cat &lt;&lt;EOF | sudo tee /etc/modules-load.d/k8s.conf
+br_netfilter
+overlay
+EOF
+
+# 配置内核网络参数
+cat &lt;&lt;EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+sudo sysctl --system
+
+# 关闭防火墙（或开放必要端口）
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
+
+# 关闭 SELinux
+sudo setenforce 0
+sudo sed -i "s/^SELINUX=enforcing$/SELINUX=permissive/" /etc/selinux/config</pre></div>
+          <div class="warning-box">
+            <h4>生产安全提示</h4>
+            <p>生产环境不建议直接关闭防火墙，应按官方文档开放以下端口：<br>
+            <strong>Master 节点</strong>：6443(API)、2379-2380(etcd)、10250(kubelet)、10259(kube-scheduler)、10257(kube-controller)<br>
+            <strong>Worker 节点</strong>：10250(kubelet)、30000-32767(NodePort)</p>
+          </div>
+          <h4>步骤 1.2：安装容器运行时（containerd）</h4>
+          <p>自 Kubernetes 1.24 起，Dockershim 已被移除，推荐使用 <strong>containerd</strong> 作为容器运行时（CRI）。containerd 性能更优、资源占用更少，且是 CNCF 毕业项目。</p>
+          <div class="code-block" data-lang="bash"><pre># 安装 containerd
+sudo apt-get update
+sudo apt-get install -y containerd.io
+
+# 生成默认配置
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+
+# 修改配置：使用 systemd cgroup driver（K8s 推荐）
+sudo sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml
+
+# 配置镜像加速（国内环境必需）
+# 在 [plugins."io.containerd.grpc.v1.cri".registry.mirrors] 下添加：
+#   [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+#     endpoint = ["https://mirror.ccs.tencentyun.com"]
+
+sudo systemctl restart containerd
+sudo systemctl enable containerd</pre></div>
+          <h4>步骤 1.3：安装 kubeadm、kubelet、kubectl</h4>
+          <div class="code-block" data-lang="bash"><pre># 添加 Kubernetes apt 源
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
+  https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | \
+  sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo systemctl enable kubelet</pre></div>
+          <h3>2. 初始化控制平面（Master 节点）</h3>
+          <div class="code-block" data-lang="bash"><pre># 在 Master 节点执行集群初始化
+sudo kubeadm init \
+  --apiserver-advertise-address=192.168.1.10 \
+  --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers \
+  --kubernetes-version=v1.30.0 \
+  --service-cidr=10.96.0.0/12 \
+  --pod-network-cidr=10.244.0.0/16 \
+  --token-ttl=0
+
+# 配置 kubectl 访问凭证
+mkdir -p C:Userslxubin/.kube
+sudo cp -i /etc/kubernetes/admin.conf C:Userslxubin/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# 验证集群状态
+kubectl get nodes
+kubectl get componentstatuses</pre></div>
+          <div class="highlight-box">
+            <h4>参数说明</h4>
+            <p><strong>--apiserver-advertise-address</strong>：Master 节点对外可达的 IP 地址<br>
+            <strong>--image-repository</strong>：国内镜像仓库地址，解决 gcr.io 拉取超时问题<br>
+            <strong>--service-cidr</strong>：Service 虚拟 IP 地址段（ClusterIP 范围）<br>
+            <strong>--pod-network-cidr</strong>：Pod 网络地址段，需与 CNI 插件配置一致<br>
+            <strong>--token-ttl=0</strong>：Token 永不过期，方便后续多次加入 Worker 节点</p>
+          </div>
+          <h3>3. 安装 Pod 网络插件（CNI）</h3>
+          <p>K8s 集群初始化后，Pod 间跨节点通信依赖 CNI 插件。生产环境推荐 <strong>Calico</strong>，它基于 BGP 协议实现高效路由，支持网络策略（NetworkPolicy）实现微服务间的网络隔离。</p>
+          <div class="code-block" data-lang="bash"><pre># 安装 Calico（Tigera Operator 方式，推荐）
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/custom-resources.yaml
+
+# 验证 Calico Pod 运行状态
+kubectl get pods -n calico-system -w
+
+# 验证节点就绪
+kubectl get nodes</pre></div>
+          <h3>4. 加入 Worker 节点</h3>
+          <div class="code-block" data-lang="bash"><pre># 在 Master 初始化输出的 join 命令，在所有 Worker 节点执行：
+sudo kubeadm join 192.168.1.10:6443 \
+  --token abcdef.0123456789abcdef \
+  --discovery-token-ca-cert-hash sha256:xxxx...
+
+# 如果丢失了 join 命令，可在 Master 节点重新生成：
+kubeadm token create --print-join-command
+
+# 验证所有节点已加入集群
+kubectl get nodes -o wide</pre></div>
+        </section>
+
+        <section id="core-concepts">
+          <h2>核心概念与资源对象</h2>
+          <p>Kubernetes 的设计理念围绕<strong>声明式 API</strong>展开，所有系统状态通过 API 对象描述。理解以下核心资源对象是掌握 K8s 的基础：</p>
+          <table class="info-table">
+            <thead><tr><th>资源对象</th><th>用途</th><th>关键属性</th></tr></thead>
+            <tbody>
+              <tr><td>Pod</td><td>最小调度单元，包含一个或多个容器</td><td>restartPolicy, containers, volumes</td></tr>
+              <tr><td>Deployment</td><td>无状态应用管理，控制副本数与滚动更新</td><td>replicas, strategy, selector</td></tr>
+              <tr><td>StatefulSet</td><td>有状态应用管理，稳定网络标识与持久化</td><td>serviceName, volumeClaimTemplates</td></tr>
+              <tr><td>DaemonSet</td><td>每个节点运行一个 Pod 副本</td><td>nodeSelector, tolerations</td></tr>
+              <tr><td>Service</td><td>服务发现与负载均衡</td><td>type, selector, ports</td></tr>
+              <tr><td>Ingress</td><td>HTTP 层路由与 TLS 终止</td><td>rules, tls, ingressClassName</td></tr>
+              <tr><td>ConfigMap</td><td>非敏感配置存储</td><td>data, binaryData</td></tr>
+              <tr><td>Secret</td><td>敏感信息加密存储</td><td>type, data</td></tr>
+              <tr><td>PV/PVC</td><td>持久化存储申请与绑定</td><td>storageClassName, accessModes</td></tr>
+            </tbody>
+          </table>
+          <h3>Pod 生命周期详解</h3>
+          <p>Pod 是 K8s 中最小的调度单元。它封装了一个或多个容器，共享网络命名空间（IP 地址）和存储卷。理解 Pod 的生命周期对于排查问题至关重要：</p>
+          <div class="code-block" data-lang="yaml"><pre># Pod 生命周期阶段：
+# Pending -> ContainerCreating -> Running -> Succeeded/Failed
+#                     ↳ CrashLoopBackOff (崩溃循环)
+#                     ↳ ImagePullBackOff (镜像拉取失败)
+
+# 查看 Pod 状态
+kubectl get pods -o wide
+kubectl describe pod "my-app-7d4b8f6c5-x2k9j"
+
+# 查看 Pod 事件（排查关键）
+kubectl get events --field-selector involvedObject.name="my-app-7d4b8f6c5-x2k9j"
+
+# 查看容器日志
+kubectl logs my-app-7d4b8f6c5-x2k9j --previous  # 查看上一次崩溃的日志
+kubectl logs my-app-7d4b8f6c5-x2k9j -c sidecar    # 指定容器日志</pre></div>
+        </section>
+
+        <section id="deployment">
+          <h2>应用部署实战</h2>
+          <h3>1. Deployment 无状态应用</h3>
+          <p>Deployment 是 K8s 中最常用的工作负载类型，适用于 Web 服务、API 网关等无状态应用。它通过 ReplicaSet 管理 Pod 副本，支持滚动更新和回滚操作。</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pigx-gateway
+  namespace: production
+  labels:
+    app: pigx-gateway
+    version: v3.7.0
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1          # 滚动更新时最多超出副本数 1 个
+      maxUnavailable: 0   # 滚动更新时不允许不可用 Pod
+  selector:
+    matchLabels:
+      app: pigx-gateway
+  template:
+    metadata:
+      labels:
+        app: pigx-gateway
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: gateway
+        image: registry.cn-hangzhou.aliyuncs.com/pigx/pigx-gateway:3.7.0
+        ports:
+        - containerPort: 9999
+          protocol: TCP
+        env:
+        - name: NACOS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pigx-config
+              key: nacos.host
+        - name: JAVA_OPTS
+          value: "-Xms512m -Xmx512m -XX:+UseG1GC"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 9999
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 9999
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}</pre></div>
+          <h3>2. StatefulSet 有状态应用</h3>
+          <p>对于数据库、消息队列等需要稳定网络标识和持久化存储的应用，必须使用 StatefulSet。它保证 Pod 按顺序创建/删除，并提供稳定的 DNS 名称。</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: production
+spec:
+  serviceName: mysql-headless  # 必须指定 Headless Service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: mysql
+            topologyKey: "kubernetes.io/hostname"  # Pod 分散到不同节点
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:     # 每个 Pod 自动创建一个 PVC
+  - metadata:
+      name: data
+    spec:
+      storageClassName: local-storage
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi</pre></div>
+          <div class="highlight-box">
+            <h4>StatefulSet vs Deployment</h4>
+            <p><strong>网络标识</strong>：StatefulSet Pod 拥有稳定的 DNS 名称（mysql-0.mysql-headless），Deployment Pod 名称随机<br>
+            <strong>启动顺序</strong>：StatefulSet 按序号创建 Pod，确保前一个就绪后才启动下一个<br>
+            <strong>持久化</strong>：StatefulSet 通过 volumeClaimTemplates 为每个 Pod 绑定独立 PVC，不会因 Pod 重建而丢失</p>
+          </div>
+          <h3>3. 滚动更新与回滚</h3>
+          <p>K8s Deployment 的滚动更新策略确保服务零平稳过渡，配合 readinessProbe 可实现真正的零平滑部署：</p>
+          <div class="code-block" data-lang="bash"><pre># 滚动更新：修改镜像版本触发
+kubectl set image deployment/pigx-gateway gateway=pigx/pigx-gateway:3.7.1 -n production
+
+# 查看滚动更新状态
+kubectl rollout status deployment/pigx-gateway -n production
+
+# 查看历史版本
+kubectl rollout history deployment/pigx-gateway -n production
+
+# 回滚到上一个版本
+kubectl rollout undo deployment/pigx-gateway -n production
+
+# 回滚到指定版本
+kubectl rollout undo deployment/pigx-gateway --to-revision=2 -n production
+
+# 暂停滚动更新（用于金丝雀发布）
+kubectl rollout pause deployment/pigx-gateway -n production
+kubectl rollout resume deployment/pigx-gateway -n production</pre></div>
+          <h3>4. HPA 自动扩缩容</h3>
+          <p>基于 CPU/内存使用率或自定义指标，HPA 自动调整 Pod 副本数，应对流量波动：</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pigx-gateway-hpa
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pigx-gateway
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70    # CPU 使用率超过 70% 触发扩容
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80    # 内存使用率超过 80% 触发扩容
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 缩容冷却期 5 分钟
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 60
+      selectPolicy: Max</pre></div>
+        </section>
+
+        <section id="networking">
+          <h2>服务发现与网络配置</h2>
+          <h3>1. Service 服务暴露</h3>
+          <p>K8s Service 为 Pod 提供稳定的访问入口，通过 label selector 自动关联后端 Pod。常用的 Service 类型包括：</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: v1
+kind: Service
+metadata:
+  name: pigx-gateway-svc
+  namespace: production
+spec:
+  type: ClusterIP       # 集群内部访问（默认类型）
+  # type: NodePort      # 通过节点端口暴露（30000-32767）
+  # type: LoadBalancer  # 云环境自动创建外部负载均衡器
+  selector:
+    app: pigx-gateway
+  ports:
+  - name: http
+    port: 80           # Service 监听端口
+    targetPort: 9999   # Pod 容器端口
+    protocol: TCP
+  sessionAffinity: ClientIP  # 会话亲和，同一客户端请求转发到同一 Pod
+---
+# Headless Service（用于 StatefulSet）
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+spec:
+  clusterIP: None       # 不分配 ClusterIP
+  selector:
+    app: mysql
+  ports:
+  - port: 3306</pre></div>
+          <h3>2. Ingress HTTP 路由</h3>
+          <p>Ingress 提供了 HTTP 层的路由规则，支持域名路由、TLS 终止、路径分发等能力，是微服务对外暴露的标准方式：</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pigx-ingress
+  namespace: production
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.pigx.vip
+    secretName: pigx-tls-secret
+  rules:
+  - host: api.pigx.vip
+    http:
+      paths:
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: pigx-auth-svc
+            port:
+              number: 3000
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: pigx-admin-svc
+            port:
+              number: 3001
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pigx-gateway-svc
+            port:
+              number: 80</pre></div>
+          <h3>3. NetworkPolicy 网络策略</h3>
+          <p>默认情况下，K8s 集群内所有 Pod 可以互相访问。在生产环境中，必须通过 NetworkPolicy 实现微服务间的网络隔离，遵循最小权限原则：</p>
+          <div class="code-block" data-lang="yaml"><pre># 仅允许网关 Pod 访问认证服务
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-gateway-to-auth
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: pigx-auth
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: pigx-gateway    # 仅允许网关访问
+    ports:
+    - protocol: TCP
+      port: 3000
+---
+# 禁止数据库 Pod 的外部访问
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-external-to-mysql
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}       # 仅允许同命名空间内的 Pod 访问</pre></div>
+        </section>
+
+        <section id="storage">
+          <h2>持久化存储方案</h2>
+          <h3>1. StorageClass 动态供应</h3>
+          <p>StorageClass 实现了存储的动态供应，开发者只需申请 PVC，K8s 自动创建 PV。生产环境常用的存储后端包括 Ceph、NFS、Longhorn 等：</p>
+          <div class="code-block" data-lang="yaml"><pre># NFS StorageClass 示例
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-storage
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: 192.168.1.100
+  share: /data/nfs
+reclaimPolicy: Retain          # 删除 PVC 后保留数据
+volumeBindingMode: WaitForFirstConsumer
+mountOptions:
+  - hard
+  - nfsvers=4.1
+---
+# 申请存储卷
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-data-pvc
+  namespace: production
+spec:
+  storageClassName: nfs-storage
+  accessModes:
+  - ReadWriteMany          # 多节点读写（NFS 特性）
+  resources:
+    requests:
+      storage: 20Gi</pre></div>
+          <h3>2. 存储访问模式</h3>
+          <table class="info-table">
+            <thead><tr><th>访问模式</th><th>缩写</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>ReadWriteOnce (RWO)</td><td>RWO</td><td>单节点读写，常用于数据库</td></tr>
+              <tr><td>ReadOnlyMany (ROX)</td><td>ROX</td><td>多节点只读，常用于配置文件共享</td></tr>
+              <tr><td>ReadWriteMany (RWX)</td><td>RWX</td><td>多节点读写，需 NFS/CephFS 等分布式文件系统</td></tr>
+              <tr><td>ReadWriteOncePod</td><td>RWOP</td><td>单 Pod 读写（K8s 1.22+）</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="config-secrets">
+          <h2>配置与密钥管理</h2>
+          <h3>1. ConfigMap 配置管理</h3>
+          <p>ConfigMap 用于存储非敏感的配置数据，可以作为环境变量、配置文件或命令行参数注入到 Pod 中：</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pigx-config
+  namespace: production
+data:
+  application.yml: |
+    spring:
+      datasource:
+        url: jdbc:mysql://mysql:3306/pigx
+        username: root
+      redis:
+        host: redis-master
+        port: 6379
+  nacos.host: "nacos-server"
+  log.level: INFO
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pigx-admin
+spec:
+  template:
+    spec:
+      containers:
+      - name: admin
+        image: pigx/pigx-admin:3.7.0
+        envFrom:
+        - configMapRef:
+            name: pigx-config    # 注入所有 key-value 为环境变量
+        volumeMounts:
+        - name: config
+          mountPath: /app/config/application.yml
+          subPath: application.yml
+      volumes:
+      - name: config
+        configMap:
+          name: pigx-config</pre></div>
+          <h3>2. Secret 密钥管理</h3>
+          <p>Secret 用于存储敏感信息（密码、证书、Token 等），数据以 Base64 编码存储。生产环境建议集成 HashiCorp Vault 或 External Secrets Operator 实现动态密钥管理：</p>
+          <div class="code-block" data-lang="bash"><pre># 创建 Docker Registry Secret（拉取私有镜像必需）
+kubectl create secret docker-registry aliyun-registry \
+  --docker-server=registry.cn-hangzhou.aliyuncs.com \
+  --docker-username=admin@pigx \
+  --docker-password=PASSWORD \
+  --docker-email=admin@pigx.vip \
+  -n production
+
+# 创建 TLS Secret（Ingress HTTPS 必需）
+kubectl create secret tls pigx-tls-secret \
+  --cert=fullchain.pem \
+  --key=privkey.pem \
+  -n production
+
+# 查看 Secret（仅显示 Base64 编码）
+kubectl get secret pigx-config -n production -o yaml
+
+# 解码查看 Secret 内容
+kubectl get secret pigx-config -n production \
+  -o jsonpath="{.data.password}" | base64 -d</pre></div>
+        </section>
+
+        <section id="monitoring">
+          <h2>监控与日志体系</h2>
+          <h3>1. Prometheus + Grafana 监控堆栈</h3>
+          <p>使用 kube-prometheus-stack Helm Chart 一键部署完整监控方案，包含 Prometheus、Grafana、AlertManager、Node Exporter 等组件：</p>
+          <div class="code-block" data-lang="bash"><pre># 添加 Helm 仓库
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+# 部署 kube-prometheus-stack
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace \
+  --set prometheus.service.type=NodePort \
+  --set prometheus.service.nodePort=30090 \
+  --set grafana.service.type=NodePort \
+  --set grafana.service.nodePort=30030 \
+  --set grafana.adminPassword=pigx@2026
+
+# 获取 Grafana 初始密码
+kubectl get secret -n monitoring monitoring-grafana \
+  -o jsonpath="{.data.admin-password}" | base64 -d
+
+# 访问 Grafana
+# http://NODE_IP:30030  admin/pigx@2026</pre></div>
+          <h3>2. 自定义监控指标</h3>
+          <p>通过 Prometheus ServiceMonitor 自动发现应用的 /actuator/prometheus 端点，采集 Spring Boot Actuator 暴露的业务指标：</p>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pigx-services
+  namespace: production
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      monitoring: enabled
+  endpoints:
+  - port: metrics          # 对应 Service 的 named port
+    path: /actuator/prometheus
+    interval: 15s
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - production</pre></div>
+          <h3>3. Fluent Bit + Loki 日志收集</h3>
+          <p>相比传统 ELK 堆栈，Loki + Fluent Bit 方案资源占用更低，且与 Grafana 原生集成：</p>
+          <div class="code-block" data-lang="bash"><pre># 部署 Loki
+helm repo add grafana https://grafana.github.io/helm-charts
+helm install loki grafana/loki-stack \
+  --namespace logging \
+  --create-namespace \
+  --set fluent-bit.enabled=true \
+  --set fluent-bit.config.outputs.forward.host=loki \
+  --set promtail.enabled=true
+
+# Fluent Bit 作为 DaemonSet 运行在每个节点
+# 自动采集 /var/log/containers/ 下的容器日志
+# 通过 label 实现日志分类查询</pre></div>
+        </section>
+
+        <section id="cicd">
+          <h2>CI/CD 自动化部署</h2>
+          <h3>1. GitOps 与 ArgoCD</h3>
+          <p>GitOps 是现代云原生应用部署的最佳实践，Git 仓库作为应用期望状态的唯一真理来源。ArgoCD 持续监听 Git 仓库，自动同步到集群：</p>
+          <div class="code-block" data-lang="bash"><pre># 部署 ArgoCD
+kubectl create namespace argocd
+kubectl apply -n argocd \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# 获取 ArgoCD 初始密码
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+
+# 通过 CLI 登录
+argocd login argocd.pigx.vip \
+  --username admin \
+  --password PASSWORD
+
+# 注册集群凭证（多集群管理必需）
+argocd cluster add production-cluster</pre></div>
+          <h3>2. ArgoCD Application 声明</h3>
+          <div class="code-block" data-lang="yaml"><pre>apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pigx-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://git.pigx.vip/devops/pigx-k8s-manifests.git
+    targetRevision: main
+    path: overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    automated:
+      prune: true           # 自动删除 Git 中已移除的资源
+      selfHeal: true        # 自动修复手动修改
+    syncOptions:
+    - CreateNamespace=true
+    - PruneLast=true
+  revisionHistoryLimit: 10</pre></div>
+          <h3>3. Kustomize 多环境配置</h3>
+          <p>Kustomize 允许为不同环境（dev/staging/prod）定义差异配置，避免 YAML 重复：</p>
+          <div class="code-block" data-lang="yaml"><pre># base/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pigx-gateway
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: gateway
+        image: pigx/pigx-gateway:latest
+---
+# overlays/production/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: production
+resources:
+- ../../base
+patches:
+- replica_count.yaml
+images:
+- name: pigx/pigx-gateway
+  newTag: 3.7.0
+configMapGenerator:
+- name: pigx-config
+  literals:
+  - ENV=production
+  - LOG_LEVEL=INFO</pre></div>
+        </section>
+
+        <section id="best-practices">
+          <h2>生产最佳实践</h2>
+          <h3>1. 资源配额与限制</h3>
+          <p>生产环境必须为每个 Pod 设置 resource requests/limits，并在命名空间级别配置 ResourceQuota 和 LimitRange：</p>
+          <div class="code-block" data-lang="yaml"><pre># 命名空间资源配额
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: production-quota
+  namespace: production
+spec:
+  hard:
+    requests.cpu: "20"
+    requests.memory: 40Gi
+    limits.cpu: "40"
+    limits.memory: 80Gi
+    persistentvolumeclaims: "10"
+    pods: "50"
+---
+# 默认资源限制
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: production
+spec:
+  limits:
+  - type: Container
+    default:          # 默认 limits
+      cpu: "1000m"
+      memory: 1Gi
+    defaultRequest:   # 默认 requests
+      cpu: "200m"
+      memory: 256Mi
+    max:              # 最大限制
+      cpu: "4000m"
+      memory: 8Gi</pre></div>
+          <h3>2. Pod 安全上下文</h3>
+          <p>遵循最小权限原则，禁止容器以 root 运行，限制文件系统访问权限：</p>
+          <div class="code-block" data-lang="yaml"><pre>spec:
+  securityContext:
+    runAsNonRoot: true       # 禁止 root 用户运行
+    runAsUser: 1000          # 指定运行用户 UID
+    fsGroup: 2000            # 卷挂存储卷的组 GID
+    seccompProfile:
+      type: RuntimeDefault   # 启用默认系统调用过滤
+  containers:
+  - name: app
+    securityContext:
+      allowPrivilegeEscalation: false  # 禁止提权
+      readOnlyRootFilesystem: true     # 只读根文件系统
+      capabilities:
+        drop: [ALL]                    # 丢弃所有 Linux capabilities</pre></div>
+          <h3>3. 多集群管理</h3>
+          <p>对于核心业务，建议采用多集群架构实现容灾恢复。通过 Karmada 或 Cluster API 管理多个 K8s 集群，实现跨集群应用调度：</p>
+          <div class="highlight-box">
+            <h4>生产检查清单</h4>
+            <p><strong>集群高可用</strong>：至少 3 个 Master 节点，etcd 启用 TLS 加密并定期备份<br>
+            <strong>资源配额</strong>：所有 Pod 设置 requests/limits，命名空间配置 ResourceQuota<br>
+            <strong>网络隔离</strong>：通过 NetworkPolicy 实现微服务间的访问控制<br>
+            <strong>密钥管理</strong>：使用 Vault 或 External Secrets 动态管理密钥，禁止硬编码<br>
+            <strong>监控告警</strong>：Prometheus AlertManager 配置关键指标告警，推送到企业微信/钉钉<br>
+            <strong>日志集中</strong>：Loki + Fluent Bit 实现日志统一采集与查询<br>
+            <strong>自动化部署</strong>：GitOps + ArgoCD 实现声明式自动化发布</p>
+          </div>
+        </section>
+
+        <section id="summary">
+          <h2>总结与展望</h2>
+          <p>Kubernetes 作为云原生时代的基础设施，已经成为企业容器化转型的标准选择。掌握 K8s 不仅需要理解核心概念和资源对象，更需要在实战中积累运维经验。</p>
+          <div class="highlight-box">
+            <h4>核心要点回顾</h4>
+            <p><strong>集群搭建</strong>：kubeadm + containerd + Calico 是生产环境的标准组合<br>
+            <strong>应用部署</strong>：Deployment 适用于无状态服务，StatefulSet 适用于数据库等有状态应用<br>
+            <strong>网络通信</strong>：Service + Ingress 实现服务发现与外部访问，NetworkPolicy 实现网络安全隔离<br>
+            <strong>持久化</strong>：StorageClass + PVC 实现存储动态供应，支持 NFS/Ceph/Longhorn 等后端<br>
+            <strong>配置管理</strong>：ConfigMap + Secret 分离配置与密钥，结合 Vault 实现动态密钥管理<br>
+            <strong>监控运维</strong>：Prometheus + Grafana + Loki 构建完整可观测性体系<br>
+            <strong>自动化</strong>：GitOps + ArgoCD + Kustomize 实现声明式自动化发布</p>
+          </div>
+          <p>未来，K8s 生态将继续向服务网格（Istio）、Serverless（Knative）、边缘计算（KubeEdge）等方向演进。作为开发者，建议在掌握基础的同时，持续关注社区动态，在实际项目中不断实践与优化。</p>
+        </section>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="index.html" class="footer-nav-link">← 返回文档列表</a>
+        <a href="article-kubernetes-deployment.html" class="footer-nav-link">下一篇: IoT架构实战 →</a>
+      </footer>
+
+    </article>
+
+    <!-- ===== 右侧：目录索引 (TOC) ===== -->
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+﻿          <li class= toc-nav-item><a href=#intro class=toc-nav-link active>为什么选择 K8s？</a></li>
+          <li class=toc-nav-item><a href=#cluster-setup class=toc-nav-link>集群环境搭建</a></li>
+          <li class=toc-nav-item><a href=#core-concepts class=toc-nav-link>核心概念与资源对象</a></li>
+          <li class=toc-nav-item><a href=#deployment class=toc-nav-link>应用部署实战</a></li>
+          <li class=toc-nav-item><a href=#networking class=toc-nav-link>服务发现与网络配置</a></li>
+          <li class=toc-nav-item><a href=#storage class=toc-nav-link>持久化存储方案</a></li>
+          <li class=toc-nav-item><a href=#config-secrets class=toc-nav-link>配置与密钥管理</a></li>
+          <li class=toc-nav-item><a href=#monitoring class=toc-nav-link>监控与日志体系</a></li>
+          <li class=toc-nav-item><a href=#cicd class=toc-nav-link>CI/CD 自动化部署</a></li>
+          <li class=toc-nav-item><a href=#best-practices class=toc-nav-link>生产最佳实践</a></li>
+          <li class=toc-nav-item><a href=#summary class=toc-nav-link>总结与展望</a></li>
+        </ol>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- 返回顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    // ===== 目录高亮跟随滚动 =====
+    const sections = document.querySelectorAll('.article-content section[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+    
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // ===== 阅读进度条 =====
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.article-content');
+      if (!articleContent) return;
+      
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      
+      document.getElementById('readingProgress').style.transform = `scaleX(${progress})`;
+    }
+
+    // ===== 返回顶部按钮显隐 =====
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ===== 平滑滚动到锚点 =====
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 滚动事件监听（节流优化）=====
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // 初始化调用
+    updateActiveToc();
+  
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
