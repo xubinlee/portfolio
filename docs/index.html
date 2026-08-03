@@ -768,8 +768,8 @@
         <h3 id="sidebar-arch-heading" class="sidebar-section-title">🏗️ 架构</h3>
         <ul class="sidebar-nav-list">
           <li class="sidebar-nav-item">
-            <a href="doc-iot-architecture.html" class="sidebar-nav-link">
-              <span class="nav-item-tag nav-tag-arch">ARCH</span>IoT 业务场景架构设计
+            <a href="doc-microservice-architecture.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>微服务通用底层架构
             </a>
           </li>
           <li class="sidebar-nav-item">
@@ -795,6 +795,53 @@
           <li class="sidebar-nav-item">
             <a href="article-distributed-transaction.html" class="sidebar-nav-link">
               <span class="nav-item-tag nav-tag-arch">ARCH</span>分布式事务深度解析
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-collab-editor-architecture.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>在线协同文档编辑器架构
+            </a>
+          </li>
+        </ul>
+      
+      </nav>
+
+      <nav class="sidebar-section" aria-labelledby="sidebar-iot-heading">
+        <h3 id="sidebar-iot-heading" class="sidebar-section-title">📡 IoT</h3>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-architecture.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">ARCH</span>IoT 业务场景架构设计
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-lock-token-auth.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">SEC</span>门锁 Token 鉴权认证体系
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-mqtt-detail.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">MQTT</span>MQTT 全细节深度解析
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-massive-concurrency.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">PERF</span>海量设备并发处理
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-ota-upgrade.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">OTA</span>固件 OTA 升级链路
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-lock-security.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">SEC</span>门锁安全通信与风控
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="doc-iot-multi-tenant.html" class="sidebar-nav-link">
+              <span class="nav-item-tag nav-tag-arch">SAAS</span>多租户 SaaS 门锁管理
             </a>
           </li>
         </ul>
@@ -916,25 +963,25 @@
 
         <div class="page-hero">
           <h1 class="page-title">./docs</h1>
-          <p class="page-subtitle">技术文档中心 — 架构设计 · AI工程 · DevOps实践 · 在线资源</p>
+          <p class="page-subtitle">技术文档中心 — 架构设计 · IoT · AI工程 · DevOps实践 · 在线资源</p>
         </div>
 
         <section class="section-block" id="arch-section" aria-labelledby="arch-section-heading">
-          <h2 id="arch-section-heading" class="section-title">架构<span class="section-label section-label-arch">6 篇</span></h2>
-          
+          <h2 id="arch-section-heading" class="section-title">架构<span class="section-label section-label-arch">7 篇</span></h2>
+        
           <div class="doc-grid" role="list">
 
             <article class="doc-card" role="listitem">
-              <a href="doc-iot-architecture.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+              <a href="doc-microservice-architecture.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
                 <div class="doc-meta">
                   <span class="doc-tag tag-arch">ARCH</span>
-                  <span class="doc-date">2026-07-31</span>
+                  <span class="doc-date">2026-08-03</span>
                 </div>
-                <h3 class="doc-title">IoT 业务场景架构设计</h3>
-                <p class="doc-desc">高并发限流降级、离线数据同步、全球多区域部署、Edge边缘计算 — 从传统方案到质变级方案的架构演进实践。</p>
+                <h3 class="doc-title">微服务通用底层架构</h3>
+                <p class="doc-desc">Spring Boot 4.x + Spring Cloud 2025 — 多租户 SaaS · 聚合支付 · 工作流引擎 · 灰度发布 · 幂等性 · 熔断降级全栈微服务底座。</p>
                 <div class="doc-footer">
                   <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
-                  <span class="doc-read-time">25 min</span>
+                  <span class="doc-read-time">35 min</span>
                 </div>
               </a>
             </article>
@@ -1010,6 +1057,134 @@
                 <div class="doc-footer">
                   <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
                   <span class="doc-read-time">22 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-collab-editor-architecture.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">在线协同文档编辑器架构</h3>
+                <p class="doc-desc">OT/CRDT 一致性算法 · WebSocket 实时同步 · 操作日志与快照 · 权限控制 · 离线编辑 — 从冲突解决到工程落地的全链路架构设计。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">30 min</span>
+                </div>
+              </a>
+            </article>
+
+          </div>
+        </section>
+
+        <section class="section-block" id="iot-section" aria-labelledby="iot-section-heading">
+          <h2 id="iot-section-heading" class="section-title">IoT<span class="section-label section-label-arch">7 篇</span></h2>
+        
+          <div class="doc-grid" role="list">
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-architecture.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">ARCH</span>
+                  <span class="doc-date">2026-07-31</span>
+                </div>
+                <h3 class="doc-title">IoT 业务场景架构设计</h3>
+                <p class="doc-desc">高并发限流降级、离线数据同步、全球多区域部署、Edge边缘计算 — 从传统方案到质变级方案的架构演进实践。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">25 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-lock-token-auth.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">SEC</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">门锁 Token 鉴权认证体系</h3>
+                <p class="doc-desc">出厂证书烧录 · 挑战-应答激活 · mTLS双向认证 · OAuth2 Token鉴权 · MQTT ACL权限控制 — 从安全芯片到云端服务的端到端认证链路。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">35 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-mqtt-detail.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">MQTT</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">MQTT 全细节深度解析</h3>
+                <p class="doc-desc">QoS 等级策略 · 遗嘱消息 · 设备离线上报 · 心跳保活 · 门锁上下线海量消息削峰 — MQTT 协议在智能门锁场景的深度实践。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">25 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-massive-concurrency.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">PERF</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">海量设备并发处理</h3>
+                <p class="doc-desc">EMQX 集群横向扩展 · Kafka 分区削峰 · 分层存储 · 批量消费幂等 · 背压策略 — 几万台智能锁同时上报的消息堆积解决方案。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">28 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-ota-upgrade.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">OTA</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">固件 OTA 升级链路</h3>
+                <p class="doc-desc">升级包管理 · 灰度推送策略 · A/B 分区升级 · 升级失败回滚 · 设备升级状态上报 — 从后端分发到设备端执行的全链路设计。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">25 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-lock-security.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">SEC</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">门锁安全通信与风控</h3>
+                <p class="doc-desc">mTLS 双向认证 · 证书吊销 · 设备 Token 鉴权 · Nonce 防重放 · 非法开锁风控拦截 — 从传输层加密到业务层风控的纵深防御体系。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">28 min</span>
+                </div>
+              </a>
+            </article>
+
+            <article class="doc-card" role="listitem">
+              <a href="doc-iot-multi-tenant.html" style="all:unset;cursor:inherit;display:block;color:inherit;">
+                <div class="doc-meta">
+                  <span class="doc-tag tag-arch">SAAS</span>
+                  <span class="doc-date">2026-08-03</span>
+                </div>
+                <h3 class="doc-title">多租户 SaaS 门锁管理</h3>
+                <p class="doc-desc">四级组织架构 · tenant_id 行级隔离 · MQTT Topic 租户隔离 · 批量设备绑定 · RBAC 权限体系 · 业态策略模式 · 功能开关套餐 — 公寓酒店民宿批量门锁管理。</p>
+                <div class="doc-footer">
+                  <div class="doc-author"><span class="author-avatar">L</span>LI XUBIN</div>
+                  <span class="doc-read-time">26 min</span>
                 </div>
               </a>
             </article>

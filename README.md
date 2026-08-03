@@ -2,7 +2,7 @@
 
 > LI XUBIN — 架构师 & 技术主管 | 个人作品集与技术文档站
 
-纯静态前端站点，零构建依赖，双主题自适应，涵盖 12 个项目展示与 13 篇深度技术文档。
+纯静态前端站点，零构建依赖，双主题自适应，涵盖 12 个项目展示与 21 篇深度技术文档。
 
 ---
 
@@ -18,19 +18,27 @@ portfolio-site/
 │   └── images/
 ├── docs/                   # 技术文档中心
 │   ├── index.html
-│   ├── article-distributed-transaction.html   # 分布式事务实战
-│   ├── article-docker-best-practices.html     # Docker 最佳实践
-│   ├── article-kubernetes-deployment.html     # Kubernetes 部署实战
+│   ├── doc-microservice-architecture.html    # 微服务通用底层架构
+│   ├── doc-ecommerce-skills.html              # 全渠道零售架构
+│   ├── doc-spring-boot-principles.html        # Spring Boot 核心原理
 │   ├── article-spring-cloud-alibaba.html      # Spring Cloud Alibaba 实战
+│   ├── doc-msa-framework-guide.html           # MSA Framework 手册
+│   ├── article-distributed-transaction.html   # 分布式事务实战
+│   ├── doc-collab-editor-architecture.html    # 协同文档编辑器架构
+│   ├── doc-iot-architecture.html              # IoT 架构设计
+│   ├── doc-iot-lock-token-auth.html           # 门锁 Token 鉴权
+│   ├── doc-iot-mqtt-detail.html               # MQTT 全细节解析
+│   ├── doc-iot-massive-concurrency.html       # 海量设备并发处理
+│   ├── doc-iot-ota-upgrade.html               # 固件 OTA 升级链路
+│   ├── doc-iot-lock-security.html             # 门锁安全通信与风控
+│   ├── doc-iot-multi-tenant.html              # 多租户 SaaS 门锁管理
 │   ├── doc-ai-agent-engineering.html          # AI Agent 工程实战
 │   ├── doc-ai-inventory-management.html       # AI 智能库存管理
-│   ├── doc-cicd.html                          # CI/CD 自动化部署
-│   ├── doc-ecommerce-skills.html              # 全渠道零售架构
 │   ├── doc-harness-engineering.html           # Harness Engineering
-│   ├── doc-iot-architecture.html              # IoT 架构设计
-│   ├── doc-jenkins-pipeline-guide.html        # Jenkins Pipeline 指南
-│   ├── doc-msa-framework-guide.html           # MSA Framework 手册
-│   └── doc-spring-boot-principles.html        # Spring Boot 核心原理
+│   ├── doc-cicd.html                          # CI/CD 自动化部署
+│   ├── article-kubernetes-deployment.html     # Kubernetes 部署实战
+│   ├── article-docker-best-practices.html     # Docker 最佳实践
+│   └── doc-jenkins-pipeline-guide.html        # Jenkins Pipeline 指南
 └── projects/               # 项目详情页
     ├── index.html
     ├── project-common.css
@@ -135,21 +143,46 @@ npx serve -l 8080
 
 ## 技术文档
 
+### 架构（7 篇）
+
 | 文档 | 主题 |
 |------|------|
-| Spring Boot 核心原理 | IoC / AOP / 自动配置 / 条件装配 |
+| 微服务通用底层架构 | Spring Boot 4.x + Spring Cloud 2025 · 多租户 SaaS · 聚合支付 · 工作流引擎 · 灰度发布 · 幂等性 · 熔断降级 |
+| 全渠道零售技术架构 | 微服务架构 · 高并发库存 · 多仓调度 · 事件驱动 · 跨境支付 · 物流状态机 · 业财一体 |
+| Spring & Spring Boot 核心原理 | IoC / AOP / 自动配置 / 条件装配 |
 | Spring Cloud Alibaba 实战 | Nacos / Sentinel / Seata / Gateway |
-| IoT 架构设计 | 高并发限流 / 离线同步 / Edge 边缘计算 |
-| CI/CD 自动化部署 | 流水线设计 / 蓝绿部署 / 金丝雀发布 |
-| 全渠道零售架构 | 商品状态机 / 库存一致性 / 渠道适配 |
-| Harness Engineering | 工程化实践 / 评分体系 / 最佳实践 |
-| MSA Framework 手册 | 微服务框架组件 / 配置中心 / 服务治理 |
+| MSA Framework 使用手册 | 微服务框架组件 / 配置中心 / 服务治理 |
+| 分布式事务深度解析 | CAP/BASE 理论 / 2PC/XA / TCC / Saga / 消息事务 / Seata 框架 |
+| 在线协同文档编辑器架构 | OT/CRDT 一致性算法 / WebSocket 实时同步 / 操作日志与快照 / 权限控制 / 离线编辑 |
+
+### IoT（7 篇）
+
+| 文档 | 主题 |
+|------|------|
+| IoT 业务场景架构设计 | 高并发限流 / 离线同步 / Edge 边缘计算 |
+| 门锁 Token 鉴权认证体系 | 出厂证书烧录 / 挑战-应答激活 / mTLS 双向认证 / OAuth2 Token 鉴权 / MQTT ACL |
+| MQTT 全细节深度解析 | QoS 等级策略 / 遗嘱消息 / 心跳保活 / 海量消息削峰 |
+| 海量设备并发处理 | EMQX 集群扩展 / Kafka 分区削峰 / 分层存储 / 批量消费幂等 / 背压策略 |
+| 固件 OTA 升级链路 | 升级包管理 / 灰度推送 / A/B 分区升级 / 失败回滚 / 状态上报 |
+| 门锁安全通信与风控 | mTLS 双向认证 / 证书吊销 / Nonce 防重放 / 非法开锁风控拦截 |
+| 多租户 SaaS 门锁管理 | 四级组织架构 / tenant_id 行级隔离 / MQTT Topic 租户隔离 / RBAC 权限体系 |
+
+### AI（3 篇）
+
+| 文档 | 主题 |
+|------|------|
+| Harness Engineering | Prompt → Context → Harness Engineering 三次范式跃迁 |
 | AI 智能库存管理 | 多智能体协同 / 分布式决策 / 库存优化 |
-| Kubernetes 部署实战 | 集群搭建 / Deployment / 服务网络 / 持久化存储 / 监控运维 |
-| Jenkins Pipeline 指南 | 声明式/脚本式语法 / 共享库 / 多分支策略 / 凭据管理 |
 | AI Agent 工程实战 | ReAct 推理 / Function Calling / 记忆系统 / 多 Agent 协同 / MCP 协议 |
+
+### DevOps（4 篇）
+
+| 文档 | 主题 |
+|------|------|
+| CI/CD 自动化部署 | 流水线设计 / 蓝绿部署 / 金丝雀发布 |
+| Kubernetes 部署实战 | 集群搭建 / Deployment / 服务网络 / 持久化存储 / 监控运维 |
 | Docker 最佳实践 | Dockerfile 编写 / 镜像优化 / 安全加固 / Compose 编排 / 监控日志 |
-| 分布式事务实战 | CAP/BASE 理论 / 2PC/XA / TCC / Saga / 消息事务 / Seata 框架 |
+| Jenkins Pipeline 指南 | 声明式/脚本式语法 / 共享库 / 多分支策略 / 凭据管理 |
 
 每篇文档均包含：
 - 左侧：文章正文（代码块 + 架构图 + 对比表格 + 高亮提示框）

@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="门锁 Token 鉴权认证体系全流程详解 — 出厂证书烧录、挑战-应答激活、mTLS双向认证、OAuth2 Token鉴权、MQTT ACL权限控制">
+  <title>门锁 Token 鉴权认证体系 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-purple: rgba(139, 92, 246, 0.12);
+      --code-bg-yellow: rgba(234, 179, 8, 0.12);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --code-border-red: rgba(248, 113, 113, 0.3);
+      --code-border-green: rgba(52, 211, 153, 0.3);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --bg-danger: rgba(248, 113, 113, 0.08);
+      --bg-success: rgba(52, 211, 153, 0.08);
+      --badge-danger: #ef4444;
+      --badge-success: #22c55e;
+      --badge-danger-bg: rgba(239, 68, 68, 0.15);
+      --badge-success-bg: rgba(34, 197, 94, 0.15);
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-red: #dc2626;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-purple: #f5f0ff;
+      --code-bg-yellow: #fdf0a0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --code-border-red: #f5c8c8;
+      --code-border-green: #b8dcc8;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --bg-danger: #fdf0f0;
+      --bg-success: #f0f7f0;
+      --badge-danger: #c0392b;
+      --badge-success: #1a8a5a;
+      --badge-danger-bg: rgba(192, 57, 43, 0.12);
+      --badge-success-bg: rgba(26, 138, 90, 0.12);
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.95);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+
+    .brand-text-accent {
+      color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex; align-items: center; gap: 24px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      transition: color 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-link:hover, .nav-link:focus-visible { color: var(--accent-cyan); }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 9999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .article-layout {
+      display: flex; max-width: 1400px; margin: 0 auto;
+      gap: 40px; padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    .article-main {
+      flex: 1; min-width: 0; max-width: 900px;
+    }
+
+    .article-header {
+      margin-bottom: 40px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .article-breadcrumb {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+      font-size: 0.85rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .breadcrumb-link { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumb-link:hover, .breadcrumb-link:focus-visible { color: var(--accent-cyan); }
+    .breadcrumb-separator::before { content: '/'; opacity: 0.5; }
+
+    .article-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+    }
+
+    .meta-date {
+      font-size: 0.84rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .meta-read-time {
+      font-size: 0.82rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 700;
+      line-height: 1.3; color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .article-subtitle {
+      font-size: 1.08rem; color: var(--text-secondary); line-height: 1.6;
+    }
+
+    .iot-content {
+      font-size: 1.01rem; line-height: 1.9;
+    }
+
+    .iot-content h2 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.5rem;
+      font-weight: 600; color: var(--accent-cyan); margin-top: 44px;
+      margin-bottom: 18px; padding-bottom: 11px;
+      border-bottom: 2px solid var(--border-color);
+      scroll-margin-top: 20px;
+    }
+
+    .iot-content h3 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.22rem;
+      font-weight: 600; color: var(--text-primary); margin-top: 32px;
+      margin-bottom: 14px; scroll-margin-top: 20px;
+    }
+
+    .iot-content h4 {
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--accent-purple); margin-top: 0.8rem; margin-bottom: 0.2rem;
+    }
+
+    .iot-content p { margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .iot-content strong { color: var(--text-primary); font-weight: 600; }
+    .iot-content ul, .iot-content ol { padding-left: 1.8rem; margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .iot-content li { margin-bottom: 0.2rem; }
+    .iot-content code { background: var(--bg-secondary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+
+    .iot-content .code-block {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 22px; margin: 22px 0; overflow-x: auto;
+      position: relative;
+    }
+
+    .iot-content .code-block.light {
+      background: var(--bg-secondary);
+    }
+
+    .iot-content .code-block pre {
+      margin: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.7; color: var(--text-primary);
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    .iot-content .code-block .cls { color: var(--code-gold); }
+    .iot-content .code-block .kw { color: var(--hl-keyword); }
+    .iot-content .code-block .fn { color: var(--hl-function); }
+    .iot-content .code-block .num { color: var(--hl-number); }
+    .iot-content .code-block .str { color: var(--hl-string); }
+    .iot-content .code-block .cmt { color: var(--text-muted); }
+
+    .iot-content .highlight-box {
+      border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
+      border-left: 4px solid var(--accent-cyan);
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(139, 92, 246, 0.07));
+    }
+
+    .iot-content .highlight-box .label {
+      font-weight: 600; color: var(--accent-cyan); font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .iot-content .highlight-box .content { margin-top: 4px; color: var(--text-secondary); }
+
+    .iot-content .highlight-box.gold {
+      border-left-color: var(--code-gold);
+      background: var(--highlight-gold-bg);
+    }
+    .iot-content .highlight-box.gold .label { color: var(--highlight-gold); }
+
+    .iot-content .highlight-box.green {
+      border-left-color: var(--accent-green);
+      background: var(--highlight-green-bg);
+    }
+    .iot-content .highlight-box.green .label { color: var(--highlight-green); }
+
+    .iot-content .highlight-box.purple {
+      border-left-color: var(--accent-purple);
+      background: var(--highlight-purple-bg);
+    }
+    .iot-content .highlight-box.purple .label { color: var(--highlight-purple); }
+
+    .iot-content .highlight-box.red {
+      border-left-color: var(--accent-red);
+      background: var(--highlight-red-bg);
+    }
+    .iot-content .highlight-box.red .label { color: var(--highlight-red); }
+
+    .iot-content .compare-table {
+      width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.8rem 0;
+    }
+
+    .iot-content .compare-table th {
+      background: var(--bg-secondary); text-align: left;
+      padding: 0.5rem 1rem; font-weight: 600; color: var(--accent-purple);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .iot-content .compare-table td {
+      padding: 0.5rem 1rem; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .iot-content .compare-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
+
+    .iot-content .compare-table .badge-good {
+      display: inline-block; background: rgba(34, 197, 94, 0.15); color: var(--highlight-green);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-bad {
+      display: inline-block; background: rgba(239, 68, 68, 0.15); color: var(--highlight-red);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-iot {
+      display: inline-block; background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .arch-layers {
+      margin: 1rem 0;
+    }
+
+    .iot-content .arch-layers .layer {
+      display: flex; align-items: center; gap: 0.8rem;
+      padding: 0.7rem 1rem; margin-bottom: 0.4rem;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 8px; border-left: 4px solid var(--accent-cyan);
+      font-size: 0.88rem;
+    }
+
+    .iot-content .arch-layers .layer .level {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      color: var(--accent-cyan); font-size: 0.8rem; min-width: 28px;
+    }
+
+    .iot-content .arch-layers .layer .name {
+      font-weight: 600; color: var(--text-primary); min-width: 200px;
+    }
+
+    .iot-content .arch-layers .layer .desc {
+      color: var(--text-secondary); flex: 1; font-size: 0.82rem;
+    }
+
+    .iot-content .arch-layers .layer .tag {
+      font-size: 0.7rem; padding: 0.1rem 0.6rem; border-radius: 10px;
+      background: rgba(0, 212, 255, 0.1); color: var(--accent-cyan);
+      font-weight: 600; white-space: nowrap;
+    }
+
+    .article-footer {
+      margin-top: 56px; padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; flex-wrap: wrap;
+    }
+
+    .footer-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px; background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 10px;
+      text-decoration: none; color: var(--text-secondary); font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-nav-link:hover, .footer-nav-link:focus-visible {
+      border-color: var(--accent-cyan); color: var(--accent-cyan);
+      transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-glow);
+    }
+
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .toc-sub-list {
+      list-style: none; padding-left: 14px; margin-top: 4px;
+    }
+
+    .toc-sub-item { margin-bottom: 3px; }
+
+    .toc-sub-link {
+      display: block; padding: 5px 10px;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 0.78rem; line-height: 1.4;
+      border-radius: 5px; transition: all 0.2s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-sub-link:hover { color: var(--text-secondary); background: rgba(0, 212, 255, 0.03); }
+    .toc-sub-link.active { color: var(--accent-cyan); background: rgba(0, 212, 255, 0.05); }
+
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .site-footer {
+      text-align: center; padding: 36px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted); font-size: 0.87rem;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .article-layout { padding: 32px 20px 70px; gap: 0; }
+      .article-main { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav { gap: 12px; flex-wrap: wrap; }
+      .article-footer { flex-direction: column; }
+      .article-title { font-size: 1.55rem; }
+      .iot-content h2 { font-size: 1.3rem; }
+      .iot-content .arch-layers .layer { flex-wrap: wrap; }
+      .iot-content .arch-layers .layer .name { min-width: auto; }
+      .iot-content .compare-table { font-size: 0.82rem; }
+      .iot-content .compare-table th, .iot-content .compare-table td { padding: 10px 8px; }
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px; position: relative;
+      transition: background 0.3s ease;
+    }
+    .theme-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px);
+      background: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#iot-section" class="breadcrumb-link">IoT</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+
+        <div class="article-meta">
+          <span class="meta-tag">🔒 SECURITY</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 35min</span>
+        </div>
+
+        <h1 class="article-title">🔐 门锁 Token 鉴权认证体系 — 全流程详解</h1>
+        <p class="article-subtitle">出厂证书烧录 · 挑战-应答激活 · mTLS 双向认证 · OAuth2 Token 鉴权 · MQTT ACL 权限控制 — 从安全芯片到云端服务的端到端认证链路。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <!-- ========================================================= -->
+        <!-- 整体架构总览 -->
+        <!-- ========================================================= -->
+        <h2 id="overview">整体架构总览</h2>
+
+        <div style="
+          background: var(--bg-secondary);
+          border-radius: 12px;
+          padding: 1.5rem 1.2rem;
+          border: 1px solid var(--border-color);
+          overflow-x: auto;
+          margin: 1rem 0;
+        ">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; font-size:0.85rem;">
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:120px; border-left:4px solid var(--accent-cyan);">
+              <div style="font-size:1.5rem;">🔐</div>
+              <div style="font-weight:600; color:var(--text-primary);">门锁设备端</div>
+              <div style="font-size:0.7rem; color:var(--accent-cyan);">SE/TrustZone</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.2rem;">⇄ mTLS/证书 ⇄</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:120px; border-left:4px solid var(--code-gold);">
+              <div style="font-size:1.5rem;">📡</div>
+              <div style="font-weight:600; color:var(--text-primary);">MQTT Broker</div>
+              <div style="font-size:0.7rem; color:var(--code-gold);">EMQX</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.2rem;">⇄ OAuth2/JWT ⇄</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:120px; border-left:4px solid var(--accent-purple);">
+              <div style="font-size:1.5rem;">☁️</div>
+              <div style="font-weight:600; color:var(--text-primary);">云端服务集群</div>
+              <div style="font-size:0.7rem; color:var(--accent-purple);">pigx-auth 等</div>
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px 24px; margin-top:12px; font-size:0.78rem; color:var(--text-muted);">
+            <span>🔐 证书+私钥 → 安全芯片存储</span>
+            <span>|</span>
+            <span>📡 ACL 权限控制 → Topic 级隔离</span>
+            <span>|</span>
+            <span>☁️ Redis 多维索引 → TenantBroker 租户隔离</span>
+          </div>
+        </div>
+
+        <p>认证体系分为 <strong>设备身份层（证书 + 挑战-应答）</strong> 和 <strong>应用鉴权层（OAuth2 Token）</strong> 两个维度，二者通过 <code>deviceId + tenantId</code> 关联。</p>
+
+        <!-- ========================================================= -->
+        <!-- 阶段一：出厂预置证书烧录 -->
+        <!-- ========================================================= -->
+        <h2 id="factory-cert">阶段一：出厂预置证书烧录</h2>
+
+        <h3 id="pki-preparation">步骤 1：PKI 证书体系准备</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+根CA (Root CA)
+  └── 中间CA (Intermediate CA) —— 专门签发设备证书
+        ├── 门锁设备证书 (client.crt)  —— CN=&lt;deviceId&gt;, OU=&lt;productModel&gt;
+        └── 网关设备证书 (client.crt)  —— CN=&lt;gatewayMac&gt;</pre>
+        </div>
+
+        <h4>证书规格</h4>
+        <table class="compare-table">
+          <thead><tr><th>参数</th><th>规格</th></tr></thead>
+          <tbody>
+            <tr><td><strong>证书标准</strong></td><td>X.509 v3</td></tr>
+            <tr><td><strong>密钥算法</strong></td><td>ECDSA P-256（优先，SE原生支持）或 RSA-2048</td></tr>
+            <tr><td><strong>签名算法</strong></td><td>SHA256withECDSA</td></tr>
+            <tr><td><strong>证书Subject</strong></td><td><code>CN=&lt;deviceId&gt;, OU=&lt;productModel&gt;, O=&lt;tenantId&gt;</code></td></tr>
+            <tr><td><strong>证书扩展</strong></td><td><code>KeyUsage=digitalSignature, keyAgreement</code>; <code>ExtendedKeyUsage=clientAuth</code></td></tr>
+            <tr><td><strong>证书有效期</strong></td><td>10~20 年（覆盖设备生命周期）</td></tr>
+            <tr><td><strong>CA证书</strong></td><td><code>server-ca.crt</code>，用于验证 Broker 服务端身份</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="factory-burn">步骤 2：工厂烧录 — 密钥对生成与写入</h3>
+
+        <div class="highlight-box gold">
+          <div class="label">📌 核心原则</div>
+          <div class="content">私钥永远不离开安全芯片。签名操作在 SE 内部完成，外部只能传入待签名数据、获取签名结果。</div>
+        </div>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+工厂产线工站
+  │
+  ├── 1. 触发密钥对生成（HSM/安全工站内）
+  │      ├── 公钥 → 发送至云端CA申请签发证书
+  │      └── 私钥 → 直接写入安全芯片，<span class="cls">永不离开芯片</span>
+  │
+  ├── 2. 云端CA签发设备唯一证书 (client.crt)
+  │      └── 证书序列号 = 设备唯一标识
+  │
+  ├── 3. 证书写入安全芯片
+  │      ├── client.crt    → SE/TrustZone 安全存储区
+  │      ├── 私钥           → SE 私钥槽位（不可读出，只可签名）
+  │      └── server-ca.crt → 根CA证书（验证Broker用）
+  │
+  └── 4. 产测验证
+         └── 设备首次上电，通过 MQTT + mTLS 连接验证证书链有效性</pre>
+        </div>
+
+        <h4>证书加载代码（SSLUtils.java）</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 加载 CA 证书（验证 Broker 服务端）</span>
+X509Certificate caCert = (X509Certificate) cf.<span class="fn">generateCertificate</span>(bis);
+
+<span class="cmt">// 加载客户端证书（设备身份证明）</span>
+X509Certificate cert = (X509Certificate) cf.<span class="fn">generateCertificate</span>(bis);
+
+<span class="cmt">// 加载客户端私钥（签名用，存储在SE中）</span>
+KeyPair key = converter.<span class="fn">getKeyPair</span>((PEMKeyPair) object);
+
+<span class="cmt">// 构建双向TLS上下文</span>
+SSLContext context = SSLContext.<span class="fn">getInstance</span>(<span class="str">"TLSv1.2"</span>);
+context.<span class="fn">init</span>(kmf.getKeyManagers(), tmf.getTrustManagers(), <span class="kw">null</span>);</pre>
+        </div>
+
+        <h3 id="device-registry">步骤 3：设备信息录入</h3>
+
+        <p>烧录完成后，记录映射关系并同步至云端：</p>
+        <ul>
+          <li>证书序列号 (serialNumber) ↔ deviceId ↔ MAC地址 ↔ 产品型号 ↔ <strong>证书公钥(PEM)</strong></li>
+          <li>写入工厂MES系统</li>
+          <li>同步至云端设备注册表（待激活状态，status=INACTIVE）</li>
+        </ul>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 关键设计</div>
+          <div class="content">数据库只存 <code>cert_public_key</code>（公钥），<strong>不存 deviceSecret（私钥）</strong>。私钥永远不离开安全芯片。</div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 阶段二：设备首次上电 -->
+        <!-- ========================================================= -->
+        <h2 id="first-boot">阶段二：设备首次上电 — mTLS 建连</h2>
+
+        <h3 id="mtls-connect">步骤 4：MQTT 双向证书认证连接</h3>
+
+        <div style="
+          background: var(--bg-secondary);
+          border-radius: 12px;
+          padding: 1.2rem 1rem;
+          border: 1px solid var(--border-color);
+          overflow-x: auto;
+          margin: 0.8rem 0;
+        ">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; font-size:0.85rem;">
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:100px;">
+              <div style="font-weight:600; color:var(--text-primary);">门锁设备</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px; font-size:0.7rem; color:var(--accent-cyan);">
+              <span>① ClientHello + client.crt</span>
+              <span>② ServerHello + server.crt</span>
+              <span>③ CertificateVerify(签名)</span>
+              <span>④ TLS隧道建立</span>
+              <span>⑤ MQTT CONNECT</span>
+              <span>⑥ CONNACK</span>
+            </div>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:100px;">
+              <div style="font-weight:600; color:var(--text-primary);">EMQX Broker</div>
+            </div>
+          </div>
+        </div>
+
+        <h4>MQTT 连接配置（MqttConfig.java）</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+MqttConnectOptions options = <span class="kw">new</span> MqttConnectOptions();
+options.<span class="fn">setCleanSession</span>(<span class="kw">true</span>);
+options.<span class="fn">setUserName</span>(dto.getUsername());               <span class="cmt">// 设备身份</span>
+options.<span class="fn">setPassword</span>(dto.getPassword().toCharArray()); <span class="cmt">// 设备凭证</span>
+options.<span class="fn">setAutomaticReconnect</span>(<span class="kw">true</span>);                  <span class="cmt">// 断线自动重连</span>
+options.<span class="fn">setWill</span>(MqttConstants.WILL, ...);               <span class="cmt">// 遗嘱消息</span>
+
+<span class="cmt">// 关键：注入mTLS的SSLSocketFactory</span>
+SSLSocketFactory socketFactory = SSLUtils.<span class="fn">getSocketFactory</span>(
+    projectLocalConfigPath + <span class="str">"server-ca.crt"</span>,   <span class="cmt">// CA证书</span>
+    projectLocalConfigPath + <span class="str">"client.crt"</span>,      <span class="cmt">// 设备证书</span>
+    projectLocalConfigPath + <span class="str">"client.key"</span>,      <span class="cmt">// 设备私钥</span>
+    <span class="str">""</span>);
+options.<span class="fn">setSocketFactory</span>(socketFactory);</pre>
+        </div>
+
+        <h4>MQTT Topic 体系</h4>
+        <table class="compare-table">
+          <thead><tr><th>方向</th><th>Topic</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>订阅（云端→设备）</td><td><code>/hotel/gateway/{mac}/down</code></td><td>下发指令（开锁、授权等）</td></tr>
+            <tr><td>上报（设备→云端）</td><td><code>/hotel/gateway/publish</code></td><td>设备数据上报</td></tr>
+            <tr><td>上报（设备→云端）</td><td><code>/hotel/gateway/alive</code></td><td>心跳/上下线通知</td></tr>
+            <tr><td>广播（云端→所有）</td><td><code>/hotel/gateway/all</code></td><td>批量指令</td></tr>
+          </tbody>
+        </table>
+
+        <!-- ========================================================= -->
+        <!-- 阶段三：云端激活 -->
+        <!-- ========================================================= -->
+        <h2 id="cloud-activation">阶段三：云端激活 — 挑战-应答 + 设备绑定</h2>
+
+        <h3 id="challenge-response">步骤 5：挑战-应答式设备激活</h3>
+
+        <div class="highlight-box green">
+          <div class="label">📌 核心原则</div>
+          <div class="content">私钥永远不离开安全芯片。设备用 SE 内私钥对挑战码签名，云端用存储的公钥验签，证明设备持有私钥。</div>
+        </div>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+门锁设备                          云端激活服务 (LockDeviceAuthService)
+   │                                      │
+   │  ── POST /lock/device/challenge ───► │  ① 请求挑战码
+   │     { deviceId: "LOCK-XXXX" }        │
+   │                                      │
+   │  ◄── { challenge: "a3f8b2..." } ──── │  ② 返回随机挑战码
+   │                                      │     Redis存储，5分钟有效
+   │                                      │     一次性使用（getAndDelete）
+   │                                      │
+   │  ── SE内签名（私钥不离开芯片） ──      │
+   │     signature = SE.sign(challenge)   │
+   │                                      │
+   │  ── POST /lock/device/activate ────► │  ③ 提交签名+租户信息
+   │     { deviceId, signedChallenge,     │
+   │       tenantId }                     │
+   │                                      │
+   │                               ④ 取出并删除挑战码
+   │                               ⑤ 用设备证书公钥验签
+   │                               ⑥ 校验设备状态
+   │                               ⑦ TenantBroker.applyAs() 执行激活
+   │                                      │
+   │  ◄── { accessToken, refreshToken,   │  ⑧ 返回完整凭证
+   │         mqttUsername, mqttPassword,  │
+   │         expiresIn }                  │</pre>
+        </div>
+
+        <h4>挑战码生成与验证</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 生成挑战码</span>
+<span class="kw">public</span> ChallengeResponse <span class="fn">generateChallenge</span>(String deviceId) {
+    String challenge = SecureUtil.<span class="fn">nonce</span>(<span class="num">32</span>);  <span class="cmt">// 32字节随机数</span>
+    String challengeKey = <span class="str">"lock:device:challenge:"</span> + deviceId;
+    redisTemplate.opsForValue().<span class="fn">set</span>(challengeKey, challenge, <span class="num">5</span>, TimeUnit.MINUTES);
+    <span class="kw">return</span> ChallengeResponse.builder().challenge(challenge).build();
+}
+
+<span class="cmt">// 验证时一次性消费</span>
+String challenge = (String) redisTemplate.opsForValue().<span class="fn">getAndDelete</span>(challengeKey);
+<span class="kw">if</span> (StrUtil.isBlank(challenge)) {
+    <span class="kw">throw new</span> LockSecurityException(<span class="str">"挑战码已过期或不存在"</span>);
+}</pre>
+        </div>
+
+        <h4>签名验证</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">private boolean</span> <span class="fn">verifySignature</span>(String challenge, String signature, String publicKeyPem) {
+    Signature sig = Signature.<span class="fn">getInstance</span>(<span class="str">"SHA256withECDSA"</span>);
+    X509Certificate cert = <span class="fn">readCertificate</span>(publicKeyPem);
+    sig.<span class="fn">initVerify</span>(cert.getPublicKey());
+    sig.<span class="fn">update</span>(challenge.getBytes(StandardCharsets.UTF_8));
+    <span class="kw">return</span> sig.<span class="fn">verify</span>(Base64.<span class="fn">decode</span>(signature));
+}</pre>
+        </div>
+
+        <h3 id="token-generation">步骤 6：Token 对生成</h3>
+
+        <p>设备 Token 生成复用 Spring Authorization Server 的 <code>OAuth2TokenGenerator</code> 体系，而非自定义 <code>JwtUtils</code>：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">private</span> TokenPair <span class="fn">generateTokenPair</span>(String deviceId, Long tenantId, String productModel) {
+    String jti = SecureUtil.<span class="fn">nonce</span>(<span class="num">64</span>);       <span class="cmt">// JWT ID</span>
+    String refreshJti = SecureUtil.<span class="fn">nonce</span>(<span class="num">64</span>); <span class="cmt">// Refresh ID</span>
+
+    String accessToken = Jwts.builder()
+        .<span class="fn">id</span>(jti)
+        .<span class="fn">subject</span>(deviceId)
+        .<span class="fn">claim</span>(<span class="str">"tenantId"</span>, tenantId)
+        .<span class="fn">claim</span>(<span class="str">"productModel"</span>, productModel)
+        .<span class="fn">claim</span>(<span class="str">"deviceType"</span>, <span class="str">"lock"</span>)
+        .<span class="fn">claim</span>(<span class="str">"client_id"</span>, <span class="str">"lock-device"</span>)
+        .<span class="fn">claim</span>(<span class="str">"active"</span>, <span class="kw">true</span>)
+        .<span class="fn">issuedAt</span>(<span class="kw">new</span> Date())
+        .<span class="fn">expiration</span>(<span class="kw">new</span> Date(System.currentTimeMillis() + <span class="num">30</span> * <span class="num">86400</span> * <span class="num">1000L</span>))
+        .<span class="fn">signWith</span>(<span class="fn">getSigningKey</span>())
+        .<span class="fn">compact</span>();
+
+    <span class="kw">return new</span> TokenPair(accessToken, refreshJti);
+}</pre>
+        </div>
+
+        <h4>设备 JWT Token 结构</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+{
+  <span class="str">"sub"</span>: <span class="str">"LOCK-2024-XXXXX"</span>,
+  <span class="str">"jti"</span>: <span class="str">"a3f8b2c1d4e5..."</span>,
+  <span class="str">"tenantId"</span>: <span class="num">1</span>,
+  <span class="str">"productModel"</span>: <span class="str">"ZIGBEE_LOCK_V2"</span>,
+  <span class="str">"deviceType"</span>: <span class="str">"lock"</span>,
+  <span class="str">"client_id"</span>: <span class="str">"lock-device"</span>,
+  <span class="str">"active"</span>: <span class="kw">true</span>,
+  <span class="str">"iat"</span>: <span class="num">1700000000</span>,
+  <span class="str">"exp"</span>: <span class="num">1702592000</span>
+}</pre>
+        </div>
+
+        <h3 id="mqtt-credentials">步骤 7：MQTT 凭证独立生成</h3>
+
+        <div class="highlight-box purple">
+          <div class="label">📌 核心原则</div>
+          <div class="content">MQTT 凭证与 accessToken 完全独立，不存在数学关系，避免级联泄露。使用 HMAC-SHA256 替代不安全的 MD5。</div>
+        </div>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">private</span> MqttCredentials <span class="fn">generateMqttCredentials</span>(String deviceId) {
+    String username = deviceId;
+    String rawPassword = SecureUtil.<span class="fn">nonce</span>(<span class="num">32</span>);     <span class="cmt">// 随机32字节</span>
+    String hmacKey = <span class="str">"lock:mqtt:auth:"</span> + deviceId;
+    <span class="cmt">// HMAC-SHA256（替代不安全的MD5）</span>
+    String password = HmacUtils.<span class="fn">hmacSha256Hex</span>(hmacKey.getBytes(), rawPassword.getBytes());
+    <span class="kw">return new</span> MqttCredentials(username, password, rawPassword);
+}</pre>
+        </div>
+
+        <h3 id="redis-storage">步骤 8：Redis 多维索引存储</h3>
+
+        <p>参照 <code>PigxRedisOAuth2AuthorizationService</code> 的多维索引设计：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+Redis Key 设计：
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ lock:device:token:access::{deviceId}        → accessToken值                 │  ← 按设备查Token
+│ lock:device:token:refresh::{deviceId}       → refreshToken值                │  ← 刷新Token查
+│ lock:device:token:tenant::{tenantId}::{deviceId} → accessToken值            │  ← 按租户查设备
+│ lock:device:mqtt::{deviceId}                → {username, password}          │  ← MQTT认证用
+│ lock:device:challenge::{deviceId}           → challenge码                   │  ← 挑战码（5分钟）
+└──────────────────────────────────────────────────────────────────────────────┘</pre>
+        </div>
+
+        <h3 id="tenant-broker">步骤 9：TenantBroker 保护租户上下文</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// TenantBroker.java</span>
+<span class="kw">public</span> &lt;T&gt; T <span class="fn">applyAs</span>(Long tenant, ApplyAs&lt;Long, T&gt; func) {
+    <span class="kw">final</span> Long pre = TenantContextHolder.<span class="fn">getTenantId</span>();  <span class="cmt">// 保存当前租户</span>
+    <span class="kw">try</span> {
+        TenantContextHolder.<span class="fn">setTenantId</span>(tenant);          <span class="cmt">// 切换到目标租户</span>
+        <span class="kw">return</span> func.<span class="fn">apply</span>(tenant);                      <span class="cmt">// 执行操作</span>
+    } <span class="kw">catch</span> (Exception e) {
+        <span class="kw">throw new</span> TenantBrokerExceptionWrapper(e.getMessage(), e);
+    } <span class="kw">finally</span> {
+        TenantContextHolder.<span class="fn">setTenantId</span>(pre);             <span class="cmt">// 还原租户</span>
+    }
+}</pre>
+        </div>
+
+        <div class="highlight-box gold">
+          <div class="label">📌 为什么必须用 TenantBroker</div>
+          <div class="content"><code>PigxTenantHandler</code> 会在 SQL 层自动拼接 <code>tenant_id</code> 条件。如果不用 TenantBroker，设备激活写入的 <code>tenant_id</code> 会取到错误的值或 null。</div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 阶段四：EMQX HTTP 认证回调 -->
+        <!-- ========================================================= -->
+        <h2 id="emqx-auth">阶段四：EMQX HTTP 认证回调</h2>
+
+        <h3 id="mqtt-auth-callback">步骤 10：MQTT 连接时的应用层认证</h3>
+
+        <p>mTLS 在传输层验证证书有效性后，EMQX 在 MQTT CONNECT 阶段再回调云端接口验证凭证：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+门锁设备         EMQX Broker                    云端 /mqtt/auth
+   │                │                               │
+   │  CONNECT       │                               │
+   │  (username,    │                               │
+   │   password)    │                               │
+   │ ──────────────►│                               │
+   │                │  HTTP POST /mqtt/auth          │
+   │                │ ──────────────────────────────►│
+   │                │                               │
+   │                │                        ① 查Redis获取存储的MQTT凭证
+   │                │                        ② HMAC-SHA256 验证密码
+   │                │                        ③ 检查设备Token是否过期
+   │                │                        ④ 检查设备黑名单
+   │                │                        ⑤ 返回 ACL 权限
+   │                │ ◄─── allow + ACL ──────────────│
+   │                │                               │
+   │  ◄── CONNACK ──│                               │</pre>
+        </div>
+
+        <h4>ACL 最小权限控制</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">return</span> MqttAuthResponse.<span class="fn">allow</span>()
+    .<span class="fn">acl</span>(<span class="str">"/hotel/gateway/"</span> + deviceId + <span class="str">"/down"</span>, ACL.SUBSCRIBE)    <span class="cmt">// 只能订阅下发指令</span>
+    .<span class="fn">acl</span>(<span class="str">"/hotel/gateway/publish"</span>, ACL.PUBLISH)                     <span class="cmt">// 只能发布上报数据</span>
+    .<span class="fn">acl</span>(<span class="str">"/hotel/gateway/alive"</span>, ACL.PUBLISH)                       <span class="cmt">// 只能发布心跳</span>
+    .<span class="fn">acl</span>(<span class="str">"/hotel/gateway/all"</span>, ACL.SUBSCRIBE);                      <span class="cmt">// 可以接收广播</span></pre>
+        </div>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 对比原设计</div>
+          <div class="content">原设计 <code>ACL: /lock/{deviceId}/#</code> 给了全部子主题读写权限，过于宽泛。调整后按 Topic 方向细分 pub/sub 权限。</div>
+        </div>
+
+        <h4>Inner 注解保护</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Inner</span>
+<span class="cls">@PostMapping</span>(<span class="str">"/mqtt/auth"</span>)
+<span class="kw">public</span> MqttAuthResponse <span class="fn">authenticate</span>(<span class="cls">@RequestBody</span> MqttAuthRequest request) { ... }
+
+<span class="cmt">// PigxSecurityInnerAspect 验证逻辑</span>
+String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM);  <span class="cmt">// "from"</span>
+<span class="kw">if</span> (inner.value() && !StrUtil.equals(SecurityConstants.FROM_IN, header)) {  <span class="cmt">// "Y"</span>
+    <span class="kw">throw new</span> AccessDeniedException(<span class="str">"Access is denied"</span>);
+}</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 阶段五：应用层 Token 鉴权 -->
+        <!-- ========================================================= -->
+        <h2 id="oauth2-auth">阶段五：应用层 Token 鉴权（用户/客户端维度）</h2>
+
+        <h3 id="user-login">步骤 11：OAuth2 Token 获取（用户登录）</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+客户端(App/小程序/Web)              pigx-auth 服务
+       │                                │
+       │  POST /oauth2/token            │
+       │  ┌──────────────────────────┐  │
+       │  │ grant_type=password      │  │
+       │  │ username=admin           │  │
+       │  │ password=***             │  │
+       │  │ scope=server             │  │
+       │  │ TENANT-ID: 1             │  │  ← 租户ID通过Header传递
+       │  │ Authorization: Basic XXX │  │  ← 客户端凭证(Base64)
+       │  └──────────────────────────┘  │
+       │ ──────────────────────────────►│
+       │                                │
+       │  ◄─── {                        │
+       │        access_token: "eyJ...", │
+       │        refresh_token: "xxx",   │
+       │        token_type: "Bearer",   │
+       │        expires_in: 3600        │
+       │      }                         │</pre>
+        </div>
+
+        <h4>完整认证链路</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+1. 请求进入 → DelegatingAuthenticationConverter 识别 grant_type
+      │
+      ├─ password → OAuth2ResourceOwnerPasswordAuthenticationConverter
+      ├─ sms      → OAuth2ResourceOwnerSmsAuthenticationConverter
+      ├─ refresh_token → PigxOAuth2RefreshTokenAuthenticationConverter
+      ├─ client_credentials → OAuth2ClientCredentialsAuthenticationConverter
+      └─ authorization_code → OAuth2AuthorizationCodeAuthenticationConverter
+
+2. 对应 Provider 执行认证
+      │
+      ├─ checkClient(registeredClient)  → 校验客户端是否支持此模式
+      ├─ authenticationManager.authenticate() → 调用DaoAuthenticationProvider
+      │      └─ PigxDaoAuthenticationProvider.retrieveUser()
+      │           ├─ 根据clientId + grantType选择UserDetailsService
+      │           ├─ loadUserByUsername() → 返回PigxUser（含tenantId）
+      │           └─ TenantContextHolder.setTenantId(pigxUser.getTenantId())
+      │
+      ├─ 并发控制检查（ONLINE_QUANTITY 配置）
+      │
+      └─ generatAuthenticationToken() → 生成Token
+           ├─ tokenGenerator.generate() → 生成 AccessToken (JWT)
+           │    └─ CustomeOAuth2TokenCustomizer.customize() 注入claims
+           ├─ 生成 RefreshToken
+           └─ authorizationService.save() → 存入Redis</pre>
+        </div>
+
+        <h3 id="token-claims">步骤 12：Token Claims 增强</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">public void</span> <span class="fn">customize</span>(OAuth2TokenClaimsContext context) {
+    OAuth2TokenClaimsSet.Builder claims = context.<span class="fn">getClaims</span>();
+    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_LICENSE, SecurityConstants.PIGX_LICENSE);
+    claims.<span class="fn">claim</span>(SecurityConstants.CLIENT_ID, clientId);
+    claims.<span class="fn">claim</span>(SecurityConstants.ACTIVE, Boolean.TRUE);
+
+    <span class="cmt">// 客户端模式不返回具体用户信息</span>
+    <span class="kw">if</span> (SecurityConstants.CLIENT_CREDENTIALS.equals(...)) <span class="kw">return</span>;
+
+    PigxUser pigxUser = (PigxUser) context.<span class="fn">getPrincipal</span>().<span class="fn">getPrincipal</span>();
+    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_USER_ID, pigxUser.getId().toString());
+    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_USERNAME, pigxUser.getUsername());
+}</pre>
+        </div>
+
+        <h3 id="user-token-redis">步骤 13：用户 Token 存储 — Redis 多维索引</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+Redis Key 设计：
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ token::access_token::eyJhbG...  →  OAuth2Authorization对象                      │  ← 按Token值查
+│ token::refresh_token::xxxxx    →  OAuth2Authorization对象                      │  ← 刷新Token查
+│ token::username::admin::test::1::eyJhbG...  →  accessToken值                  │  ← 按用户名+租户查
+│       │          │      │    │    │
+│       │          │      │    │    └── accessToken值                             │
+│       │          │      │    └── tenantId (pigxUser.getTenantId())              │
+│       │          │      └── clientId (registeredClientId)                       │
+│       │          └── username (principalName)                                    │
+│       └── 固定前缀 "token"                                                       │
+└─────────────────────────────────────────────────────────────────────────────────┘</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 阶段六：API 请求鉴权 -->
+        <!-- ========================================================= -->
+        <h2 id="api-auth">阶段六：API 请求鉴权 — 完整调用链</h2>
+
+        <h3 id="api-call-chain">步骤 14：用户通过 App 操作门锁</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+用户App                         API Gateway              pigx-auth           业务服务
+   │                               │                       │                   │
+   │ POST /lock/unlock             │                       │                   │
+   │ Authorization: Bearer eyJ... │                       │                   │
+   │ TENANT-ID: 1                 │                       │                   │
+   │ ────────────────────────────►│                       │                   │
+   │                               │                       │                   │
+   │                        ① 提取Token                  │                   │
+   │                        ② 校验签名/过期               │                   │
+   │                        ③ 查Redis验证Token有效性      │                   │
+   │                               │                       │                   │
+   │                               │  ④ 如需内省            │                   │
+   │                               │ ─────────────────────►│                   │
+   │                               │                       │                   │
+   │                               │  PigxCustomOpaque-    │                   │
+   │                               │  TokenIntrospector    │                   │
+   │                               │  .introspect(token)   │                   │
+   │                               │                       │                   │
+   │                               │  ⑤a 查Redis中Token    │                   │
+   │                               │  ⑤b 加载用户详情       │                   │
+   │                               │  ⑤c 检查账号状态       │                   │
+   │                               │ ◄─── PigxUser ────────│                   │
+   │                               │                       │                   │
+   │                               │  ⑥ 设置上下文          │                   │
+   │                               │  - TenantContextHolder │                   │
+   │                               │  - SecurityContext     │                   │
+   │                               │ ──────────────────────────────────────────►│
+   │                               │                       │                   │
+   │                               │                       │            ⑦ 业务鉴权
+   │                               │                       │            - 用户是否有此门锁权限
+   │                               │                       │            - 租户隔离校验
+   │                               │                       │            - 设备归属校验
+   │                               │                       │                   │
+   │                               │                       │            ⑧ 下发MQTT指令
+   │                               │                       │            → /hotel/gateway/{mac}/down
+   │                               │                       │                   │
+   │ ◄─────────────────────────────────────────────────────────────────────────│
+   │        { result: "00" }       │                       │                   │</pre>
+        </div>
+
+        <h4>Token 内省逻辑</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">public</span> OAuth2AuthenticatedPrincipal <span class="fn">introspect</span>(String token) {
+    <span class="cmt">// API-KEY 前缀检测：sk- 开头走独立处理逻辑</span>
+    <span class="kw">if</span> (token.startsWith(<span class="str">"sk-"</span>)) {
+        <span class="kw">return</span> <span class="fn">handleApiKeyToken</span>(token);
+    }
+
+    <span class="cmt">// 1. 查Redis中Token</span>
+    OAuth2Authorization oldAuthorization = authorizationService.<span class="fn">findByToken</span>(token, OAuth2TokenType.ACCESS_TOKEN);
+    <span class="kw">if</span> (Objects.isNull(oldAuthorization)) {
+        <span class="kw">throw new</span> InvalidBearerTokenException(token);
+    }
+
+    <span class="cmt">// 2. 加载用户详情</span>
+    UserDetails userDetails = optional.get().<span class="fn">loadUserByUser</span>((PigxUser) tokenPrincipal);
+
+    <span class="cmt">// 3. 检查账号状态</span>
+    <span class="kw">if</span> (isLocked) <span class="kw">throw new</span> InvalidBearerTokenException(token);
+    <span class="kw">if</span> (isExpired) <span class="kw">throw new</span> InvalidBearerTokenException(token);
+
+    <span class="cmt">// 4. 注入客户端信息</span>
+    pigxUser.getAttributes().<span class="fn">put</span>(SecurityConstants.CLIENT_ID, oldAuthorization.getRegisteredClientId());
+    <span class="kw">return</span> pigxUser;
+}</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 阶段七：设备端指令鉴权 -->
+        <!-- ========================================================= -->
+        <h2 id="mqtt-command">阶段七：设备端指令鉴权 — MQTT 消息级安全</h2>
+
+        <h3 id="command-flow">步骤 15：MQTT 指令下发与应答</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+云端服务                              门锁设备
+   │                                     │
+   │  PUBLISH /hotel/gateway/{mac}/down  │
+   │  ┌─────────────────────────────┐    │
+   │  │ cmd: "19" (开锁指令)         │    │
+   │  │ msgId: 42                    │    │  ← Redis生成唯一msgId (0~255)
+   │  │ data: AES加密的业务数据       │    │
+   │  │ tenantId: 1                  │    │
+   │  └─────────────────────────────┘    │
+   │ ───────────────────────────────────►│
+   │                                     │
+   │  ◄── PUBLISH /hotel/gateway/publish │
+   │  ┌─────────────────────────────┐    │
+   │  │ gateway: "AABBCCDDEEFF0001" │    │
+   │  │ cmd: "19"                   │    │
+   │  │ result: "00" (成功)          │    │
+   │  │ msgId: 42                   │    │
+   │  └─────────────────────────────┘    │</pre>
+        </div>
+
+        <h4>msgId 防重机制</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">public synchronized int</span> <span class="fn">getMsgId</span>(String key) {
+    <span class="kw">int</span> randomInt = RandomUtil.<span class="fn">randomInt</span>(<span class="num">0</span>, <span class="num">255</span>);  <span class="cmt">// 锁端1字节存储</span>
+    String redisKey = MqttConstants.MSG_ID_KEY + key;
+    <span class="kw">if</span> (redisTemplate.opsForSet().<span class="fn">size</span>(redisKey) >= <span class="num">255</span>) {
+        redisTemplate.opsForSet().<span class="fn">pop</span>(redisKey, <span class="num">256</span>);   <span class="cmt">// 255个用完则清空重用</span>
+    }
+    <span class="kw">while</span> (redisTemplate.opsForSet().<span class="fn">isMember</span>(redisKey, randomInt)) {
+        randomInt = RandomUtil.<span class="fn">randomInt</span>(<span class="num">0</span>, <span class="num">255</span>);   <span class="cmt">// 确保不重复</span>
+    }
+    redisTemplate.opsForSet().<span class="fn">add</span>(redisKey, randomInt);
+    redisTemplate.<span class="fn">expire</span>(redisKey, <span class="num">3</span>, TimeUnit.MINUTES);
+    <span class="kw">return</span> randomInt;
+}</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 阶段八：Token 生命周期管理 -->
+        <!-- ========================================================= -->
+        <h2 id="token-lifecycle">阶段八：Token 生命周期管理</h2>
+
+        <h3 id="device-token-refresh">步骤 16：设备 Token 刷新</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">public</span> LockToken <span class="fn">refreshToken</span>(String deviceId, String refreshToken) {
+    String refreshKey = <span class="str">"lock:device:token:refresh::"</span> + deviceId;
+
+    <span class="kw">if</span> (LOCK.<span class="fn">tryLock</span>()) {                              <span class="cmt">// ReentrantLock 双重检查锁</span>
+        <span class="kw">try</span> {
+            String storedRefresh = (String) redisTemplate.opsForValue().<span class="fn">get</span>(refreshKey);
+            <span class="kw">if</span> (!StrUtil.equals(storedRefresh, refreshToken)) {
+                <span class="kw">throw new</span> LockSecurityException(<span class="str">"刷新令牌无效"</span>);
+            }
+            LockDevice device = lockDeviceMapper.<span class="fn">selectByDeviceId</span>(deviceId);
+            TokenPair tokenPair = <span class="fn">generateTokenPair</span>(deviceId, device.getTenantId(), device.getProductModel());
+            MqttCredentials mqttCreds = <span class="fn">generateMqttCredentials</span>(deviceId);
+            <span class="fn">saveDeviceTokenToRedis</span>(deviceId, device.getTenantId(), tokenPair, mqttCreds);
+            <span class="kw">return</span> LockToken.builder()
+                .accessToken(tokenPair.accessToken())
+                .refreshToken(tokenPair.refreshToken())
+                .mqttUsername(mqttCreds.username())
+                .mqttPassword(mqttCreds.password())
+                .expiresIn(<span class="num">30</span> * <span class="num">86400L</span>)
+                .build();
+        } <span class="kw">finally</span> {
+            LOCK.<span class="fn">unlock</span>();
+        }
+    }
+    <span class="kw">throw new</span> LockSecurityException(<span class="str">"系统繁忙，请稍后重试"</span>);
+}</pre>
+        </div>
+
+        <h3 id="user-logout">步骤 17：用户登出 — 批量清除 Token</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 批量删除该用户在所有租户下的全部token</span>
+<span class="kw">private void</span> <span class="fn">removeTokensByUsername</span>(String username) {
+    <span class="cmt">// Redis key 格式：token::username::{username}::{clientId}::{tenantId}::{tokenId}</span>
+    Set&lt;String&gt; keys = RedisUtils.<span class="fn">keys</span>(<span class="str">"token::username::"</span> + username + <span class="str">"*"</span>);
+    <span class="kw">for</span> (String keyName : keys) {
+        String[] parts = keyName.<span class="fn">split</span>(<span class="str">"::"</span>);
+        <span class="kw">if</span> (parts.length &lt; <span class="num">6</span>) <span class="kw">continue</span>;
+        String tokenValue = parts[<span class="num">5</span>];
+        OAuth2Authorization authorization = authorizationService.<span class="fn">findByToken</span>(tokenValue, OAuth2TokenType.ACCESS_TOKEN);
+        <span class="kw">if</span> (authorization == <span class="kw">null</span>) <span class="kw">continue</span>;
+        Cache userCache = cacheManager.<span class="fn">getCache</span>(CacheConstants.USER_DETAILS);
+        <span class="kw">if</span> (userCache != <span class="kw">null</span>) userCache.<span class="fn">evict</span>(authorization.getPrincipalName());
+        authorizationService.<span class="fn">remove</span>(authorization);
+    }
+}</pre>
+        </div>
+
+        <h3 id="concurrent-control">步骤 18：并发控制 — 踢人下线</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+Object onlineQuantity = registeredClient.getClientSettings()
+    .getSettings().<span class="fn">get</span>(CommonConstants.ONLINE_QUANTITY);
+
+<span class="kw">if</span> (Objects.isNull(onlineQuantity) || BooleanUtil.<span class="fn">toBooleanObject</span>((String) onlineQuantity)) {
+    <span class="cmt">// 允许同时在线 → 正常生成Token</span>
+    <span class="kw">return</span> <span class="fn">generatAuthenticationToken</span>(...);
+}
+
+<span class="cmt">// 不允许同时在线 → 先删除该用户所有已有Token，再生成新Token</span>
+PigxRedisOAuth2AuthorizationService redisService =
+    (PigxRedisOAuth2AuthorizationService) <span class="kw">this</span>.authorizationService;
+redisService.<span class="fn">removeByUsername</span>(usernamePasswordAuthentication);
+<span class="kw">return</span> <span class="fn">generatAuthenticationToken</span>(...);</pre>
+        </div>
+
+        <h3 id="brute-force-protection">步骤 19：暴力破解防护</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">private void</span> <span class="fn">recordLoginFailureTimes</span>(String username) {
+    String key = String.<span class="fn">format</span>(<span class="str">"%s%s:%s"</span>, CacheConstants.GLOBALLY, CacheConstants.LOGIN_ERROR_TIMES, username);
+    Long deltaTimes = ParamResolver.<span class="fn">getLong</span>(<span class="str">"LOGIN_ERROR_TIMES"</span>, <span class="num">5L</span>);
+
+    <span class="kw">if</span> (!isLoginFailureLockEnabled(deltaTimes)) {
+        RedisUtils.<span class="fn">delete</span>(key);
+        <span class="kw">return</span>;
+    }
+
+    Long times = RedisUtils.<span class="fn">increment</span>(key, <span class="num">1L</span>);
+    Long deltaTime = ParamResolver.<span class="fn">getLong</span>(<span class="str">"DELTA_TIME"</span>, <span class="num">1L</span>);
+    RedisUtils.<span class="fn">expire</span>(key, deltaTime * <span class="num">3600</span>);
+
+    <span class="kw">if</span> (deltaTimes &lt;= times) {
+        userService.<span class="fn">lockUser</span>(username);  <span class="cmt">// 超过阈值，锁定用户</span>
+    }
+}</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 安全机制汇总 -->
+        <!-- ========================================================= -->
+        <h2 id="security-summary">安全机制汇总</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>安全层级</th><th>机制</th><th>对应代码</th></tr></thead>
+          <tbody>
+            <tr><td><strong>传输层</strong></td><td>TLS 1.2 双向认证 (mTLS)</td><td><span class="badge-iot">SSLUtils.java</span></td></tr>
+            <tr><td><strong>设备身份</strong></td><td>X.509 证书 CN=deviceId + 挑战-应答签名</td><td><span class="badge-iot">MqttConfig.java</span></td></tr>
+            <tr><td><strong>MQTT应用层</strong></td><td>EMQX HTTP Auth 回调 + HMAC-SHA256</td><td><span class="badge-iot">LockDeviceAuthService</span></td></tr>
+            <tr><td><strong>应用认证</strong></td><td>OAuth2 多模式 (password/sms/client_credentials)</td><td><span class="badge-iot">AuthorizationServerConfiguration</span></td></tr>
+            <tr><td><strong>Token安全</strong></td><td>JWT + Redis 双重验证</td><td><span class="badge-iot">PigxRedisOAuth2AuthorizationService</span></td></tr>
+            <tr><td><strong>Token内省</strong></td><td>OpaqueTokenIntrospector + API-KEY支持</td><td><span class="badge-iot">PigxCustomOpaqueTokenIntrospector</span></td></tr>
+            <tr><td><strong>租户隔离</strong></td><td>TTL线程传递 + SQL自动拼接 + TenantBroker</td><td><span class="badge-iot">TenantContextHolder + TenantBroker</span></td></tr>
+            <tr><td><strong>密码传输</strong></td><td>AES-CFB/SM4 加密 + ENC_FLAG 动态控制</td><td><span class="badge-iot">PasswordDecoderFilter</span></td></tr>
+            <tr><td><strong>指令防重</strong></td><td>Redis Set 去重 msgId (0~255)</td><td><span class="badge-iot">MqttCommon.java</span></td></tr>
+            <tr><td><strong>暴力破解</strong></td><td>登录失败计数 + 自动锁定</td><td><span class="badge-iot">PigxAuthenticationFailureEventHandler</span></td></tr>
+            <tr><td><strong>并发控制</strong></td><td>ONLINE_QUANTITY 配置踢人</td><td><span class="badge-iot">OAuth2ResourceOwnerBaseAuthenticationProvider</span></td></tr>
+            <tr><td><strong>内部调用</strong></td><td>@Inner + FROM Header 验证</td><td><span class="badge-iot">Inner.java + PigxSecurityInnerAspect</span></td></tr>
+            <tr><td><strong>ACL控制</strong></td><td>Topic级最小权限（pub/sub分离）</td><td><span class="badge-iot">MqttConstants.java</span></td></tr>
+          </tbody>
+        </table>
+
+        <!-- ========================================================= -->
+        <!-- 端到端完整时序图 -->
+        <!-- ========================================================= -->
+        <h2 id="e2e-sequence">端到端完整时序图</h2>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+工厂产线        安全芯片       门锁设备      MQTT Broker    云端激活服务    pigx-auth     用户App
+  │               │             │              │              │             │            │
+  │─生成密钥对──►│              │              │              │             │            │
+  │◄──公钥──────│              │              │              │             │            │
+  │──申请证书──────────────────────────────────────────────────────────────►│            │
+  │◄──签发client.crt───────────────────────────────────────────────────────│            │
+  │──写入cert─────────────────►│              │              │             │            │
+  │  (私钥不可读出SE)           │              │              │             │            │
+  │              │              │              │              │             │            │
+  │              │     ──── mTLS CONNECT ─────►│              │             │            │
+  │              │     ◄─── CONNACK ──────────│              │             │            │
+  │              │              │              │              │             │            │
+  │              │              │──请求挑战码─────────────────►│             │            │
+  │              │              │◄──challenge────────────────│             │            │
+  │              │──SE签名─────►│              │              │             │            │
+  │              │              │──提交签名+tenantId─────────►│             │            │
+  │              │              │              │              │             │            │
+  │              │              │              │       验签+状态校验          │            │
+  │              │              │              │       TenantBroker.applyAs │            │
+  │              │              │              │       生成Token+MQTT凭证   │            │
+  │              │              │              │       Redis多维索引存储     │            │
+  │              │              │◄──accessToken+mqttCreds────│             │            │
+  │              │              │              │              │             │            │
+  │              │              │──MQTT CONNECT(mqttCreds)──►│             │            │
+  │              │              │              │──HTTP Auth──►│             │            │
+  │              │              │              │◄──allow+ACL─│             │            │
+  │              │              │◄──CONNACK─────────────────│              │            │
+  │              │              │              │              │             │            │
+  │              │              │              │              │             │──登录────►│
+  │              │              │              │              │             │◄─credentials
+  │              │              │              │              │             │──JWT──────►│
+  │              │              │              │              │             │            │
+  │              │              │              │              │             │  ──开锁──►│
+  │              │              │              │              │             │◄─Bearer──│
+  │              │              │              │              │  Token内省   │            │
+  │              │              │              │              │  租户隔离    │            │
+  │              │              │              │              │  权限校验    │            │
+  │              │              │◄─MQTT指令────│◄─────────────│             │            │
+  │              │              │──执行开锁───►│              │             │            │
+  │              │              │──上报结果────►│─────────────►│             │──结果────►│</pre>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 核心设计原则 -->
+        <!-- ========================================================= -->
+        <h2 id="design-principles">核心设计原则总结</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>原则</th><th>实现方式</th></tr></thead>
+          <tbody>
+            <tr><td><strong>私钥永不离开SE</strong></td><td>挑战-应答签名，云端只存公钥</td></tr>
+            <tr><td><strong>MQTT凭证与Token解耦</strong></td><td>独立随机生成，无数学关系</td></tr>
+            <tr><td><strong>HMAC-SHA256替代MD5</strong></td><td><code>HmacUtils.hmacSha256Hex()</code></td></tr>
+            <tr><td><strong>复用OAuth2框架</strong></td><td>接入 <code>OAuth2TokenGenerator</code> + <code>CustomeOAuth2TokenCustomizer</code></td></tr>
+            <tr><td><strong>租户上下文保护</strong></td><td><code>TenantBroker.applyAs()</code> 嵌套安全</td></tr>
+            <tr><td><strong>Redis多维索引</strong></td><td>按设备/租户/Token值多维度查询和清除</td></tr>
+            <tr><td><strong>ACL最小权限</strong></td><td>按Topic方向细分 pub/sub</td></tr>
+            <tr><td><strong>挑战码一次性</strong></td><td><code>redis.getAndDelete()</code> 防重放</td></tr>
+            <tr><td><strong>并发刷新安全</strong></td><td><code>ReentrantLock</code> 双重检查锁</td></tr>
+            <tr><td><strong>暴力破解防护</strong></td><td>Redis计数 + 自动锁定</td></tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:1.5rem;padding:1rem 0;border-top:2px solid var(--code-border-subtle);text-align:center;color:var(--text-muted);font-size:0.9rem;">
+            🔐 门锁 Token 鉴权认证体系 · 全流程详解 · 完整版
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="index.html" class="footer-nav-link">← 返回文档列表</a>
+        <a href="doc-iot-architecture.html" class="footer-nav-link">上一篇: IoT 业务场景架构设计 →</a>
+      </footer>
+
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">整体架构总览</a></li>
+          <li class="toc-nav-item"><a href="#factory-cert" class="toc-nav-link">阶段一：出厂预置证书烧录</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#pki-preparation" class="toc-sub-link">PKI 证书体系准备</a></li>
+              <li class="toc-sub-item"><a href="#factory-burn" class="toc-sub-link">工厂烧录 — 密钥对生成与写入</a></li>
+              <li class="toc-sub-item"><a href="#device-registry" class="toc-sub-link">设备信息录入</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#first-boot" class="toc-nav-link">阶段二：设备首次上电</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#mtls-connect" class="toc-sub-link">MQTT 双向证书认证连接</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#cloud-activation" class="toc-nav-link">阶段三：云端激活</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#challenge-response" class="toc-sub-link">挑战-应答式设备激活</a></li>
+              <li class="toc-sub-item"><a href="#token-generation" class="toc-sub-link">Token 对生成</a></li>
+              <li class="toc-sub-item"><a href="#mqtt-credentials" class="toc-sub-link">MQTT 凭证独立生成</a></li>
+              <li class="toc-sub-item"><a href="#redis-storage" class="toc-sub-link">Redis 多维索引存储</a></li>
+              <li class="toc-sub-item"><a href="#tenant-broker" class="toc-sub-link">TenantBroker 租户上下文保护</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#emqx-auth" class="toc-nav-link">阶段四：EMQX HTTP 认证回调</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#mqtt-auth-callback" class="toc-sub-link">MQTT 连接时的应用层认证</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#oauth2-auth" class="toc-nav-link">阶段五：应用层 Token 鉴权</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#user-login" class="toc-sub-link">OAuth2 Token 获取</a></li>
+              <li class="toc-sub-item"><a href="#token-claims" class="toc-sub-link">Token Claims 增强</a></li>
+              <li class="toc-sub-item"><a href="#user-token-redis" class="toc-sub-link">用户 Token Redis 存储</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#api-auth" class="toc-nav-link">阶段六：API 请求鉴权</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#api-call-chain" class="toc-sub-link">完整调用链</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#mqtt-command" class="toc-nav-link">阶段七：设备端指令鉴权</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#command-flow" class="toc-sub-link">MQTT 指令下发与应答</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#token-lifecycle" class="toc-nav-link">阶段八：Token 生命周期管理</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#device-token-refresh" class="toc-sub-link">设备 Token 刷新</a></li>
+              <li class="toc-sub-item"><a href="#user-logout" class="toc-sub-link">用户登出</a></li>
+              <li class="toc-sub-item"><a href="#concurrent-control" class="toc-sub-link">并发控制</a></li>
+              <li class="toc-sub-item"><a href="#brute-force-protection" class="toc-sub-link">暴力破解防护</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#security-summary" class="toc-nav-link">安全机制汇总</a></li>
+          <li class="toc-nav-item"><a href="#e2e-sequence" class="toc-nav-link">端到端完整时序图</a></li>
+          <li class="toc-nav-item"><a href="#design-principles" class="toc-nav-link">核心设计原则总结</a></li>
+        </ol>
+      </div>
+    </aside>
+
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.iot-content h2[id], .iot-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link, .toc-sub-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.iot-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) { btn.classList.add('visible'); }
+      else { btn.classList.remove('visible'); }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

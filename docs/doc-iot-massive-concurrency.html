@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="海量设备并发处理 — 几万台智能锁同时上报指纹、开门记录、电量、告警，消息堆积怎么处理">
+  <title>海量设备并发处理 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:#16161f;--text-primary:#e8e8f0;--text-secondary:#a0a0b8;--text-muted:#6b6b80;--accent-cyan:#00d4ff;--accent-purple:#8b5cf6;--accent-green:#22c55e;--accent-red:#ef4444;--border-color:rgba(255,255,255,0.08);--shadow-glow:rgba(0,212,255,0.15);--toc-width:260px;--code-blue:#6b8cff;--code-green:#34d399;--code-red:#f87171;--code-gold:#fbbf24;--code-muted:#5a5a78;--code-bg-blue:rgba(79,110,247,0.12);--code-bg-gray:rgba(255,255,255,0.06);--code-bg-green:rgba(34,197,94,0.08);--code-bg-purple:rgba(139,92,246,0.12);--code-bg-yellow:rgba(234,179,8,0.12);--code-bg-white:var(--bg-secondary);--code-border-subtle:var(--border-color);--code-border-red:rgba(248,113,113,0.3);--code-border-green:rgba(52,211,153,0.3);--hl-keyword:#c084fc;--hl-function:#22d3ee;--hl-string:#4ade80;--hl-number:#fb923c;--bg-danger:rgba(248,113,113,0.08);--bg-success:rgba(52,211,153,0.08);--badge-danger:#ef4444;--badge-success:#22c55e;--badge-danger-bg:rgba(239,68,68,0.15);--badge-success-bg:rgba(34,197,94,0.15);--highlight-gold:#eab308;--highlight-gold-bg:rgba(234,179,8,0.07);--highlight-green:#22c55e;--highlight-green-bg:rgba(34,197,94,0.07);--highlight-purple:#8b5cf6;--highlight-purple-bg:rgba(139,92,246,0.07);--highlight-red:#ef4444;--highlight-red-bg:rgba(239,68,68,0.07)}
+    [data-theme="light"]{--bg-primary:#f5f5fa;--bg-secondary:#ffffff;--bg-card:#ffffff;--text-primary:#1a1a2e;--text-secondary:#4a4a68;--text-muted:#8888a0;--accent-cyan:#0099cc;--accent-purple:#7c3aed;--accent-green:#16a34a;--accent-red:#dc2626;--border-color:rgba(0,0,0,0.08);--shadow-glow:rgba(0,153,204,0.12);--code-blue:#4f6ef7;--code-green:#1a8a5a;--code-red:#c0392b;--code-gold:#e8a838;--code-muted:#b0c0d0;--code-bg-blue:#f0f4ff;--code-bg-gray:#eef2f7;--code-bg-green:#f0f7f0;--code-bg-purple:#f5f0ff;--code-bg-yellow:#fdf0a0;--code-bg-white:#ffffff;--code-border-subtle:#eef0f4;--code-border-red:#f5c8c8;--code-border-green:#b8dcc8;--hl-keyword:#9333ea;--hl-function:#0891b2;--hl-string:#16a34a;--hl-number:#ea580c;--bg-danger:#fdf0f0;--bg-success:#f0f7f0;--badge-danger:#c0392b;--badge-success:#1a8a5a;--badge-danger-bg:rgba(192,57,43,0.12);--badge-success-bg:rgba(26,138,90,0.12);--highlight-gold:#ca8a04;--highlight-gold-bg:rgba(202,138,4,0.07);--highlight-green:#16a34a;--highlight-green-bg:rgba(22,163,74,0.07);--highlight-purple:#7c3aed;--highlight-purple-bg:rgba(124,58,237,0.07);--highlight-red:#dc2626;--highlight-red-bg:rgba(220,38,38,0.07)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.8;min-height:100vh}
+    .skip-link{position:absolute;top:-100%;left:16px;background:var(--accent-cyan);color:#000;padding:8px 16px;border-radius:4px;z-index:10000;text-decoration:none;font-weight:600}
+    .skip-link:focus{top:16px}
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);padding:16px 24px}
+    [data-theme="light"] .site-header{background:rgba(245,245,250,0.95)}
+    .header-content{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .header-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand-bracket{color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700}
+    .brand-text{font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .brand-dot{color:var(--accent-cyan);font-weight:900}
+    .brand-text-accent{color:var(--accent-purple);font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .header-nav{display:flex;align-items:center;gap:24px}
+    .nav-link{color:var(--text-secondary);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:0.88rem;transition:color 0.3s ease;display:flex;align-items:center;gap:8px}
+    .nav-link:hover,.nav-link:focus-visible{color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:9999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .article-layout{display:flex;max-width:1400px;margin:0 auto;gap:40px;padding:40px 24px 80px;position:relative}
+    .article-main{flex:1;min-width:0;max-width:900px}
+    .article-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-color)}
+    .article-breadcrumb{display:flex;align-items:center;gap:12px;margin-bottom:22px;font-size:0.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .breadcrumb-link{color:inherit;text-decoration:none;transition:color 0.3s}
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible{color:var(--accent-cyan)}
+    .breadcrumb-separator::before{content:'/';opacity:0.5}
+    .article-meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:18px;align-items:center}
+    .meta-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(0,212,255,0.12);color:var(--accent-cyan)}
+    .meta-date{font-size:0.84rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .meta-read-time{font-size:0.82rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .article-title{font-family:'JetBrains Mono',monospace;font-size:clamp(1.65rem,3.5vw,2.35rem);font-weight:700;line-height:1.3;color:var(--text-primary);margin-bottom:14px}
+    .article-subtitle{font-size:1.08rem;color:var(--text-secondary);line-height:1.6}
+    .iot-content{font-size:1.01rem;line-height:1.9}
+    .iot-content h2{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--accent-cyan);margin-top:44px;margin-bottom:18px;padding-bottom:11px;border-bottom:2px solid var(--border-color);scroll-margin-top:20px}
+    .iot-content h3{font-family:'JetBrains Mono',monospace;font-size:1.22rem;font-weight:600;color:var(--text-primary);margin-top:32px;margin-bottom:14px;scroll-margin-top:20px}
+    .iot-content h4{font-size:0.95rem;font-weight:600;color:var(--accent-purple);margin-top:0.8rem;margin-bottom:0.2rem}
+    .iot-content p{margin-bottom:0.7rem;color:var(--text-secondary)}
+    .iot-content strong{color:var(--text-primary);font-weight:600}
+    .iot-content ul,.iot-content ol{padding-left:1.8rem;margin-bottom:0.7rem;color:var(--text-secondary)}
+    .iot-content li{margin-bottom:0.2rem}
+    .iot-content code{background:var(--bg-secondary);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace}
+    .iot-content .code-block{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:22px;margin:22px 0;overflow-x:auto;position:relative}
+    .iot-content .code-block.light{background:var(--bg-secondary)}
+    .iot-content .code-block pre{margin:0;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;word-break:break-all}
+    .iot-content .code-block .cls{color:var(--code-gold)}
+    .iot-content .code-block .kw{color:var(--hl-keyword)}
+    .iot-content .code-block .fn{color:var(--hl-function)}
+    .iot-content .code-block .num{color:var(--hl-number)}
+    .iot-content .code-block .str{color:var(--hl-string)}
+    .iot-content .code-block .cmt{color:var(--text-muted)}
+    .iot-content .highlight-box{border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;border-left:4px solid var(--accent-cyan);background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(139,92,246,0.07))}
+    .iot-content .highlight-box .label{font-weight:600;color:var(--accent-cyan);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px}
+    .iot-content .highlight-box .content{margin-top:4px;color:var(--text-secondary)}
+    .iot-content .highlight-box.gold{border-left-color:var(--code-gold);background:var(--highlight-gold-bg)}
+    .iot-content .highlight-box.gold .label{color:var(--highlight-gold)}
+    .iot-content .highlight-box.green{border-left-color:var(--accent-green);background:var(--highlight-green-bg)}
+    .iot-content .highlight-box.green .label{color:var(--highlight-green)}
+    .iot-content .highlight-box.purple{border-left-color:var(--accent-purple);background:var(--highlight-purple-bg)}
+    .iot-content .highlight-box.purple .label{color:var(--highlight-purple)}
+    .iot-content .highlight-box.red{border-left-color:var(--accent-red);background:var(--highlight-red-bg)}
+    .iot-content .highlight-box.red .label{color:var(--highlight-red)}
+    .iot-content .compare-table{width:100%;border-collapse:collapse;font-size:0.9rem;margin:0.8rem 0}
+    .iot-content .compare-table th{background:var(--bg-secondary);text-align:left;padding:0.5rem 1rem;font-weight:600;color:var(--accent-purple);border-bottom:2px solid var(--border-color)}
+    .iot-content .compare-table td{padding:0.5rem 1rem;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}
+    .iot-content .compare-table tr:hover td{background:rgba(0,212,255,0.03)}
+    .iot-content .compare-table .badge-good{display:inline-block;background:rgba(34,197,94,0.15);color:var(--highlight-green);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .iot-content .compare-table .badge-bad{display:inline-block;background:rgba(239,68,68,0.15);color:var(--highlight-red);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .iot-content .compare-table .badge-iot{display:inline-block;background:rgba(0,212,255,0.12);color:var(--accent-cyan);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .iot-content .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin:0.8rem 0}
+    .iot-content .three-col .col{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center}
+    .iot-content .three-col .col .title{font-weight:600;color:var(--accent-cyan);font-size:0.9rem;margin-bottom:0.3rem}
+    .iot-content .three-col .col .desc{font-size:0.85rem;color:var(--text-secondary);line-height:1.5}
+    .iot-content .arch-layers{margin:1rem 0}
+    .iot-content .arch-layers .layer{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;margin-bottom:0.4rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;border-left:4px solid var(--accent-cyan);font-size:0.88rem}
+    .iot-content .arch-layers .layer .level{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent-cyan);font-size:0.8rem;min-width:28px}
+    .iot-content .arch-layers .layer .name{font-weight:600;color:var(--text-primary);min-width:200px}
+    .iot-content .arch-layers .layer .desc{color:var(--text-secondary);flex:1;font-size:0.82rem}
+    .iot-content .arch-layers .layer .tag{font-size:0.7rem;padding:0.1rem 0.6rem;border-radius:10px;background:rgba(0,212,255,0.1);color:var(--accent-cyan);font-weight:600;white-space:nowrap}
+    .article-footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+    .footer-nav-link{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;text-decoration:none;color:var(--text-secondary);font-size:0.9rem;transition:all 0.3s ease}
+    .footer-nav-link:hover,.footer-nav-link:focus-visible{border-color:var(--accent-cyan);color:var(--accent-cyan);transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow-glow)}
+    .toc-sidebar{width:var(--toc-width);flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}
+    .toc-sidebar::-webkit-scrollbar-track{background:transparent}
+    .toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:toc-counter}
+    .toc-nav-item{position:relative;margin-bottom:6px;counter-increment:toc-counter}
+    .toc-nav-item::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:-22px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:8px 12px 8px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.86rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .back-to-top{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .back-to-top.visible{opacity:1;visibility:visible}
+    .back-to-top:hover,.back-to-top:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .site-footer{text-align:center;padding:36px 24px;border-top:1px solid var(--border-color);color:var(--text-muted);font-size:0.87rem;margin-top:60px}
+    @media(max-width:1024px){.toc-sidebar{display:none}.article-layout{padding:32px 20px 70px;gap:0}.article-main{max-width:100%}}
+    @media(max-width:768px){.header-nav{gap:12px;flex-wrap:wrap}.article-footer{flex-direction:column}.article-title{font-size:1.55rem}.iot-content h2{font-size:1.3rem}.iot-content .three-col{grid-template-columns:1fr}.iot-content .arch-layers .layer{flex-wrap:wrap}.iot-content .arch-layers .layer .name{min-width:auto}.iot-content .compare-table{font-size:0.82rem}.iot-content .compare-table th,.iot-content .compare-table td{padding:10px 8px}}
+    .theme-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border-color);border-radius:20px;padding:4px 12px;cursor:pointer;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:border-color 0.3s ease;flex-shrink:0}
+    .theme-toggle:hover{border-color:var(--accent-cyan)}
+    .theme-switch{width:32px;height:16px;background:var(--bg-secondary);border-radius:8px;position:relative;transition:background 0.3s ease}
+    .theme-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--accent-cyan);border-radius:50%;transition:transform 0.3s ease}
+    [data-theme="light"] .theme-knob{transform:translateX(16px);background:var(--accent-purple)}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand"><span class="brand-bracket">&lt;</span><span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span><span class="brand-bracket">/&gt;</span></a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← Docs</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle"><span aria-hidden="true">REALITY</span><span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span><span aria-hidden="true">SIM</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#iot-section" class="breadcrumb-link">IoT</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">HIGH CONCURRENCY</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 28min</span>
+        </div>
+        <h1 class="article-title">🚀 海量设备并发处理</h1>
+        <p class="article-subtitle">几万台智能锁同时上报指纹、开门记录、电量、告警 — 消息堆积怎么处理，从接入层到存储层的全链路优化实践。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <h2 id="problem-analysis">并发场景分析与量化</h2>
+
+        <h3 id="data-model">1. 智能锁数据上报模型</h3>
+
+        <p>一台智能锁在运行过程中会产生多种类型的上报数据，各类型数据特征差异巨大：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>数据类型</th><th>频率</th><th>单条大小</th><th>QoS</th><th>可靠性要求</th></tr></thead>
+          <tbody>
+            <tr><td><strong>心跳保活</strong></td><td>1次/60s</td><td>~50B</td><td>QoS 0</td><td>可丢失</td></tr>
+            <tr><td><strong>开门记录</strong></td><td>事件驱动（~5次/天）</td><td>~200B</td><td>QoS 1</td><td>不可丢，可重复</td></tr>
+            <tr><td><strong>指纹上报</strong></td><td>事件驱动（注册时）</td><td>~2KB</td><td>QoS 1</td><td>不可丢，可重复</td></tr>
+            <tr><td><strong>电量上报</strong></td><td>1次/小时</td><td>~80B</td><td>QoS 0</td><td>可丢失</td></tr>
+            <tr><td><strong>告警事件</strong></td><td>事件驱动（低频）</td><td>~300B</td><td>QoS 1</td><td>不可丢，需即时</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="peak-estimate">2. 峰值估算</h3>
+
+        <div class="highlight-box gold">
+          <div class="label">📌 峰值计算公式</div>
+          <div class="content">
+            <strong>稳态 QPS</strong> = 设备数 × 平均每秒消息数<br/>
+            <strong>峰值 QPS</strong> = 稳态 QPS × 峰值倍数（通常 3~10 倍）<br/><br/>
+            3 万台设备场景：<br/>
+            • 稳态心跳：30000 / 60 = 500 msg/s<br/>
+            • 稳态开门：30000 × 5 / 86400 ≈ 1.7 msg/s<br/>
+            • 网络恢复峰值（3 倍）：1500 + 离线积压数据 ≈ <strong>5000~10000 msg/s</strong>
+          </div>
+        </div>
+
+        <h2 id="access-layer">接入层：EMQX 集群水平扩展</h2>
+
+        <h3 id="emqx-cluster">1. EMQX 集群架构</h3>
+
+        <div style="background:var(--bg-secondary);border-radius:12px;padding:1.2rem 1rem;border:1px solid var(--border-color);overflow-x:auto;margin:0.8rem 0;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;font-size:0.85rem;">
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-border-subtle);text-align:center;min-width:80px;border-left:4px solid var(--accent-cyan);">
+              <div style="font-size:1.2rem;">🔑</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">3万门锁</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-blue);text-align:center;min-width:100px;border-left:4px solid var(--code-blue);">
+              <div style="font-size:1.2rem;">⚖️</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--code-blue);">NLB/HAProxy</div>
+              <div style="font-size:0.65rem;color:var(--text-secondary);">TCP 负载均衡</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-gold);text-align:center;min-width:120px;border-left:4px solid var(--code-gold);">
+              <div style="font-size:1.2rem;">📡</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">EMQX × 3</div>
+              <div style="font-size:0.65rem;color:var(--code-gold);">集群模式</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--accent-purple);text-align:center;min-width:100px;border-left:4px solid var(--accent-purple);">
+              <div style="font-size:1.2rem;">📦</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--accent-purple);">Kafka</div>
+              <div style="font-size:0.65rem;color:var(--accent-purple);">削峰缓冲</div>
+            </div>
+          </div>
+        </div>
+
+        <h4>EMQX 集群关键参数</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt"># emqx.conf 集群配置</span>
+cluster.discovery = <span class="str">static</span>
+cluster.static.seeds = emqx1@10.0.1.1,emqx2@10.0.1.2,emqx3@10.0.1.3
+
+<span class="cmt"># 连接数与吞吐调优</span>
+listener.tcp.external.acceptors = <span class="num">64</span>        <span class="cmt"># TCP acceptor 池</span>
+listener.tcp.external.max_connections = <span class="num">1024000</span> <span class="cmt"># 单节点最大连接数</span>
+listener.tcp.external.backlog = <span class="num">8192</span>         <span class="cmt"># TCP 全连接队列</span>
+
+<span class="cmt"># 消息吞吐</span>
+broker.enable_stats = <span class="str">on</span>
+broker.sys_interval = <span class="num">60</span>s
+
+<span class="cmt"># 连接风暴保护</span>
+zone.external.max_subscriptions = <span class="num">100</span>
+zone.external.max_mqueue_len = <span class="num">10000</span>       <span class="cmt"># 消息队列最大长度</span>
+zone.external.mqueue_store_qos0 = <span class="str">false</span>      <span class="cmt"># QoS0 不入队，降低内存</span></pre>
+        </div>
+
+        <h3 id="rule-engine-shunt">2. Rule Engine 消息分流</h3>
+
+        <p>利用 EMQX Rule Engine 的 SQL 规则，将不同类型消息分流到不同 Kafka Topic，实现<strong>零代码桥接</strong>：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">-- 开门记录 → Kafka iot-lock-events</span>
+<span class="kw">SELECT</span>
+    payload.mac <span class="kw">as</span> mac,
+    payload.operation <span class="kw">as</span> operation,
+    payload.unlockType <span class="kw">as</span> unlockType,
+    payload.timestamp <span class="kw">as</span> eventTime
+<span class="kw">FROM</span> <span class="str">"/hotel/gateway/publish"</span>
+<span class="kw">WHERE</span> payload.operation = <span class="str">'unlock'</span>
+
+<span class="cmt">-- 告警事件 → Kafka iot-lock-alerts（独立 Topic，高优先级消费）</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span> <span class="str">"/hotel/gateway/publish"</span>
+<span class="kw">WHERE</span> payload.type = <span class="str">'alert'</span>
+
+<span class="cmt">-- 心跳 → Kafka iot-lock-heartbeat（低优先级）</span>
+<span class="kw">SELECT</span> clientid, timestamp
+<span class="kw">FROM</span> <span class="str">"/hotel/gateway/alive"</span></pre>
+        </div>
+
+        <h2 id="buffer-layer">缓冲层：Kafka 分区策略与消费组</h2>
+
+        <h3 id="kafka-partition">1. 分区策略</h3>
+
+        <div class="highlight-box gold">
+          <div class="label">📌 分区设计原则</div>
+          <div class="content">
+            Kafka 分区数 = 消费者最大并行度。分区 Key 选择需保证：<strong>同一设备的消息路由到同一分区</strong>（保证顺序性），同时<strong>不同设备均匀分布</strong>（保证负载均衡）。
+          </div>
+        </div>
+
+        <table class="compare-table">
+          <thead><tr><th>Topic</th><th>分区数</th><th>分区 Key</th><th>保留时间</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>iot-lock-events</code></td><td>12</td><td><code>${mac}</code></td><td>7 天</td><td>开门记录，按设备路由</td></tr>
+            <tr><td><code>iot-lock-alerts</code></td><td>6</td><td><code>${mac}</code></td><td>30 天</td><td>告警事件，高优先级</td></tr>
+            <tr><td><code>iot-lock-heartbeat</code></td><td>6</td><td><code>${mac}</code></td><td>1 天</td><td>心跳，短保留</td></tr>
+            <tr><td><code>iot-lock-dead-letter</code></td><td>3</td><td>Round-Robin</td><td>30 天</td><td>死信队列，人工排查</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="consumer-group">2. 消费组设计</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Configuration</span>
+<span class="kw">public class</span> <span class="fn">KafkaConsumerConfig</span> {
+
+    <span class="cls">@Bean</span>
+    <span class="kw">public</span> ConcurrentKafkaListenerContainerFactory&lt;String, String&gt; <span class="fn">batchFactory</span>() {
+        ConcurrentKafkaListenerContainerFactory&lt;String, String&gt; factory =
+            <span class="kw">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();
+        factory.<span class="fn">setConsumerFactory</span>(consumerFactory());
+        factory.<span class="fn">setBatchListener</span>(<span class="kw">true</span>);        <span class="cmt">// 批量消费</span>
+        factory.<span class="fn">setConcurrency</span>(<span class="num">6</span>);                  <span class="cmt">// 6 个消费线程</span>
+        factory.<span class="fn">getContainerProperties</span>().<span class="fn">setAckMode</span>(
+            ContainerProperties.AckMode.MANUAL_IMMEDIATE   <span class="cmt">// 手动提交</span>
+        );
+        <span class="kw">return</span> factory;
+    }
+
+    <span class="cls">@Bean</span>
+    <span class="kw">public</span> ConsumerFactory&lt;String, String&gt; <span class="fn">consumerFactory</span>() {
+        Map&lt;String, Object&gt; props = <span class="kw">new</span> HashMap&lt;&gt;();
+        props.<span class="fn">put</span>(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, <span class="str">"kafka:9092"</span>);
+        props.<span class="fn">put</span>(ConsumerConfig.GROUP_ID_CONFIG, <span class="str">"iot-lock-consumer"</span>);
+        props.<span class="fn">put</span>(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, <span class="num">500</span>);  <span class="cmt">// 每批最多 500 条</span>
+        props.<span class="fn">put</span>(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, <span class="num">1024</span>); <span class="cmt">// 最少 1KB 才返回</span>
+        props.<span class="fn">put</span>(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, <span class="num">500</span>); <span class="cmt">// 最多等 500ms</span>
+        <span class="kw">return new</span> DefaultKafkaConsumerFactory&lt;&gt;(props);
+    }
+}</pre>
+        </div>
+
+        <h2 id="storage-layer">存储层：分层存储架构</h2>
+
+        <h3 id="storage-design">1. 三层存储设计</h3>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="title">⚡ 热数据层</div>
+            <div class="desc"><strong>Redis</strong><br/>设备在线状态<br/>最新电量/信号<br/>TTL 自动过期<br/>读写 &lt; 1ms</div>
+          </div>
+          <div class="col">
+            <div class="title">📊 时序数据层</div>
+            <div class="desc"><strong>TDengine</strong><br/>开门记录/告警<br/>压缩比 10:1<br/>批量写入 10万+/s<br/>时序查询快 10x+</div>
+          </div>
+          <div class="col">
+            <div class="title">💾 业务数据层</div>
+            <div class="desc"><strong>MySQL</strong><br/>设备注册信息<br/>用户授权关系<br/>租户/门店配置<br/>事务一致性</div>
+          </div>
+        </div>
+
+        <h3 id="tdengine-schema">2. TDengine 超级表设计</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">-- 创建数据库：保留 365 天，每 10 天一个数据文件</span>
+<span class="kw">CREATE DATABASE</span> iot_lock <span class="kw">KEEP</span> <span class="num">365</span> <span class="kw">DURATION</span> <span class="num">10</span>;
+
+<span class="cmt">-- 开门记录超级表</span>
+<span class="kw">CREATE STABLE</span> lock_events (
+    ts              <span class="str">TIMESTAMP</span>    <span class="kw">NOLABEL</span>,
+    operation       <span class="str">NCHAR</span>(<span class="num">20</span>),
+    unlock_type     <span class="str">NCHAR</span>(<span class="num">20</span>),
+    user_id         <span class="str">BIGINT</span>,
+    success         <span class="str">BOOL</span>
+) <span class="kw">TAGS</span> (
+    mac             <span class="str">NCHAR</span>(<span class="num">17</span>),
+    tenant_id       <span class="str">INT</span>,
+    product_model   <span class="str">NCHAR</span>(<span class="num">32</span>)
+);
+
+<span class="cmt">-- 设备状态超级表（电量、信号、温度）</span>
+<span class="kw">CREATE STABLE</span> lock_telemetry (
+    ts              <span class="str">TIMESTAMP</span>    <span class="kw">NOLABEL</span>,
+    battery         <span class="str">TINYINT</span>,
+    signal_strength <span class="str">SMALLINT</span>,
+    temperature     <span class="str">FLOAT</span>
+) <span class="kw">TAGS</span> (
+    mac             <span class="str">NCHAR</span>(<span class="num">17</span>),
+    tenant_id       <span class="str">INT</span>
+);</pre>
+        </div>
+
+        <h3 id="batch-write">3. 批量写入优化</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Component</span>
+<span class="kw">public class</span> <span class="fn">LockEventConsumer</span> {
+
+    <span class="cls">@KafkaListener</span>(topics = <span class="str">"iot-lock-events"</span>,
+        concurrency = <span class="str">"6"</span>, containerFactory = <span class="str">"batchFactory"</span>)
+    <span class="kw">public void</span> <span class="fn">consume</span>(List&lt;ConsumerRecord&lt;String, String&gt;&gt; records,
+                       Acknowledgment ack) {
+        <span class="cmt">// 1. 反序列化</span>
+        List&lt;LockEvent&gt; events = records.<span class="fn">stream</span>()
+            .<span class="fn">map</span>(r -> JSON.<span class="fn">parseObject</span>(r.value(), LockEvent.class))
+            .<span class="fn">collect</span>(Collectors.<span class="fn">toList</span>());
+
+        <span class="cmt">// 2. 幂等去重：Redis Bitmap</span>
+        List&lt;LockEvent&gt; deduped = events.<span class="fn">stream</span>()
+            .<span class="fn">filter</span>(e -> <span class="fn">checkAndMarkIdempotent</span>(e))
+            .<span class="fn">collect</span>(Collectors.<span class="fn">toList</span>());
+
+        <span class="cmt">// 3. 批量写 TDengine</span>
+        <span class="kw">if</span> (!deduped.<span class="fn">isEmpty</span>()) {
+            tdEngineTemplate.<span class="fn">batchInsert</span>(<span class="str">"lock_events"</span>, deduped);
+        }
+
+        <span class="cmt">// 4. 更新 Redis 热数据</span>
+        <span class="fn">updateRedisHotData</span>(deduped);
+
+        <span class="cmt">// 5. 手动提交 offset</span>
+        ack.<span class="fn">acknowledge</span>();
+    }
+
+    <span class="kw">private boolean</span> <span class="fn">checkAndMarkIdempotent</span>(LockEvent e) {
+        String key = <span class="str">"lock:events:idempotent:"</span> + e.getMac();
+        <span class="kw">return</span> redisTemplate.opsForValue().<span class="fn">setIfAbsent</span>(
+            key + <span class="str">":"</span> + e.getSeq(), <span class="str">"1"</span>, <span class="num">24</span>, TimeUnit.HOURS
+        );
+    }
+}</pre>
+        </div>
+
+        <h2 id="backpressure">背压与降级策略</h2>
+
+        <h3 id="kafka-backpressure">1. Kafka 天然背压</h3>
+
+        <p>Kafka 的消费模型天然实现了背压：<strong>消费者按自身节奏拉取消息</strong>，Broker 不会推送。当消费者处理慢时，消息堆积在 Kafka 中，不会压垮下游。</p>
+
+        <div class="highlight-box green">
+          <div class="label">📌 背压机制</div>
+          <div class="content">
+            <code>max.poll.records=500</code> + <code>max.poll.interval.ms=300000</code>：消费者每次最多拉 500 条，5 分钟内必须处理完并提交。超时则触发 Rebalance，将分区分配给其他消费者。
+          </div>
+        </div>
+
+        <h3 id="degradation">2. 多级降级策略</h3>
+
+        <div class="arch-layers">
+          <div class="layer"><span class="level">L1</span><span class="name">🟢 正常</span><span class="desc">所有消息正常处理，Kafka Lag &lt; 1000</span><span class="tag">全量处理</span></div>
+          <div class="layer"><span class="level">L2</span><span class="name">🟡 降级</span><span class="desc">Lag &gt; 10000，心跳消息只更新 Redis 不写 DB，电量消息降频</span><span class="tag">降级处理</span></div>
+          <div class="layer"><span class="level">L3</span><span class="name">🔴 熔断</span><span class="desc">Lag &gt; 100000，暂停低优先级消费组，只保留告警和开门记录</span><span class="tag">熔断保护</span></div>
+        </div>
+
+        <h4>降级控制代码</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Component</span>
+<span class="kw">public class</span> <span class="fn">ConsumerDegradationManager</span> {
+
+    <span class="cls">@Scheduled</span>(fixedRate = <span class="num">10000</span>)  <span class="cmt">// 每 10s 检查一次</span>
+    <span class="kw">public void</span> <span class="fn">checkLagAndAdjust</span>() {
+        <span class="kw">long</span> lag = kafkaAdmin.<span class="fn">getConsumerGroupLag</span>(<span class="str">"iot-lock-consumer"</span>);
+
+        <span class="kw">if</span> (lag > <span class="num">100000</span>) {
+            <span class="cmt">// L3 熔断：暂停心跳消费组</span>
+            consumerManager.<span class="fn">pause</span>(<span class="str">"iot-lock-heartbeat"</span>);
+            <span class="fn">log</span>.<span class="fn">warn</span>(<span class="str">"熔断：暂停心跳消费，Lag={}"</span>, lag);
+        } <span class="kw">else if</span> (lag > <span class="num">10000</span>) {
+            <span class="cmt">// L2 降级：跳过电量写入</span>
+            degradationContext.<span class="fn">setSkipBattery</span>(<span class="kw">true</span>);
+            <span class="fn">log</span>.<span class="fn">warn</span>(<span class="str">"降级：跳过电量写入，Lag={}"</span>, lag);
+        } <span class="kw">else</span> {
+            <span class="cmt">// L1 恢复</span>
+            consumerManager.<span class="fn">resume</span>(<span class="str">"iot-lock-heartbeat"</span>);
+            degradationContext.<span class="fn">setSkipBattery</span>(<span class="kw">false</span>);
+        }
+    }
+}</pre>
+        </div>
+
+        <h2 id="idempotent">幂等保障与消息去重</h2>
+
+        <h3 id="idempotent-design">1. 幂等设计</h3>
+
+        <p>MQTT QoS 1 存在消息重复的可能，Kafka 消费者 Rebalance 也会导致重复消费。因此<strong>消费端必须实现幂等</strong>：</p>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="title">🔑 设备序列号</div>
+            <div class="desc">门锁每条消息携带自增 <code>seq</code>，云端用 Redis Bitmap 去重<br/><code>SETBIT lock:events:{mac} {seq} 1</code></div>
+          </div>
+          <div class="col">
+            <div class="title">📋 Kafka Offset</div>
+            <div class="desc">手动提交 offset，处理成功才提交。Rebalance 后从上次提交位置重新消费</div>
+          </div>
+          <div class="col">
+            <div class="title">💾 数据库唯一约束</div>
+            <div class="desc">TDengine 利用 <code>ts + mac</code> 联合唯一性，MySQL 利用 <code>UNIQUE KEY(device_id, seq)</code></div>
+          </div>
+        </div>
+
+        <h2 id="monitoring">监控与告警</h2>
+
+        <h3 id="monitor-metrics">1. 关键监控指标</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>指标</th><th>来源</th><th>告警阈值</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Kafka Lag</strong></td><td>Kafka Consumer Lag</td><td>&gt; 10000</td><td>消费堆积量</td></tr>
+            <tr><td><strong>EMQX 连接数</strong></td><td>EMQX Dashboard API</td><td>&gt; 预期 × 120%</td><td>异常连接增长</td></tr>
+            <tr><td><strong>消息吞吐</strong></td><td>EMQX Metrics</td><td>&gt; 峰值 × 150%</td><td>消息风暴</td></tr>
+            <tr><td><strong>消费者延迟</strong></td><td>Consumer Lag per Topic</td><td>&gt; 60s</td><td>消费延迟过大</td></tr>
+            <tr><td><strong>TDengine 写入延迟</strong></td><td>应用 Metrics</td><td>&gt; 500ms P99</td><td>存储瓶颈</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box green">
+          <div class="label">📌 一句话总结</div>
+          <div class="content">
+            海量设备并发的核心解法：<strong>EMQX 集群水平扩展 + Rule Engine 零代码分流 + Kafka 削峰填谷 + 分层存储 + 批量消费去重</strong>。不要在应用层硬限流，把缓冲和背压交给 Kafka。
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-iot-mqtt-detail.html" class="footer-nav-link">← MQTT 全细节深度解析</a>
+        <a href="doc-iot-ota-upgrade.html" class="footer-nav-link">固件 OTA 升级链路 →</a>
+      </footer>
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#problem-analysis" class="toc-nav-link">并发场景分析与量化</a></li>
+          <li class="toc-nav-item"><a href="#access-layer" class="toc-nav-link">接入层：EMQX 集群</a></li>
+          <li class="toc-nav-item"><a href="#buffer-layer" class="toc-nav-link">缓冲层：Kafka 分区策略</a></li>
+          <li class="toc-nav-item"><a href="#storage-layer" class="toc-nav-link">存储层：分层存储架构</a></li>
+          <li class="toc-nav-item"><a href="#backpressure" class="toc-nav-link">背压与降级策略</a></li>
+          <li class="toc-nav-item"><a href="#idempotent" class="toc-nav-link">幂等保障与消息去重</a></li>
+          <li class="toc-nav-item"><a href="#monitoring" class="toc-nav-link">监控与告警</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+  <footer class="site-footer"><p>&copy; 2026 ISNOWSOFT — All rights reserved.</p></footer>
+
+  <script>
+    const sections=document.querySelectorAll('.iot-content h2[id],.iot-content h3[id]');const tocLinks=document.querySelectorAll('.toc-nav-link,.toc-sub-link');
+    function updateActiveToc(){let c='';const s=window.scrollY+120;sections.forEach(sec=>{if(s>=sec.offsetTop)c=sec.id});tocLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})}
+    function updateReadingProgress(){const a=document.querySelector('.iot-content');if(!a)return;let p=(window.scrollY-a.offsetTop)/(a.offsetHeight-window.innerHeight);p=Math.min(Math.max(p,0),1);document.getElementById('readingProgress').style.transform='scaleX('+p+')'}
+    function toggleBackToTop(){const b=document.getElementById('backToTop');window.scrollY>400?b.classList.add('visible'):b.classList.remove('visible')}
+    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+    tocLinks.forEach(l=>{l.addEventListener('click',function(e){e.preventDefault();const t=document.getElementById(this.getAttribute('href').substring(1));if(t)window.scrollTo({top:t.offsetTop-20,behavior:'smooth'})})});
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){window.requestAnimationFrame(()=>{updateActiveToc();updateReadingProgress();toggleBackToTop();ticking=false});ticking=true}},{passive:true});updateActiveToc();
+    (function(){var s=localStorage.getItem('portfolio-theme');if(s)document.documentElement.setAttribute('data-theme',s);var b=document.querySelector('.theme-toggle');if(b){function u(){var t=document.documentElement.getAttribute('data-theme');b.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式')}u();b.addEventListener('click',function(){var c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('portfolio-theme',n);u()})}window.addEventListener('storage',function(e){if(e.key==='portfolio-theme'&&e.newValue){document.documentElement.setAttribute('data-theme',e.newValue);if(b)b.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式')}})})();
+  </script>
+</body>
+</html>

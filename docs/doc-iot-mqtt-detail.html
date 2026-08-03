@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MQTT 全细节深度解析 — QoS等级、遗嘱消息、设备离线上报、心跳保活、门锁上下线海量消息削峰">
+  <title>MQTT 全细节深度解析 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-purple: rgba(139, 92, 246, 0.12);
+      --code-bg-yellow: rgba(234, 179, 8, 0.12);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --code-border-red: rgba(248, 113, 113, 0.3);
+      --code-border-green: rgba(52, 211, 153, 0.3);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --bg-danger: rgba(248, 113, 113, 0.08);
+      --bg-success: rgba(52, 211, 153, 0.08);
+      --badge-danger: #ef4444;
+      --badge-success: #22c55e;
+      --badge-danger-bg: rgba(239, 68, 68, 0.15);
+      --badge-success-bg: rgba(34, 197, 94, 0.15);
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-red: #dc2626;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-purple: #f5f0ff;
+      --code-bg-yellow: #fdf0a0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --code-border-red: #f5c8c8;
+      --code-border-green: #b8dcc8;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --bg-danger: #fdf0f0;
+      --bg-success: #f0f7f0;
+      --badge-danger: #c0392b;
+      --badge-success: #1a8a5a;
+      --badge-danger-bg: rgba(192, 57, 43, 0.12);
+      --badge-success-bg: rgba(26, 138, 90, 0.12);
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.95);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+
+    .brand-text-accent {
+      color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex; align-items: center; gap: 24px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      transition: color 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-link:hover, .nav-link:focus-visible { color: var(--accent-cyan); }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 9999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .article-layout {
+      display: flex; max-width: 1400px; margin: 0 auto;
+      gap: 40px; padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    .article-main {
+      flex: 1; min-width: 0; max-width: 900px;
+    }
+
+    .article-header {
+      margin-bottom: 40px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .article-breadcrumb {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+      font-size: 0.85rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .breadcrumb-link { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumb-link:hover, .breadcrumb-link:focus-visible { color: var(--accent-cyan); }
+    .breadcrumb-separator::before { content: '/'; opacity: 0.5; }
+
+    .article-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+    }
+
+    .meta-date {
+      font-size: 0.84rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .meta-read-time {
+      font-size: 0.82rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 700;
+      line-height: 1.3; color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .article-subtitle {
+      font-size: 1.08rem; color: var(--text-secondary); line-height: 1.6;
+    }
+
+    .iot-content {
+      font-size: 1.01rem; line-height: 1.9;
+    }
+
+    .iot-content h2 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.5rem;
+      font-weight: 600; color: var(--accent-cyan); margin-top: 44px;
+      margin-bottom: 18px; padding-bottom: 11px;
+      border-bottom: 2px solid var(--border-color);
+      scroll-margin-top: 20px;
+    }
+
+    .iot-content h3 {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.22rem;
+      font-weight: 600; color: var(--text-primary); margin-top: 32px;
+      margin-bottom: 14px; scroll-margin-top: 20px;
+    }
+
+    .iot-content h4 {
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--accent-purple); margin-top: 0.8rem; margin-bottom: 0.2rem;
+    }
+
+    .iot-content p { margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .iot-content strong { color: var(--text-primary); font-weight: 600; }
+    .iot-content ul, .iot-content ol { padding-left: 1.8rem; margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .iot-content li { margin-bottom: 0.2rem; }
+    .iot-content code { background: var(--bg-secondary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+
+    .iot-content .code-block {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 22px; margin: 22px 0; overflow-x: auto;
+      position: relative;
+    }
+
+    .iot-content .code-block.light {
+      background: var(--bg-secondary);
+    }
+
+    .iot-content .code-block pre {
+      margin: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.7; color: var(--text-primary);
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    .iot-content .code-block .cls { color: var(--code-gold); }
+    .iot-content .code-block .kw { color: var(--hl-keyword); }
+    .iot-content .code-block .fn { color: var(--hl-function); }
+    .iot-content .code-block .num { color: var(--hl-number); }
+    .iot-content .code-block .str { color: var(--hl-string); }
+    .iot-content .code-block .cmt { color: var(--text-muted); }
+
+    .iot-content .highlight-box {
+      border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
+      border-left: 4px solid var(--accent-cyan);
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(139, 92, 246, 0.07));
+    }
+
+    .iot-content .highlight-box .label {
+      font-weight: 600; color: var(--accent-cyan); font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .iot-content .highlight-box .content { margin-top: 4px; color: var(--text-secondary); }
+
+    .iot-content .highlight-box.gold {
+      border-left-color: var(--code-gold);
+      background: var(--highlight-gold-bg);
+    }
+    .iot-content .highlight-box.gold .label { color: var(--highlight-gold); }
+
+    .iot-content .highlight-box.green {
+      border-left-color: var(--accent-green);
+      background: var(--highlight-green-bg);
+    }
+    .iot-content .highlight-box.green .label { color: var(--highlight-green); }
+
+    .iot-content .highlight-box.purple {
+      border-left-color: var(--accent-purple);
+      background: var(--highlight-purple-bg);
+    }
+    .iot-content .highlight-box.purple .label { color: var(--highlight-purple); }
+
+    .iot-content .highlight-box.red {
+      border-left-color: var(--accent-red);
+      background: var(--highlight-red-bg);
+    }
+    .iot-content .highlight-box.red .label { color: var(--highlight-red); }
+
+    .iot-content .compare-table {
+      width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.8rem 0;
+    }
+
+    .iot-content .compare-table th {
+      background: var(--bg-secondary); text-align: left;
+      padding: 0.5rem 1rem; font-weight: 600; color: var(--accent-purple);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .iot-content .compare-table td {
+      padding: 0.5rem 1rem; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .iot-content .compare-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
+
+    .iot-content .compare-table .badge-good {
+      display: inline-block; background: rgba(34, 197, 94, 0.15); color: var(--highlight-green);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-bad {
+      display: inline-block; background: rgba(239, 68, 68, 0.15); color: var(--highlight-red);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .compare-table .badge-iot {
+      display: inline-block; background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+      padding: 0.05rem 0.5rem; border-radius: 12px; font-size: 0.7rem;
+    }
+
+    .iot-content .three-col {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.8rem; margin: 0.8rem 0;
+    }
+
+    .iot-content .three-col .col {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1rem; text-align: center;
+    }
+
+    .iot-content .three-col .col .title {
+      font-weight: 600; color: var(--accent-cyan); font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .iot-content .three-col .col .desc {
+      font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
+    }
+
+    .iot-content .arch-layers {
+      margin: 1rem 0;
+    }
+
+    .iot-content .arch-layers .layer {
+      display: flex; align-items: center; gap: 0.8rem;
+      padding: 0.7rem 1rem; margin-bottom: 0.4rem;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 8px; border-left: 4px solid var(--accent-cyan);
+      font-size: 0.88rem;
+    }
+
+    .iot-content .arch-layers .layer .level {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      color: var(--accent-cyan); font-size: 0.8rem; min-width: 28px;
+    }
+
+    .iot-content .arch-layers .layer .name {
+      font-weight: 600; color: var(--text-primary); min-width: 200px;
+    }
+
+    .iot-content .arch-layers .layer .desc {
+      color: var(--text-secondary); flex: 1; font-size: 0.82rem;
+    }
+
+    .iot-content .arch-layers .layer .tag {
+      font-size: 0.7rem; padding: 0.1rem 0.6rem; border-radius: 10px;
+      background: rgba(0, 212, 255, 0.1); color: var(--accent-cyan);
+      font-weight: 600; white-space: nowrap;
+    }
+
+    .article-footer {
+      margin-top: 56px; padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; flex-wrap: wrap;
+    }
+
+    .footer-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px; background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 10px;
+      text-decoration: none; color: var(--text-secondary); font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-nav-link:hover, .footer-nav-link:focus-visible {
+      border-color: var(--accent-cyan); color: var(--accent-cyan);
+      transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-glow);
+    }
+
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .toc-sub-list {
+      list-style: none; padding-left: 14px; margin-top: 4px;
+    }
+
+    .toc-sub-item { margin-bottom: 3px; }
+
+    .toc-sub-link {
+      display: block; padding: 5px 10px;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 0.78rem; line-height: 1.4;
+      border-radius: 5px; transition: all 0.2s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-sub-link:hover { color: var(--text-secondary); background: rgba(0, 212, 255, 0.03); }
+    .toc-sub-link.active { color: var(--accent-cyan); background: rgba(0, 212, 255, 0.05); }
+
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .site-footer {
+      text-align: center; padding: 36px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted); font-size: 0.87rem;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .article-layout { padding: 32px 20px 70px; gap: 0; }
+      .article-main { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav { gap: 12px; flex-wrap: wrap; }
+      .article-footer { flex-direction: column; }
+      .article-title { font-size: 1.55rem; }
+      .iot-content h2 { font-size: 1.3rem; }
+      .iot-content .three-col { grid-template-columns: 1fr; }
+      .iot-content .arch-layers .layer { flex-wrap: wrap; }
+      .iot-content .arch-layers .layer .name { min-width: auto; }
+      .iot-content .compare-table { font-size: 0.82rem; }
+      .iot-content .compare-table th, .iot-content .compare-table td { padding: 10px 8px; }
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px; position: relative;
+      transition: background 0.3s ease;
+    }
+    .theme-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px);
+      background: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← Docs</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#iot-section" class="breadcrumb-link">IoT</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+
+        <div class="article-meta">
+          <span class="meta-tag">MQTT</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 30min</span>
+        </div>
+
+        <h1 class="article-title">📡 MQTT 全细节深度解析</h1>
+        <p class="article-subtitle">QoS 等级 · 遗嘱消息 · 设备离线上报 · 心跳保活 · 门锁上下线海量消息削峰 — 从协议原理到智能锁场景的工程实践。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <h2 id="qos-levels">MQTT QoS 等级与智能锁场景选型</h2>
+
+        <h3 id="qos-overview">1. QoS 三级模型</h3>
+
+        <p>MQTT 协议定义了三个服务质量等级，核心差异在于消息投递的可靠性保证与网络开销之间的权衡：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>维度</th><th>QoS 0（至多一次）</th><th>QoS 1（至少一次）</th><th>QoS 2（恰好一次）</th></tr></thead>
+          <tbody>
+            <tr><td><strong>投递保证</strong></td><td>Fire & Forget</td><td><span class="badge-good">确认投递</span></td><td><span class="badge-good">精确投递</span></td></tr>
+            <tr><td><strong>握手次数</strong></td><td>1 次（PUBLISH）</td><td>2 次（PUBLISH + PUBACK）</td><td>4 次（PUBLISH + PUBREC + PUBREL + PUBCOMP）</td></tr>
+            <tr><td><strong>消息重复</strong></td><td>无</td><td><span class="badge-bad">可能重复</span></td><td><span class="badge-good">不重复</span></td></tr>
+            <tr><td><strong>带宽开销</strong></td><td><span class="badge-good">最小</span></td><td>中等</td><td><span class="badge-bad">最大</span></td></tr>
+            <tr><td><strong>延迟</strong></td><td><span class="badge-good">最低</span></td><td>中等</td><td><span class="badge-bad">最高</span></td></tr>
+            <tr><td><strong>典型场景</strong></td><td>心跳、传感器高频采样</td><td>状态上报、告警</td><td>开锁指令、OTA 通知</td></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="qos-selection">2. 智能锁场景 QoS 选型策略</h3>
+
+        <div class="highlight-box gold">
+          <div class="label">📌 核心原则</div>
+          <div class="content">
+            QoS 等级由 <strong>发送端和接收端中较低的一方决定</strong>。即：Publisher 以 QoS 2 发布，但 Subscriber 以 QoS 1 订阅，则实际投递为 QoS 1。因此需在发布端和订阅端统一策略。
+          </div>
+        </div>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="title">🔑 QoS 0 — 心跳保活</div>
+            <div class="desc"><code>/hotel/gateway/alive</code><br/>每 60s 一次心跳<br/>丢失无影响，下次补上<br/><strong>带宽节省 50%+</strong></div>
+          </div>
+          <div class="col">
+            <div class="title">📊 QoS 1 — 状态上报</div>
+            <div class="desc"><code>/hotel/gateway/publish</code><br/>开门记录、电量、告警<br/>可容忍少量重复<br/><strong>幂等消费兜底</strong></div>
+          </div>
+          <div class="col">
+            <div class="title">🔐 QoS 2 — 开锁指令</div>
+            <div class="desc"><code>/hotel/gateway/{mac}/down</code><br/>远程开锁、授权下发<br/>绝不允许重复执行<br/><strong>恰好一次投递</strong></div>
+          </div>
+        </div>
+
+        <h4>QoS 选型代码实现</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">public class</span> <span class="fn">MqttQosStrategy</span> {
+
+    <span class="kw">public static int</span> <span class="fn">resolveQos</span>(String topic) {
+        <span class="kw">if</span> (topic.<span class="fn">contains</span>(<span class="str">"/alive"</span>)) {
+            <span class="kw">return</span> <span class="num">0</span>;  <span class="cmt">// 心跳：丢了无所谓</span>
+        }
+        <span class="kw">if</span> (topic.<span class="fn">contains</span>(<span class="str">"/down"</span>)) {
+            <span class="kw">return</span> <span class="num">2</span>;  <span class="cmt">// 下发指令：恰好一次</span>
+        }
+        <span class="kw">return</span> <span class="num">1</span>;      <span class="cmt">// 默认上报：至少一次</span>
+    }
+}
+
+<span class="cmt">// 发布时指定 QoS</span>
+mqttClient.<span class="fn">publish</span>(topic, payload.getBytes(),
+    MqttQosStrategy.<span class="fn">resolveQos</span>(topic), <span class="kw">false</span>);</pre>
+        </div>
+
+        <h2 id="will-message">遗嘱消息（LWT）与设备离线感知</h2>
+
+        <h3 id="lwt-principle">1. 遗嘱消息机制</h3>
+
+        <p>MQTT 的 <strong>Last Will and Testament（LWT）</strong> 是连接建立时预注册的一条"遗嘱"消息。当 Broker 检测到设备连接异常断开（未发送 DISCONNECT），自动向指定 Topic 发布遗嘱消息，实现<strong>设备离线即时感知</strong>。</p>
+
+        <div style="
+          background: var(--bg-secondary);
+          border-radius: 12px;
+          padding: 1.2rem 1rem;
+          border: 1px solid var(--border-color);
+          overflow-x: auto;
+          margin: 0.8rem 0;
+        ">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; font-size:0.85rem;">
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:100px;">
+              <div style="font-size:1.5rem;">🔑</div>
+              <div style="font-weight:600; color:var(--text-primary);">门锁设备</div>
+              <div style="font-size:0.7rem; color:var(--text-secondary);">CONNECT + Will</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-gold); text-align:center; min-width:120px; border-left:4px solid var(--code-gold);">
+              <div style="font-size:1.5rem;">📡</div>
+              <div style="font-weight:600; color:var(--text-primary);">EMQX Broker</div>
+              <div style="font-size:0.7rem; color:var(--code-gold);">存储遗嘱</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-red); text-align:center; min-width:120px; border-left:4px solid var(--code-red);">
+              <div style="font-size:1.5rem;">⚡</div>
+              <div style="font-weight:600; color:var(--text-primary);">异常断开</div>
+              <div style="font-size:0.7rem; color:var(--code-red);">触发遗嘱发布</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--accent-purple); text-align:center; min-width:120px; border-left:4px solid var(--accent-purple);">
+              <div style="font-size:1.5rem;">☁️</div>
+              <div style="font-weight:600; color:var(--text-primary);">云端服务</div>
+              <div style="font-size:0.7rem; color:var(--accent-purple);">订阅遗嘱 Topic</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 id="lwt-config">2. 遗嘱消息配置</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 遗嘱消息配置</span>
+MqttConnectOptions options = <span class="kw">new</span> MqttConnectOptions();
+
+<span class="cmt">// 遗嘱 Topic：设备离线通知</span>
+String willTopic = <span class="str">"/hotel/gateway/offline"</span>;
+
+<span class="cmt">// 遗嘱 Payload：包含设备标识与离线时间</span>
+String willPayload = JSON.<span class="fn">toJSONString</span>(Map.<span class="fn">of</span>(
+    <span class="str">"mac"</span>, deviceId,
+    <span class="str">"status"</span>, <span class="str">"offline"</span>,
+    <span class="str">"timestamp"</span>, System.<span class="fn">currentTimeMillis</span>(),
+    <span class="str">"reason"</span>, <span class="str">"connection_lost"</span>
+));
+
+options.<span class="fn">setWill</span>(willTopic,
+    willPayload.getBytes(StandardCharsets.UTF_8),
+    <span class="num">1</span>,     <span class="cmt">// QoS 1：确保遗嘱至少投递一次</span>
+    <span class="kw">false</span>  <span class="cmt">// retain = false：不保留</span>
+);</pre>
+        </div>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 遗嘱消息的局限</div>
+          <div class="content">
+            遗嘱消息仅在<strong>异常断开</strong>时触发。如果设备正常调用 <code>disconnect()</code>，Broker 不会发布遗嘱。此外，遗嘱消息的触发依赖于 Broker 的 Keep Alive 超时检测，存在 <strong>1.5 × KeepAlive</strong> 的延迟窗口。
+          </div>
+        </div>
+
+        <h3 id="offline-report">3. 设备离线上报增强方案</h3>
+
+        <p>单纯依赖遗嘱消息存在延迟，生产环境需要<strong>主动离线上报 + 遗嘱兜底</strong>的双保险机制：</p>
+
+        <div class="arch-layers">
+          <div class="layer"><span class="level">L1</span><span class="name">🔑 主动离线</span><span class="desc">设备正常关机前，主动发布 offline 消息到 <code>/hotel/gateway/alive</code>，延迟 ≈ 0</span><span class="tag">首选</span></div>
+          <div class="layer"><span class="level">L2</span><span class="name">📡 遗嘱兜底</span><span class="desc">异常断线时 Broker 自动发布遗嘱消息，延迟 ≤ 1.5 × KeepAlive</span><span class="tag">兜底</span></div>
+          <div class="layer"><span class="level">L3</span><span class="name">☁️ 心跳超时</span><span class="desc">云端定时扫描心跳表，超过 3 × KeepAlive 未收到心跳则标记离线</span><span class="tag">最终一致</span></div>
+        </div>
+
+        <h4>主动离线上报代码</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Component</span>
+<span class="kw">public class</span> <span class="fn">DeviceLifecycleManager</span> {
+
+    <span class="cmt">// 设备主动离线</span>
+    <span class="kw">public void</span> <span class="fn">gracefulOffline</span>(String deviceId) {
+        <span class="cmt">// 1. 主动发布离线消息</span>
+        String payload = JSON.<span class="fn">toJSONString</span>(Map.<span class="fn">of</span>(
+            <span class="str">"mac"</span>, deviceId,
+            <span class="str">"status"</span>, <span class="str">"offline"</span>,
+            <span class="str">"timestamp"</span>, System.<span class="fn">currentTimeMillis</span>(),
+            <span class="str">"reason"</span>, <span class="str">"graceful_shutdown"</span>
+        ));
+        mqttClient.<span class="fn">publish</span>(<span class="str">"/hotel/gateway/alive"</span>,
+            payload.getBytes(), <span class="num">1</span>, <span class="kw">false</span>);
+
+        <span class="cmt">// 2. 断开连接（不触发遗嘱）</span>
+        mqttClient.<span class="fn">disconnect</span>();
+    }
+}</pre>
+        </div>
+
+        <h2 id="keepalive">心跳保活（Keep Alive）机制</h2>
+
+        <h3 id="keepalive-principle">1. Keep Alive 工作原理</h3>
+
+        <p>MQTT Keep Alive 是设备与 Broker 之间的<strong>双向存活检测</strong>机制：</p>
+        <ul>
+          <li>设备在 <code>CONNECT</code> 报文中声明 <code>keepAlive</code> 间隔（秒）</li>
+          <li>在 <code>keepAlive × 1.5</code> 时间内，如果 Broker 未收到任何报文（含 PINGREQ），则判定设备离线</li>
+          <li>设备在空闲期间发送 <code>PINGREQ</code>，Broker 回复 <code>PINGRESP</code></li>
+        </ul>
+
+        <h3 id="keepalive-config">2. 智能锁 Keep Alive 参数调优</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>参数</th><th>推荐值</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><strong>keepAlive</strong></td><td>60s</td><td>NB-IoT 设备建议 120~300s，WiFi 设备建议 30~60s</td></tr>
+            <tr><td><strong>离线判定阈值</strong></td><td>1.5 × keepAlive = 90s</td><td>Broker 端自动判定</td></tr>
+            <tr><td><strong>云端心跳超时</strong></td><td>3 × keepAlive = 180s</td><td>Redis TTL 兜底，防止 Broker 判定延迟</td></tr>
+            <tr><td><strong>重连策略</strong></td><td>指数退避 + 抖动</td><td>1s → 2s → 4s → 8s → 16s → 32s（上限）</td></tr>
+          </tbody>
+        </table>
+
+        <h4>心跳上报与云端检测</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Component</span>
+<span class="kw">public class</span> <span class="fn">HeartbeatMonitor</span> {
+
+    <span class="cls">@KafkaListener</span>(topics = <span class="str">"iot-lock-heartbeat"</span>)
+    <span class="kw">public void</span> <span class="fn">onHeartbeat</span>(ConsumerRecord&lt;String, String&gt; record) {
+        String deviceId = record.<span class="fn">key</span>();
+        <span class="cmt">// 更新 Redis 心跳时间戳，TTL = 3 × keepAlive</span>
+        redisTemplate.opsForValue().<span class="fn">set</span>(
+            <span class="str">"lock:heartbeat:"</span> + deviceId,
+            String.<span class="fn">valueOf</span>(System.<span class="fn">currentTimeMillis</span>()),
+            <span class="num">180</span>, TimeUnit.SECONDS
+        );
+    }
+
+    <span class="cmt">// 定时扫描：Redis TTL 过期即判定离线</span>
+    <span class="cls">@Scheduled</span>(fixedRate = <span class="num">30000</span>)
+    <span class="kw">public void</span> <span class="fn">scanOfflineDevices</span>() {
+        <span class="cmt">// Redis Keyspace Notification 监听过期事件</span>
+        <span class="cmt">// 过期 key → 触发设备离线处理流程</span>
+    }
+}</pre>
+        </div>
+
+        <h3 id="reconnect">3. 断线重连策略</h3>
+
+        <div class="highlight-box green">
+          <div class="label">📌 最佳实践</div>
+          <div class="content">
+            使用<strong>指数退避 + 随机抖动</strong>避免海量设备同时重连导致的"惊群效应"。EMQX 原生支持 <code>AutomaticReconnect</code>，但建议在设备端 SDK 层实现更精细的控制。
+          </div>
+        </div>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">public class</span> <span class="fn">ExponentialBackoffReconnect</span> {
+    <span class="kw">private static final int</span> MAX_BACKOFF = <span class="num">32</span>;  <span class="cmt">// 最大退避 32s</span>
+    <span class="kw">private static final double</span> JITTER = <span class="num">0.3</span>;   <span class="cmt">// 30% 随机抖动</span>
+    <span class="kw">private int</span> attempt = <span class="num">0</span>;
+
+    <span class="kw">public long</span> <span class="fn">nextDelay</span>() {
+        <span class="kw">long</span> baseDelay = (<span class="kw">long</span>) Math.<span class="fn">min</span>(
+            Math.<span class="fn">pow</span>(<span class="num">2</span>, attempt), MAX_BACKOFF
+        );
+        <span class="kw">double</span> jitter = <span class="num">1.0</span> + (Math.<span class="fn">random</span>() * <span class="num">2</span> - <span class="num">1</span>) * JITTER;
+        <span class="kw">long</span> delay = (<span class="kw">long</span>) (baseDelay * jitter * <span class="num">1000</span>);
+        attempt++;
+        <span class="kw">return</span> delay;
+    }
+
+    <span class="kw">public void</span> <span class="fn">reset</span>() { attempt = <span class="num">0</span>; }
+}
+
+<span class="cmt">// MQTT 连接配置</span>
+options.<span class="fn">setAutomaticReconnect</span>(<span class="kw">true</span>);  <span class="cmt">// 启用自动重连</span></pre>
+        </div>
+
+        <h2 id="peak-shaving">门锁上下线海量消息削峰</h2>
+
+        <h3 id="peak-problem">1. 问题场景</h3>
+
+        <p>当公寓/酒店区域发生<strong>网络抖动或停电恢复</strong>时，数万台门锁同时重连，产生海量上下线消息风暴：</p>
+        <ul>
+          <li>每台设备产生：<code>CONNECT</code> + <code>遗嘱触发(离线)</code> + <code>重连(在线)</code> = 3 条消息</li>
+          <li>3 万台设备 × 3 = <strong>9 万条消息在数秒内涌入</strong></li>
+          <li>如果每条消息都触发数据库写入和业务逻辑，后端瞬间过载</li>
+        </ul>
+
+        <div style="
+          background: var(--bg-danger);
+          border-radius: 12px;
+          padding: 1.2rem 1rem;
+          border: 1px solid var(--code-border-red);
+          overflow-x: auto;
+          margin: 0.8rem 0;
+        ">
+          <div style="text-align:center; margin-bottom:10px;">
+            <span style="background: var(--badge-danger); color:#fff; padding:0.2rem 1.2rem; border-radius:20px; font-size:0.8rem; font-weight:600;">⚠️ 消息风暴：网络恢复瞬间</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; font-size:0.85rem;">
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-red); text-align:center; min-width:100px; border-left:4px solid var(--code-red);">
+              <div style="font-size:1.5rem;">🔑</div>
+              <div style="font-weight:600; color:var(--text-primary);">3万门锁</div>
+              <div style="font-size:0.7rem; color:var(--code-red);">同时重连</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-red); text-align:center; min-width:120px; border-left:4px solid var(--code-red);">
+              <div style="font-size:1.5rem;">📡</div>
+              <div style="font-weight:600; color:var(--text-primary);">EMQX</div>
+              <div style="font-size:0.7rem; color:var(--code-red);">9万条/数秒</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-red); text-align:center; min-width:120px;">
+              <div style="font-size:1.5rem;">🧵</div>
+              <div style="font-weight:600; color:var(--text-primary);">Consumer</div>
+              <div style="font-size:0.7rem; color:var(--code-red);">逐条处理 → 过载</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:100px;">
+              <div style="font-size:1.5rem;">💾</div>
+              <div style="font-weight:600; color:var(--text-primary);">MySQL</div>
+              <div style="font-size:0.7rem; color:var(--text-secondary);">连接池耗尽</div>
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px 16px; margin-top:8px; font-size:0.75rem; color:var(--text-muted);">
+            <span>⚠️ 9万条消息瞬间涌入</span>
+            <span>|</span>
+            <span>⚠️ 每条触发DB写入</span>
+            <span>|</span>
+            <span>⚠️ 连接池耗尽 → 雪崩</span>
+          </div>
+        </div>
+
+        <h3 id="peak-solution">2. 削峰方案：EMQX Rule Engine + Kafka + 批量消费</h3>
+
+        <div style="
+          background: var(--bg-success);
+          border-radius: 12px;
+          padding: 1.2rem 1rem;
+          border: 1px solid var(--code-border-green);
+          overflow-x: auto;
+          margin: 0.8rem 0;
+        ">
+          <div style="text-align:center; margin-bottom:10px;">
+            <span style="background: var(--badge-success); color:#fff; padding:0.2rem 1.2rem; border-radius:20px; font-size:0.8rem; font-weight:600;">✅ 削峰填谷 + 合并去重</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 12px; font-size:0.85rem;">
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:100px;">
+              <div style="font-size:1.5rem;">🔑</div>
+              <div style="font-weight:600; color:var(--text-primary);">3万门锁</div>
+              <div style="font-size:0.7rem; color:var(--text-secondary);">同时重连</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-blue); text-align:center; min-width:120px; border-left:4px solid var(--code-blue);">
+              <div style="font-size:1.5rem;">⚙️</div>
+              <div style="font-weight:600; color:var(--code-blue);">Rule Engine</div>
+              <div style="font-size:0.7rem; color:var(--code-blue);">SQL 分流去重</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-gold); text-align:center; min-width:120px; border-left:4px solid var(--code-gold);">
+              <div style="font-size:1.5rem;">📦</div>
+              <div style="font-weight:600; color:var(--text-primary);">Kafka</div>
+              <div style="font-size:0.7rem; color:var(--code-gold);">削峰填谷</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:120px;">
+              <div style="font-size:1.5rem;">⚡</div>
+              <div style="font-weight:600; color:var(--text-primary);">Consumer</div>
+              <div style="font-size:0.7rem; color:var(--code-green);">批量合并写入</div>
+            </div>
+            <span style="color:var(--code-muted); font-size:1.5rem;">→</span>
+            <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--accent-purple); text-align:center; min-width:100px; border-left:4px solid var(--accent-purple);">
+              <div style="font-size:1.5rem;">💾</div>
+              <div style="font-weight:600; color:var(--accent-purple);">Redis + DB</div>
+              <div style="font-size:0.7rem; color:var(--accent-purple);">合并更新</div>
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px 16px; margin-top:8px; font-size:0.75rem; color:var(--code-green);">
+            <span>✅ Kafka 缓冲海量消息</span>
+            <span>|</span>
+            <span>✅ 批量拉取合并去重</span>
+            <span>|</span>
+            <span>✅ 只保留最终状态</span>
+            <span>|</span>
+            <span>✅ DB 写入量降低 90%+</span>
+          </div>
+        </div>
+
+        <h4>EMQX Rule Engine 去重配置</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">-- EMQX 规则引擎：上下线消息分流</span>
+<span class="kw">SELECT</span>
+    clientid <span class="kw">as</span> deviceId,
+    event <span class="kw">as</span> eventType,
+    timestamp <span class="kw">as</span> eventTime,
+    reason <span class="kw">as</span> disconnectReason
+<span class="kw">FROM</span> <span class="str">"$events/client_connected"</span>
+
+<span class="kw">UNION ALL</span>
+
+<span class="kw">SELECT</span>
+    clientid <span class="kw">as</span> deviceId,
+    <span class="str">'client_disconnected'</span> <span class="kw">as</span> eventType,
+    timestamp <span class="kw">as</span> eventTime,
+    reason <span class="kw">as</span> disconnectReason
+<span class="kw">FROM</span> <span class="str">"$events/client_disconnected"</span>
+
+<span class="cmt">-- Kafka Bridge Action: topic = iot-device-lifecycle</span>
+<span class="cmt">-- Key: ${deviceId}（同设备消息路由到同一分区，保证顺序）</span></pre>
+        </div>
+
+        <h4>消费者批量合并去重</h4>
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cls">@Component</span>
+<span class="kw">public class</span> <span class="fn">DeviceLifecycleConsumer</span> {
+
+    <span class="cls">@KafkaListener</span>(topics = <span class="str">"iot-device-lifecycle"</span>,
+        concurrency = <span class="str">"6"</span>,
+        containerFactory = <span class="str">"batchFactory"</span>)
+    <span class="kw">public void</span> <span class="fn">consume</span>(List&lt;ConsumerRecord&lt;String, String&gt;&gt; records) {
+        <span class="cmt">// 批量拉取，max.poll.records=500</span>
+
+        <span class="cmt">// 核心：按设备分组，只保留最新状态</span>
+        Map&lt;String, DeviceLifecycleEvent&gt; latestByDevice = <span class="kw">new</span> LinkedHashMap&lt;&gt;();
+        <span class="kw">for</span> (ConsumerRecord&lt;String, String&gt; r : records) {
+            DeviceLifecycleEvent event = JSON.<span class="fn">parseObject</span>(r.value(), DeviceLifecycleEvent.class);
+            <span class="cmt">// 同一设备只保留最后一条（覆盖旧状态）</span>
+            latestByDevice.<span class="fn">put</span>(event.getDeviceId(), event);
+        }
+
+        <span class="cmt">// 批量更新 Redis + DB</span>
+        List&lt;DeviceLifecycleEvent&gt; deduped = <span class="kw">new</span> ArrayList&lt;&gt;(latestByDevice.values());
+        redisTemplate.<span class="fn">executePipelined</span>((RedisCallback&lt;Object&gt;) conn -> {
+            <span class="kw">for</span> (DeviceLifecycleEvent e : deduped) {
+                conn.<span class="fn">set</span>(
+                    (<span class="str">"lock:status:"</span> + e.getDeviceId()).getBytes(),
+                    e.getStatus().getBytes()
+                );
+            }
+            <span class="kw">return null</span>;
+        });
+
+        <span class="cmt">// 批量写 DB（只写最终状态）</span>
+        deviceLifecycleMapper.<span class="fn">batchUpsert</span>(deduped);
+    }
+}</pre>
+        </div>
+
+        <h3 id="peak-summary">3. 削峰效果对比</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>维度</th><th>原方案（逐条处理）</th><th>削峰方案（批量合并）</th></tr></thead>
+          <tbody>
+            <tr><td><strong>消息处理</strong></td><td>9 万条逐条处理</td><td><span class="badge-good">合并后 ≤ 3 万条</span></td></tr>
+            <tr><td><strong>DB 写入</strong></td><td>9 万次单条 INSERT</td><td><span class="badge-good">1 次批量 UPSERT</span></td></tr>
+            <tr><td><strong>峰值 QPS</strong></td><td>3 万/秒（冲击后端）</td><td><span class="badge-good">受控消费，按节奏处理</span></td></tr>
+            <tr><td><strong>消息可靠性</strong></td><td>处理失败即丢失</td><td><span class="badge-good">Kafka 持久化，可重试</span></td></tr>
+            <tr><td><strong>后端压力</strong></td><td><span class="badge-bad">过载雪崩</span></td><td><span class="badge-good">平稳运行</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box green">
+          <div class="label">📌 一句话总结</div>
+          <div class="content">
+            <strong>上下线消息的核心特征是"可覆盖"——同一设备的多次状态变更，只有最终状态有意义。</strong>利用这一特征，通过 Kafka 缓冲 + 批量消费 + 按 DeviceId 去重合并，可将 DB 写入量降低 90%+。
+          </div>
+        </div>
+
+        <h2 id="clean-session">Clean Session 与 Session 持久化</h2>
+
+        <h3 id="clean-session-principle">1. MQTT 3.1.1 中的 Clean Session</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>参数</th><th>Clean Session = 1</th><th>Clean Session = 0</th></tr></thead>
+          <tbody>
+            <tr><td><strong>连接断开后</strong></td><td>Broker 清除所有 Session 信息</td><td><span class="badge-good">Broker 保留 Session</span></td></tr>
+            <tr><td><strong>离线消息</strong></td><td>不保留</td><td><span class="badge-good">按订阅 QoS 缓存</span></td></tr>
+            <tr><td><strong>重连后</strong></td><td>全新 Session</td><td><span class="badge-good">恢复离线消息</span></td></tr>
+            <tr><td><strong>适用场景</strong></td><td>心跳、高频传感器数据</td><td>下发指令、OTA 通知</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="mqtt5-session">2. MQTT 5.0 的改进</h3>
+
+        <p>MQTT 5.0 将 <code>Clean Session</code> 拆分为两个独立参数：</p>
+        <ul>
+          <li><code>Clean Start = 1</code>：本次连接开始时清除已有 Session</li>
+          <li><code>Session Expiry Interval</code>：连接断开后 Session 保留时长（秒），0 = 不保留</li>
+        </ul>
+
+        <div class="highlight-box purple">
+          <div class="label">📌 智能锁推荐配置</div>
+          <div class="content">
+            智能锁场景建议使用 <code>Clean Start = 1 + Session Expiry Interval = 3600</code>：每次重连清除旧 Session，但离线后保留 1 小时，确保短时间断线重连后能收到离线期间的 QoS 1/2 消息。
+          </div>
+        </div>
+
+        <h2 id="retain-message">Retain 消息与设备初始状态获取</h2>
+
+        <h3 id="retain-principle">1. Retain 消息机制</h3>
+
+        <p>当 Publisher 设置 <code>retain = true</code> 时，Broker 会保存该 Topic 上的最后一条消息。新订阅者订阅该 Topic 时，<strong>立即收到这条保留消息</strong>，无需等待下一次发布。</p>
+
+        <h3 id="retain-scenario">2. 智能锁场景应用</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>场景</th><th>Retain Topic</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><strong>设备最新状态</strong></td><td><code>/hotel/lock/{mac}/status</code></td><td>新管理端上线，立即获取门锁当前状态</td></tr>
+            <tr><td><strong>固件版本</strong></td><td><code>/hotel/lock/{mac}/version</code></td><td>OTA 服务订阅后立即知道当前版本</td></tr>
+            <tr><td><strong>配置下发</strong></td><td><code>/hotel/lock/{mac}/config</code></td><td>设备重连后获取最新配置</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 注意事项</div>
+          <div class="content">
+            Retain 消息不适合高频变化的数据（如实时电量），仅用于<strong>低频、状态性</strong>数据。高频数据应通过普通发布 + 订阅后主动查询的方式获取。
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-iot-architecture.html" class="footer-nav-link">← IoT 业务场景架构设计</a>
+        <a href="doc-iot-massive-concurrency.html" class="footer-nav-link">海量设备并发处理 →</a>
+      </footer>
+
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#qos-levels" class="toc-nav-link">MQTT QoS 等级与选型</a></li>
+          <li class="toc-nav-item"><a href="#will-message" class="toc-nav-link">遗嘱消息与离线感知</a></li>
+          <li class="toc-nav-item"><a href="#keepalive" class="toc-nav-link">心跳保活机制</a></li>
+          <li class="toc-nav-item"><a href="#peak-shaving" class="toc-nav-link">门锁上下线消息削峰</a></li>
+          <li class="toc-nav-item"><a href="#clean-session" class="toc-nav-link">Clean Session 与 Session 持久化</a></li>
+          <li class="toc-nav-item"><a href="#retain-message" class="toc-nav-link">Retain 消息与初始状态</a></li>
+        </ol>
+      </div>
+    </aside>
+
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.iot-content h2[id], .iot-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link, .toc-sub-link');
+
+    function updateActiveToc() {
+      let currentId = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        if (scrollPos >= section.offsetTop) {
+          currentId = section.id;
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentId) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.iot-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) { btn.classList.add('visible'); }
+      else { btn.classList.remove('visible'); }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          window.scrollTo({ top: targetElement.offsetTop - 20, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

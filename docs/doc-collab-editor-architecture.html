@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="在线协同文档编辑器架构 — OT/CRDT 一致性算法、WebSocket 实时同步、操作日志与快照、权限控制、离线编辑">
+  <title>在线协同文档编辑器架构 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:#16161f;--text-primary:#e8e8f0;--text-secondary:#a0a0b8;--text-muted:#6b6b80;--accent-cyan:#00d4ff;--accent-purple:#8b5cf6;--accent-green:#22c55e;--accent-red:#ef4444;--accent-gold:#eab308;--border-color:rgba(255,255,255,0.08);--shadow-glow:rgba(0,212,255,0.15);--toc-width:260px;--code-blue:#6b8cff;--code-green:#34d399;--code-red:#f87171;--code-gold:#fbbf24;--code-muted:#5a5a78;--code-bg-blue:rgba(79,110,247,0.12);--code-bg-gray:rgba(255,255,255,0.06);--code-bg-green:rgba(34,197,94,0.08);--code-bg-purple:rgba(139,92,246,0.12);--code-bg-white:var(--bg-secondary);--code-border-subtle:var(--border-color);--hl-keyword:#c084fc;--hl-function:#22d3ee;--hl-string:#4ade80;--hl-number:#fb923c;--bg-danger:rgba(248,113,113,0.08);--bg-success:rgba(52,211,153,0.08);--badge-danger:#ef4444;--badge-success:#22c55e;--badge-danger-bg:rgba(239,68,68,0.15);--badge-success-bg:rgba(34,197,94,0.15);--highlight-gold:#eab308;--highlight-gold-bg:rgba(234,179,8,0.07);--highlight-green:#22c55e;--highlight-green-bg:rgba(34,197,94,0.07);--highlight-purple:#8b5cf6;--highlight-purple-bg:rgba(139,92,246,0.07);--highlight-red:#ef4444;--highlight-red-bg:rgba(239,68,68,0.07)}
+    [data-theme="light"]{--bg-primary:#f5f5fa;--bg-secondary:#ffffff;--bg-card:#ffffff;--text-primary:#1a1a2e;--text-secondary:#4a4a68;--text-muted:#8888a0;--accent-cyan:#0099cc;--accent-purple:#7c3aed;--accent-green:#16a34a;--accent-red:#dc2626;--accent-gold:#ca8a04;--border-color:rgba(0,0,0,0.08);--shadow-glow:rgba(0,153,204,0.12);--code-blue:#4f6ef7;--code-green:#1a8a5a;--code-red:#c0392b;--code-gold:#e8a838;--code-muted:#b0c0d0;--code-bg-blue:#f0f4ff;--code-bg-gray:#eef2f7;--code-bg-green:#f0f7f0;--code-bg-purple:#f5f0ff;--code-bg-white:#ffffff;--code-border-subtle:#eef0f4;--hl-keyword:#9333ea;--hl-function:#0891b2;--hl-string:#16a34a;--hl-number:#ea580c;--bg-danger:#fdf0f0;--bg-success:#f0f7f0;--badge-danger:#c0392b;--badge-success:#1a8a5a;--badge-danger-bg:rgba(192,57,43,0.12);--badge-success-bg:rgba(26,138,90,0.12);--highlight-gold:#ca8a04;--highlight-gold-bg:rgba(202,138,4,0.07);--highlight-green:#16a34a;--highlight-green-bg:rgba(22,163,74,0.07);--highlight-purple:#7c3aed;--highlight-purple-bg:rgba(124,58,237,0.07);--highlight-red:#dc2626;--highlight-red-bg:rgba(220,38,38,0.07)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.8;min-height:100vh}
+    .skip-link{position:absolute;top:-100%;left:16px;background:var(--accent-cyan);color:#000;padding:8px 16px;border-radius:4px;z-index:10000;text-decoration:none;font-weight:600}
+    .skip-link:focus{top:16px}
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);padding:16px 24px}
+    [data-theme="light"] .site-header{background:rgba(245,245,250,0.95)}
+    .header-content{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .header-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand-bracket{color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700}
+    .brand-text{font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .brand-dot{color:var(--accent-cyan);font-weight:900}
+    .brand-text-accent{color:var(--accent-purple);font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .header-nav{display:flex;align-items:center;gap:24px}
+    .nav-link{color:var(--text-secondary);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:0.88rem;transition:color 0.3s ease;display:flex;align-items:center;gap:8px}
+    .nav-link:hover,.nav-link:focus-visible{color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:9999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .article-layout{display:flex;max-width:1400px;margin:0 auto;gap:40px;padding:40px 24px 80px;position:relative}
+    .article-main{flex:1;min-width:0;max-width:900px}
+    .article-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-color)}
+    .article-breadcrumb{display:flex;align-items:center;gap:12px;margin-bottom:22px;font-size:0.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .breadcrumb-link{color:inherit;text-decoration:none;transition:color 0.3s}
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible{color:var(--accent-cyan)}
+    .breadcrumb-separator::before{content:'/';opacity:0.5}
+    .article-meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:18px;align-items:center}
+    .meta-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(139,92,246,0.12);color:var(--accent-purple)}
+    .meta-date{font-size:0.84rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .meta-read-time{font-size:0.82rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .article-title{font-family:'JetBrains Mono',monospace;font-size:clamp(1.65rem,3.5vw,2.35rem);font-weight:700;line-height:1.3;color:var(--text-primary);margin-bottom:14px}
+    .article-subtitle{font-size:1.08rem;color:var(--text-secondary);line-height:1.6}
+    .collab-content{font-size:1.01rem;line-height:1.9}
+    .collab-content h2{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--accent-cyan);margin-top:44px;margin-bottom:18px;padding-bottom:11px;border-bottom:2px solid var(--border-color);scroll-margin-top:20px}
+    .collab-content h3{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--text-primary);margin-top:32px;margin-bottom:14px;scroll-margin-top:20px;padding-left:0.5rem;border-left:3px solid var(--accent-purple)}
+    .collab-content h4{font-size:0.95rem;font-weight:600;color:var(--accent-gold);margin-top:1.2rem;margin-bottom:0.4rem}
+    .collab-content p{margin-bottom:0.7rem;color:var(--text-secondary)}
+    .collab-content strong{color:var(--text-primary);font-weight:600}
+    .collab-content ul,.collab-content ol{padding-left:1.8rem;margin-bottom:0.7rem;color:var(--text-secondary)}
+    .collab-content li{margin-bottom:0.2rem}
+    .collab-content code{background:var(--bg-secondary);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace}
+    .collab-content .code-block{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:22px;margin:22px 0;overflow-x:auto;position:relative}
+    .collab-content .code-block pre{margin:0;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;word-break:break-all}
+    .collab-content .code-block .cls{color:var(--code-gold)}
+    .collab-content .code-block .kw{color:var(--hl-keyword)}
+    .collab-content .code-block .fn{color:var(--hl-function)}
+    .collab-content .code-block .num{color:var(--hl-number)}
+    .collab-content .code-block .str{color:var(--hl-string)}
+    .collab-content .code-block .cmt{color:var(--text-muted)}
+    .collab-content .highlight-box{border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;border-left:4px solid var(--accent-cyan);background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(139,92,246,0.07))}
+    .collab-content .highlight-box .label{font-weight:600;color:var(--accent-cyan);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px}
+    .collab-content .highlight-box .content{margin-top:4px;color:var(--text-secondary)}
+    .collab-content .highlight-box.gold{border-left-color:var(--accent-gold);background:var(--highlight-gold-bg)}
+    .collab-content .highlight-box.gold .label{color:var(--highlight-gold)}
+    .collab-content .highlight-box.green{border-left-color:var(--accent-green);background:var(--highlight-green-bg)}
+    .collab-content .highlight-box.green .label{color:var(--highlight-green)}
+    .collab-content .highlight-box.purple{border-left-color:var(--accent-purple);background:var(--highlight-purple-bg)}
+    .collab-content .highlight-box.purple .label{color:var(--highlight-purple)}
+    .collab-content .highlight-box.red{border-left-color:var(--accent-red);background:var(--highlight-red-bg)}
+    .collab-content .highlight-box.red .label{color:var(--highlight-red)}
+    .collab-content .compare-table{width:100%;border-collapse:collapse;font-size:0.9rem;margin:0.8rem 0}
+    .collab-content .compare-table th{background:var(--bg-secondary);text-align:left;padding:0.5rem 1rem;font-weight:600;color:var(--accent-purple);border-bottom:2px solid var(--border-color)}
+    .collab-content .compare-table td{padding:0.5rem 1rem;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}
+    .collab-content .compare-table tr:hover td{background:rgba(0,212,255,0.03)}
+    .collab-content .compare-table .badge-good{display:inline-block;background:rgba(34,197,94,0.15);color:var(--highlight-green);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .collab-content .compare-table .badge-bad{display:inline-block;background:rgba(239,68,68,0.15);color:var(--highlight-red);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .collab-content .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin:0.8rem 0}
+    .collab-content .three-col .col{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center}
+    .collab-content .three-col .col .title{font-weight:600;color:var(--accent-cyan);font-size:0.9rem;margin-bottom:0.3rem}
+    .collab-content .three-col .col .desc{font-size:0.85rem;color:var(--text-secondary);line-height:1.5}
+    .collab-content .arch-layers{margin:1rem 0}
+    .collab-content .arch-layers .layer{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;margin-bottom:0.4rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;border-left:4px solid var(--accent-cyan);font-size:0.88rem}
+    .collab-content .arch-layers .layer .level{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent-cyan);font-size:0.8rem;min-width:28px}
+    .collab-content .arch-layers .layer .name{font-weight:600;color:var(--text-primary);min-width:200px}
+    .collab-content .arch-layers .layer .desc{color:var(--text-secondary);flex:1;font-size:0.82rem}
+    .collab-content .arch-layers .layer .tag{font-size:0.7rem;padding:0.1rem 0.6rem;border-radius:10px;background:rgba(0,212,255,0.1);color:var(--accent-cyan);font-weight:600;white-space:nowrap}
+    .article-footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+    .footer-nav-link{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;text-decoration:none;color:var(--text-secondary);font-size:0.9rem;transition:all 0.3s ease}
+    .footer-nav-link:hover,.footer-nav-link:focus-visible{border-color:var(--accent-cyan);color:var(--accent-cyan);transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow-glow)}
+    .toc-sidebar{width:var(--toc-width);flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}
+    .toc-sidebar::-webkit-scrollbar-track{background:transparent}
+    .toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:toc-counter}
+    .toc-nav-item{position:relative;margin-bottom:6px;counter-increment:toc-counter}
+    .toc-nav-item::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:-22px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:8px 12px 8px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.86rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .back-to-top{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .back-to-top.visible{opacity:1;visibility:visible}
+    .back-to-top:hover,.back-to-top:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .site-footer{text-align:center;padding:36px 24px;border-top:1px solid var(--border-color);color:var(--text-muted);font-size:0.87rem;margin-top:60px}
+    @media(max-width:1024px){.toc-sidebar{display:none}.article-layout{padding:32px 20px 70px;gap:0}.article-main{max-width:100%}}
+    @media(max-width:768px){.header-nav{gap:12px;flex-wrap:wrap}.article-footer{flex-direction:column}.article-title{font-size:1.55rem}.collab-content h2{font-size:1.3rem}.collab-content .three-col{grid-template-columns:1fr}.collab-content .arch-layers .layer{flex-wrap:wrap}.collab-content .arch-layers .layer .name{min-width:auto}.collab-content .compare-table{font-size:0.82rem}.collab-content .compare-table th,.collab-content .compare-table td{padding:10px 8px}}
+    .theme-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border-color);border-radius:20px;padding:4px 12px;cursor:pointer;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:border-color 0.3s ease;flex-shrink:0}
+    .theme-toggle:hover{border-color:var(--accent-cyan)}
+    .theme-switch{width:32px;height:16px;background:var(--bg-secondary);border-radius:8px;position:relative;transition:background 0.3s ease}
+    .theme-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--accent-cyan);border-radius:50%;transition:transform 0.3s ease}
+    [data-theme="light"] .theme-knob{transform:translateX(16px);background:var(--accent-purple)}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand"><span class="brand-bracket">&lt;</span><span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span><span class="brand-bracket">/&gt;</span></a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← Docs</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle"><span aria-hidden="true">REALITY</span><span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span><span aria-hidden="true">SIM</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#arch-section" class="breadcrumb-link">架构</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">ARCH</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 30min</span>
+        </div>
+        <h1 class="article-title">📝 在线协同文档编辑器架构</h1>
+        <p class="article-subtitle">OT/CRDT 一致性算法 · WebSocket 实时同步 · 操作日志与快照 · 权限控制 · 离线编辑 — 从冲突解决到工程落地的全链路架构设计。</p>
+      </header>
+
+      <div class="article-content collab-content">
+
+        <h2 id="overview">协同编辑核心挑战</h2>
+
+        <p>多人同时编辑同一份文档时，最核心的问题是：<strong>如何保证所有客户端最终看到的内容一致？</strong>这看似简单，实则涉及分布式系统中一些最棘手的问题——网络延迟、操作乱序、并发冲突、离线重连。</p>
+
+        <div style="background:var(--bg-secondary);border-radius:12px;padding:1.2rem 1rem;border:1px solid var(--border-color);overflow-x:auto;margin:0.8rem 0;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;font-size:0.85rem;">
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--accent-red);text-align:center;min-width:100px;border-left:4px solid var(--accent-red);">
+              <div style="font-size:1.2rem;">⚠️</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">并发冲突</div>
+              <div style="font-size:0.65rem;color:var(--accent-red);">两人同位插入</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-gold);text-align:center;min-width:100px;border-left:4px solid var(--code-gold);">
+              <div style="font-size:1.2rem;">🔀</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">操作乱序</div>
+              <div style="font-size:0.65rem;color:var(--code-gold);">网络延迟重排</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-blue);text-align:center;min-width:100px;border-left:4px solid var(--code-blue);">
+              <div style="font-size:1.2rem;">📡</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">实时同步</div>
+              <div style="font-size:0.65rem;color:var(--code-blue);">低延迟广播</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--accent-purple);text-align:center;min-width:100px;border-left:4px solid var(--accent-purple);">
+              <div style="font-size:1.2rem;">📴</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">离线编辑</div>
+              <div style="font-size:0.65rem;color:var(--accent-purple);">断网后合并</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--accent-green);text-align:center;min-width:100px;border-left:4px solid var(--accent-green);">
+              <div style="font-size:1.2rem;">✅</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">最终一致</div>
+              <div style="font-size:0.65rem;color:var(--accent-green);">所有端收敛</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="consistency-algorithm">一致性算法：OT vs CRDT</h2>
+
+        <h3 id="ot-algorithm">1. OT（Operational Transformation）</h3>
+
+        <p>OT 是协同编辑的"始祖"算法，Google Docs、腾讯文档、飞书文档均采用此方案。核心思想：<strong>操作原子化 + 服务端转换</strong>。当两个并发操作冲突时，通过 Transform 函数调整操作参数，使结果一致。</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** OT 核心流程 — 两人同时编辑 "Hello" */</span>
+<span class="cmt">//</span>
+<span class="cmt">// 用户 A：在位置 5 插入 "!"  →  opA = Insert(5, "!")</span>
+<span class="cmt">// 用户 B：在位置 5 插入 "?"  →  opB = Insert(5, "?")</span>
+<span class="cmt">//</span>
+<span class="cmt">// 如果不转换，两人结果不同：</span>
+<span class="cmt">//   A 先应用 opA → "Hello!" → 再应用 opB → "Hello?!"</span>
+<span class="cmt">//   B 先应用 opB → "Hello?" → 再应用 opA → "Hello!?."</span>
+<span class="cmt">//</span>
+<span class="cmt">// OT Transform 函数：当 A 收到 B 的 opB 时，</span>
+<span class="cmt">//   因为 opB 也在位置 5 插入，A 需要把 opB 调整为 Insert(6, "?")</span>
+<span class="cmt">//   结果：A → "Hello!" → "Hello!?"  ✅</span>
+<span class="cmt">//   B 收到 A 的 opA，调整为 Insert(5, "!")</span>
+<span class="cmt">//   结果：B → "Hello?" → "Hello!?"  ✅ 一致！</span>
+
+<span class="kw">public class</span> <span class="cls">OTTransform</span> {
+
+    <span class="cmt">/** Insert vs Insert 的 Transform */</span>
+    <span class="kw">public static</span> Operation <span class="fn">transform</span>(Operation opA, Operation opB) {
+        <span class="kw">if</span> (opA <span class="kw">instanceof</span> Insert insA && opB <span class="kw">instanceof</span> Insert insB) {
+            <span class="cmt">// 同位置插入：服务端先到的优先（左优先策略）</span>
+            <span class="kw">if</span> (insA.position == insB.position) {
+                <span class="cmt">// opB 需要右移一位</span>
+                <span class="kw">return new</span> Insert(insB.position + <span class="num">1</span>, insB.text);
+            }
+            <span class="cmt">// opB 位置在 opA 之后，需要偏移</span>
+            <span class="kw">if</span> (insB.position > insA.position) {
+                <span class="kw">return new</span> Insert(insB.position + insA.text.length(), insB.text);
+            }
+        }
+        <span class="kw">if</span> (opA <span class="kw">instanceof</span> Insert insA && opB <span class="kw">instanceof</span> Delete delB) {
+            <span class="kw">if</span> (insA.position <= delB.position) {
+                <span class="kw">return new</span> Delete(delB.position + insA.text.length(), delB.length);
+            }
+            <span class="cmt">// 插入位置在删除范围内，需要拆分删除操作</span>
+            <span class="kw">return new</span> Delete(delB.position, delB.length);
+        }
+        <span class="cmt">// ... Delete vs Delete, Delete vs Insert 等组合</span>
+        <span class="kw">return</span> opB;
+    }
+}</pre>
+        </div>
+
+        <h3 id="crdt-algorithm">2. CRDT（Conflict-free Replicated Data Type）</h3>
+
+        <p>CRDT 是近年的新贵，Figma、Notion、Linear 都在用。核心思想：<strong>为每个字符分配全局唯一 ID</strong>，操作天然可交换，无需中心服务器仲裁。</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** CRDT — RGA（Replicated Growable Array）实现 */</span>
+<span class="kw">public class</span> <span class="cls">RGANode</span> {
+    <span class="kw">private</span> LamportTimestamp id;     <span class="cmt">// 全局唯一 ID：clock + clientId</span>
+    <span class="kw">private</span> Character value;          <span class="cmt">// 字符值</span>
+    <span class="kw">private</span> LamportTimestamp leftId;   <span class="cmt">// 左邻居 ID（插入位置参考）</span>
+    <span class="kw">private</span> <span class="kw">boolean</span> deleted;           <span class="cmt">// 逻辑删除标记（tombstone）</span>
+}
+
+<span class="cmt">/** Lamport 时间戳 — 因果序保证 */</span>
+<span class="kw">public class</span> <span class="cls">LamportTimestamp</span> <span class="kw">implements</span> Comparable&lt;LamportTimestamp&gt; {
+    <span class="kw">private</span> <span class="kw">long</span> clock;       <span class="cmt">// 逻辑时钟</span>
+    <span class="kw">private</span> String clientId;  <span class="cmt">// 客户端唯一标识</span>
+
+    <span class="kw">@Override</span>
+    <span class="kw">public int</span> <span class="fn">compareTo</span>(LamportTimestamp other) {
+        <span class="cmt">// 先比较逻辑时钟，再比较 clientId（确定性全序）</span>
+        <span class="kw">int</span> cmp = Long.compare(<span class="kw">this</span>.clock, other.clock);
+        <span class="kw">return</span> cmp != <span class="num">0</span> ? cmp : <span class="kw">this</span>.clientId.compareTo(other.clientId);
+    }
+}
+
+<span class="cmt">/** CRDT 插入操作 — 无需 Transform */</span>
+<span class="kw">public class</span> <span class="cls">CRDTDocument</span> {
+    <span class="kw">private</span> List&lt;RGANode&gt; sequence = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">private</span> LamportTimestamp clock = <span class="kw">new</span> LamportTimestamp(<span class="num">0</span>, clientId);
+
+    <span class="kw">public</span> InsertOp <span class="fn">localInsert</span>(<span class="kw">int</span> index, <span class="kw">char</span> value) {
+        clock = clock.increment();
+        LamportTimestamp leftId = (index > <span class="num">0</span>)
+            ? sequence.get(index - <span class="num">1</span>).getId()
+            : LamportTimestamp.ROOT;
+
+        RGANode node = <span class="kw">new</span> RGANode(clock, value, leftId, <span class="kw">false</span>);
+        <span class="cmt">// 本地立即生效（乐观更新）</span>
+        insertByLeftId(node);
+
+        <span class="kw">return new</span> InsertOp(node);  <span class="cmt">// 广播给其他客户端</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">remoteInsert</span>(InsertOp op) {
+        <span class="cmt">// CRDT 天然无冲突：按 ID 偏序插入即可</span>
+        <span class="cmt">// 无需 Transform，无需中心服务器仲裁</span>
+        insertByLeftId(op.getNode());
+        clock = clock.merge(op.getNode().getId());
+    }
+}</pre>
+        </div>
+
+        <h3 id="ot-vs-crdt">3. OT vs CRDT 全维度对比</h3>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>维度</th><th>OT</th><th>CRDT</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>核心思想</strong></td><td>操作转换，服务端仲裁</td><td>数据结构自合并，无需仲裁</td></tr>
+            <tr><td><strong>一致性保证</strong></td><td>强一致（中心服务器定序）</td><td>最终一致（数学可证明收敛）</td></tr>
+            <tr><td><strong>服务端依赖</strong></td><td>强依赖（必须中心化）</td><td>弱依赖（支持 P2P）</td></tr>
+            <tr><td><strong>离线支持</strong></td><td>差（重连需补发+重排）</td><td>优（本地操作，上线后合并）</td></tr>
+            <tr><td><strong>元数据开销</strong></td><td><span class="badge-good">低</span>（仅操作本身）</td><td><span class="badge-bad">高</span>（每字符带 ID + tombstone）</td></tr>
+            <tr><td><strong>算法复杂度</strong></td><td><span class="badge-bad">高</span>（Transform 组合爆炸）</td><td><span class="badge-good">低</span>（插入/删除独立处理）</td></tr>
+            <tr><td><strong>典型产品</strong></td><td>Google Docs、腾讯文档、飞书</td><td>Figma、Notion、Linear、Yjs</td></tr>
+            <tr><td><strong>适用场景</strong></td><td>中心化、强一致、纯文本</td><td>去中心化、离线优先、结构化数据</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box gold">
+          <div class="label">选型建议</div>
+          <div class="content"><strong>中心化场景 → OT</strong>：强一致要求高、服务端可控、纯文本编辑。<strong>去中心化/离线场景 → CRDT</strong>：需要离线编辑、P2P 协同、结构化数据（JSON/Map）。<strong>混合方案</strong>：飞书文档采用"文本用 OT、表格用 CRDT"的混合架构，按数据类型选择最优算法。</div>
+        </div>
+
+        <h2 id="system-architecture">系统架构设计</h2>
+
+        <h3 id="overall-arch">1. 整体分层架构</h3>
+
+        <div class="arch-layers">
+          <div class="layer">
+            <span class="level">L1</span>
+            <span class="name">编辑器内核层</span>
+            <span class="desc">ProseMirror / TipTap / Lexical — 文档模型、渲染、输入捕获</span>
+            <span class="tag">客户端</span>
+          </div>
+          <div class="layer">
+            <span class="level">L2</span>
+            <span class="name">协同引擎层</span>
+            <span class="desc">OT Client / Yjs CRDT — 本地操作生成、远程操作应用</span>
+            <span class="tag">客户端</span>
+          </div>
+          <div class="layer">
+            <span class="level">L3</span>
+            <span class="name">通信层</span>
+            <span class="desc">WebSocket / WebRTC — 双向实时通信、连接管理</span>
+            <span class="tag">全链路</span>
+          </div>
+          <div class="layer">
+            <span class="level">L4</span>
+            <span class="name">协同服务层</span>
+            <span class="desc">Document Hub — 操作排序、Transform、广播、版本管理</span>
+            <span class="tag">服务端</span>
+          </div>
+          <div class="layer">
+            <span class="level">L5</span>
+            <span class="desc">操作日志 + 文档快照 + 元数据 — 持久化与恢复</span>
+            <span class="name">存储层</span>
+            <span class="tag">服务端</span>
+          </div>
+        </div>
+
+        <h3 id="doc-hub">2. Document Hub 核心服务</h3>
+
+        <p>Document Hub 是协同编辑的"大脑"，负责操作排序、转换、广播和版本管理：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** Document Hub — 协同编辑中心服务 */</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="cls">DocumentHubService</span> {
+
+    <span class="cmt">// 文档房间：每个打开的文档对应一个 Room</span>
+    <span class="kw">private final</span> ConcurrentHashMap&lt;String, DocumentRoom&gt; rooms = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">handleOperation</span>(String docId, String userId, ClientOperation clientOp) {
+        DocumentRoom room = rooms.computeIfAbsent(docId, DocumentRoom::<span class="kw">new</span>);
+
+        <span class="cmt">// 1. 服务端全局递增版本号</span>
+        <span class="kw">long</span> serverSeq = room.nextSeq();
+
+        <span class="cmt">// 2. OT Transform：对齐客户端版本与服务端版本</span>
+        ServerOperation serverOp = transformToServerVersion(room, clientOp, serverSeq);
+
+        <span class="cmt">// 3. 应用到服务端文档模型</span>
+        room.applyOperation(serverOp);
+
+        <span class="cmt">// 4. 持久化操作日志</span>
+        opLogStore.append(docId, serverOp);
+
+        <span class="cmt">// 5. 广播给同文档的其他协作者</span>
+        broadcastToPeers(room, userId, serverOp);
+
+        <span class="cmt">// 6. ACK 回发送者</span>
+        sendAck(userId, docId, serverSeq);
+    }
+
+    <span class="kw">private</span> ServerOperation <span class="fn">transformToServerVersion</span>(
+            DocumentRoom room, ClientOperation clientOp, <span class="kw">long</span> targetSeq) {
+        <span class="cmt">// 客户端基于 baseVersion，服务端已到 currentVersion</span>
+        <span class="cmt">// 需要把 clientOp 依次 transform 过 [baseVersion+1, targetSeq] 的操作</span>
+        Operation op = clientOp.getOperation();
+        <span class="kw">long</span> baseVersion = clientOp.getBaseVersion();
+
+        <span class="kw">for</span> (<span class="kw">long</span> v = baseVersion + <span class="num">1</span>; v <= targetSeq; v++) {
+            ServerOperation concurrent = room.getOperationAt(v);
+            op = OTTransform.transform(concurrent.getOperation(), op);
+        }
+
+        <span class="kw">return new</span> ServerOperation(targetSeq, op, clientOp.getUserId());
+    }
+}</pre>
+        </div>
+
+        <h2 id="websocket-layer">WebSocket 实时通信层</h2>
+
+        <h3 id="ws-connection">1. 连接管理</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** WebSocket 连接管理器 */</span>
+<span class="kw">@ServerEndpoint</span>(value = <span class="str">"/ws/collab/{docId}"</span>, configurator = SpringConfigurator.<span class="kw">class</span>)
+<span class="kw">public class</span> <span class="cls">CollabWebSocket</span> {
+
+    <span class="cmt">// docId → Set<Session>  一个文档的多个协作者</span>
+    <span class="kw">private static final</span> ConcurrentHashMap&lt;String, CopyOnWriteArraySet&lt;Session&gt;&gt; docSessions = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
+
+    <span class="kw">@OnOpen</span>
+    <span class="kw">public void</span> <span class="fn">onOpen</span>(Session session, @PathParam(<span class="str">"docId"</span>) String docId) {
+        <span class="cmt">// 1. 鉴权：验证 Token</span>
+        String token = session.getRequestParameterMap().get(<span class="str">"token"</span>).get(<span class="num">0</span>);
+        UserInfo user = authService.validate(token);
+        <span class="kw">if</span> (user == <span class="kw">null</span>) { session.close(); <span class="kw">return</span>; }
+
+        <span class="cmt">// 2. 权限校验：是否有编辑权限</span>
+        <span class="kw">if</span> (!permissionService.canEdit(user.getUserId(), docId)) {
+            session.close(); <span class="kw">return</span>;
+        }
+
+        <span class="cmt">// 3. 加入文档房间</span>
+        session.getUserProperties().put(<span class="str">"userId"</span>, user.getUserId());
+        session.getUserProperties().put(<span class="str">"docId"</span>, docId);
+        docSessions.computeIfAbsent(docId, k -> <span class="kw">new</span> CopyOnWriteArraySet&lt;&gt;()).add(session);
+
+        <span class="cmt">// 4. 推送当前文档状态（快照 + 增量 Ops）</span>
+        DocumentSnapshot snapshot = snapshotService.getLatest(docId);
+        sendJson(session, MessageType.INIT, snapshot);
+
+        <span class="cmt">// 5. 广播用户加入通知（光标 Presence）</span>
+        broadcastPresence(docId, user.getUserId(), <span class="str">"JOIN"</span>);
+    }
+
+    <span class="kw">@OnMessage</span>
+    <span class="kw">public void</span> <span class="fn">onMessage</span>(String message, Session session) {
+        CollabMessage msg = JSON.parseObject(message, CollabMessage.<span class="kw">class</span>);
+        String docId = (String) session.getUserProperties().get(<span class="str">"docId"</span>);
+        String userId = (String) session.getUserProperties().get(<span class="str">"userId"</span>);
+
+        <span class="kw">switch</span> (msg.getType()) {
+            <span class="kw">case</span> OPERATION -> documentHub.handleOperation(docId, userId, msg.getOp());
+            <span class="kw">case</span> CURSOR    -> broadcastCursor(docId, userId, msg.getCursor());
+            <span class="kw">case</span> SELECTION -> broadcastSelection(docId, userId, msg.getSelection());
+            <span class="kw">case</span> HEARTBEAT -> sendJson(session, MessageType.HEARTBEAT_ACK, <span class="str">"OK"</span>);
+        }
+    }
+
+    <span class="kw">@OnClose</span>
+    <span class="kw">public void</span> <span class="fn">onClose</span>(Session session) {
+        String docId = (String) session.getUserProperties().get(<span class="str">"docId"</span>);
+        String userId = (String) session.getUserProperties().get(<span class="str">"userId"</span>);
+        docSessions.getOrDefault(docId, <span class="kw">new</span> CopyOnWriteArraySet&lt;&gt;()).remove(session);
+        broadcastPresence(docId, userId, <span class="str">"LEAVE"</span>);
+    }
+}</pre>
+        </div>
+
+        <h3 id="ws-ha">2. 高可用：集群化 WebSocket</h3>
+
+        <p>单机 WebSocket 无法支撑大规模并发，需要集群化部署。核心问题是：<strong>同一文档的协作者可能连到不同节点</strong>，需要跨节点消息路由。</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 基于 Redis Pub/Sub 的跨节点消息路由 */</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="cls">CrossNodeRouter</span> {
+
+    <span class="kw">private final</span> RedisTemplate&lt;String, String&gt; redisTemplate;
+    <span class="kw">private final</span> String nodeId = UUID.randomUUID().toString();
+
+    <span class="cmt">// 订阅文档频道</span>
+    <span class="kw">public void</span> <span class="fn">subscribe</span>(String docId) {
+        String channel = <span class="str">"collab:doc:"</span> + docId;
+        redisTemplate.execute((RedisCallback&lt;Void&gt;) conn -> {
+            conn.subscribe((message, pattern) -> {
+                CollabMessage msg = JSON.parseObject(message, CollabMessage.<span class="kw">class</span>);
+                <span class="cmt">// 只处理其他节点发来的消息</span>
+                <span class="kw">if</span> (!msg.getOriginNode().equals(nodeId)) {
+                    localBroadcast(docId, msg);
+                }
+            }, channel.getBytes());
+            <span class="kw">return null</span>;
+        });
+    }
+
+    <span class="cmt">// 发布到文档频道</span>
+    <span class="kw">public void</span> <span class="fn">publish</span>(String docId, CollabMessage msg) {
+        msg.setOriginNode(nodeId);
+        redisTemplate.convertAndSend(<span class="str">"collab:doc:"</span> + docId, JSON.toJSONString(msg));
+    }
+}</pre>
+        </div>
+
+        <h2 id="storage-model">存储模型：操作日志 + 快照</h2>
+
+        <h3 id="op-log">1. 操作日志（OpLog）</h3>
+
+        <p>每次编辑操作追加写入操作日志，保证<strong>不可变、有序、可重放</strong>：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">CREATE TABLE</span> doc_op_log (
+    id              <span class="str">BIGINT</span>       <span class="kw">PRIMARY KEY</span> AUTO_INCREMENT,
+    doc_id          <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    seq             <span class="str">BIGINT</span>       <span class="kw">NOT NULL</span>,           <span class="cmt">-- 服务端全局递增版本号</span>
+    user_id         <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    op_type         <span class="str">VARCHAR</span>(<span class="num">16</span>)  <span class="kw">NOT NULL</span>,           <span class="cmt">-- INSERT / DELETE / RETAIN</span>
+    position        <span class="str">INT</span>,                              <span class="cmt">-- 操作位置</span>
+    content         <span class="str">TEXT</span>,                              <span class="cmt">-- 操作内容</span>
+    length          <span class="str">INT</span>,                              <span class="cmt">-- 删除长度</span>
+    base_version    <span class="str">BIGINT</span>       <span class="kw">NOT NULL</span>,           <span class="cmt">-- 客户端基于的版本</span>
+    created_at      <span class="str">DATETIME</span>     <span class="kw">DEFAULT</span> CURRENT_TIMESTAMP,
+    <span class="kw">UNIQUE KEY</span> uk_doc_seq (doc_id, seq),
+    <span class="kw">KEY</span> idx_doc_created (doc_id, created_at)
+);
+
+<span class="cmt">/** 操作日志追加 — 顺序写入 */</span>
+<span class="kw">@Repository</span>
+<span class="kw">public class</span> <span class="cls">OpLogStore</span> {
+
+    <span class="kw">public void</span> <span class="fn">append</span>(String docId, ServerOperation op) {
+        <span class="cmt">// MongoDB 也可以：按 docId 分片，顺序追加写入</span>
+        opLogMapper.insert(DocOpLog.builder()
+            .docId(docId)
+            .seq(op.getSeq())
+            .userId(op.getUserId())
+            .opType(op.getOperation().getType().name())
+            .position(op.getOperation().getPosition())
+            .content(op.getOperation().getContent())
+            .baseVersion(op.getBaseVersion())
+            .build());
+    }
+
+    <span class="kw">public</span> List&lt;ServerOperation&gt; <span class="fn">getOpsAfter</span>(String docId, <span class="kw">long</span> sinceSeq) {
+        <span class="cmt">// 客户端重连时，拉取缺失的操作</span>
+        <span class="kw">return</span> opLogMapper.selectList(<span class="kw">new</span> QueryWrapper&lt;DocOpLog&gt;()
+            .eq(<span class="str">"doc_id"</span>, docId)
+            .gt(<span class="str">"seq"</span>, sinceSeq)
+            .orderByAsc(<span class="str">"seq"</span>));
+    }
+}</pre>
+        </div>
+
+        <h3 id="snapshot">2. 文档快照（Snapshot）</h3>
+
+        <p>如果只有操作日志，新用户打开文档需要重放全部历史操作，代价极高。定期生成<strong>文档快照</strong>，新用户只需加载最新快照 + 增量操作：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 文档快照服务 */</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="cls">SnapshotService</span> {
+
+    <span class="kw">private static final long</span> SNAPSHOT_INTERVAL_OPS = <span class="num">500</span>;  <span class="cmt">// 每 500 次操作生成快照</span>
+
+    <span class="kw">public</span> DocumentSnapshot <span class="fn">getLatest</span>(String docId) {
+        <span class="cmt">// 1. 尝试从 Redis 缓存获取</span>
+        String cacheKey = <span class="str">"doc:snapshot:"</span> + docId;
+        DocumentSnapshot cached = redisTemplate.opsForValue().get(cacheKey);
+        <span class="kw">if</span> (cached != <span class="kw">null</span>) <span class="kw">return</span> cached;
+
+        <span class="cmt">// 2. 从对象存储加载最新快照</span>
+        DocumentSnapshot snapshot = ossClient.getObject(
+            <span class="str">"doc-snapshots"</span>, docId + <span class="str">"/latest.json"</span>,
+            DocumentSnapshot.<span class="kw">class</span>
+        );
+
+        <span class="cmt">// 3. 回放快照之后的增量操作</span>
+        List&lt;ServerOperation&gt; deltaOps = opLogStore.getOpsAfter(docId, snapshot.getSeq());
+        <span class="kw">for</span> (ServerOperation op : deltaOps) {
+            snapshot.apply(op);
+        }
+
+        <span class="cmt">// 4. 缓存到 Redis</span>
+        redisTemplate.opsForValue().set(cacheKey, snapshot, <span class="num">5</span>, TimeUnit.MINUTES);
+
+        <span class="kw">return</span> snapshot;
+    }
+
+    <span class="cmt">/** 异步生成快照 */</span>
+    <span class="kw">@Async</span>
+    <span class="kw">public void</span> <span class="fn">maybeCreateSnapshot</span>(String docId, <span class="kw">long</span> currentSeq) {
+        DocumentSnapshot last = snapshotRepo.findLatest(docId);
+        <span class="kw">if</span> (currentSeq - last.getSeq() >= SNAPSHOT_INTERVAL_OPS) {
+            DocumentSnapshot newSnapshot = getLatest(docId);  <span class="cmt">// 已回放至最新</span>
+            ossClient.putObject(<span class="str">"doc-snapshots"</span>,
+                docId + <span class="str">"/"</span> + currentSeq + <span class="str">".json"</span>,
+                JSON.toJSONString(newSnapshot));
+            <span class="cmt">// 更新 latest 指针</span>
+            ossClient.copyObject(<span class="str">"doc-snapshots"</span>,
+                docId + <span class="str">"/"</span> + currentSeq + <span class="str">".json"</span>,
+                docId + <span class="str">"/latest.json"</span>);
+        }
+    }
+}</pre>
+        </div>
+
+        <div class="highlight-box green">
+          <div class="label">存储分层策略</div>
+          <div class="content"><strong>元数据</strong>（MySQL）：docId、owner、权限、创建时间 — 强一致、低频查询。<strong>操作日志</strong>（MongoDB/TiKV）：高写入、按 docId 顺序追加。<strong>文档快照</strong>（对象存储 COS/OSS）：JSON/Protobuf 序列化，每 500 次操作生成一次。<strong>实时状态</strong>（Redis）：当前在线用户、光标位置、临时编辑状态，TTL 10s。</div>
+        </div>
+
+        <h2 id="permission-control">权限控制体系</h2>
+
+        <h3 id="doc-permission">1. 文档权限模型</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">CREATE TABLE</span> doc_permission (
+    id              <span class="str">BIGINT</span>       <span class="kw">PRIMARY KEY</span> AUTO_INCREMENT,
+    doc_id          <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    target_type     <span class="str">VARCHAR</span>(<span class="num">16</span>)  <span class="kw">NOT NULL</span>,  <span class="cmt">-- USER / DEPARTMENT / ORG / LINK</span>
+    target_id       <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    role            <span class="str">VARCHAR</span>(<span class="num">16</span>)  <span class="kw">NOT NULL</span>,  <span class="cmt">-- OWNER / EDITOR / COMMENTER / VIEWER</span>
+    grant_by        <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    expire_at       <span class="str">DATETIME</span>,                    <span class="cmt">-- NULL=永久</span>
+    created_at      <span class="str">DATETIME</span>     <span class="kw">DEFAULT</span> CURRENT_TIMESTAMP,
+    <span class="kw">UNIQUE KEY</span> uk_doc_target (doc_id, target_type, target_id)
+);
+
+<span class="cmt">/** 权限校验服务 */</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="cls">DocPermissionService</span> {
+
+    <span class="kw">public</span> DocRole <span class="fn">resolveRole</span>(String userId, String docId) {
+        <span class="cmt">// 1. 查直接用户权限</span>
+        DocPermission direct = permRepo.findByDocAndTarget(docId, <span class="str">"USER"</span>, userId);
+        <span class="kw">if</span> (direct != <span class="kw">null</span>) <span class="kw">return</span> direct.getRole();
+
+        <span class="cmt">// 2. 查部门权限（用户所属部门）</span>
+        List&lt;String&gt; deptIds = userService.getUserDepartments(userId);
+        <span class="kw">for</span> (String deptId : deptIds) {
+            DocPermission dept = permRepo.findByDocAndTarget(docId, <span class="str">"DEPARTMENT"</span>, deptId);
+            <span class="kw">if</span> (dept != <span class="kw">null</span>) <span class="kw">return</span> dept.getRole();
+        }
+
+        <span class="cmt">// 3. 查组织权限</span>
+        String orgId = userService.getUserOrgId(userId);
+        DocPermission org = permRepo.findByDocAndTarget(docId, <span class="str">"ORG"</span>, orgId);
+        <span class="kw">if</span> (org != <span class="kw">null</span>) <span class="kw">return</span> org.getRole();
+
+        <span class="cmt">// 4. 查链接分享权限</span>
+        DocPermission link = permRepo.findByDocAndTarget(docId, <span class="str">"LINK"</span>, <span class="str">"*"</span>);
+        <span class="kw">if</span> (link != <span class="kw">null</span>) <span class="kw">return</span> link.getRole();
+
+        <span class="cmt">// 5. 无权限</span>
+        <span class="kw">return</span> DocRole.NONE;
+    }
+}</pre>
+        </div>
+
+        <h3 id="role-matrix">2. 角色权限矩阵</h3>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>操作</th><th>OWNER</th><th>EDITOR</th><th>COMMENTER</th><th>VIEWER</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>编辑内容</td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-bad">✗</span></td><td><span class="badge-bad">✗</span></td></tr>
+            <tr><td>添加评论</td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-bad">✗</span></td></tr>
+            <tr><td>查看文档</td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td></tr>
+            <tr><td>分享/授权</td><td><span class="badge-good">✓</span></td><td><span class="badge-bad">✗</span></td><td><span class="badge-bad">✗</span></td><td><span class="badge-bad">✗</span></td></tr>
+            <tr><td>删除文档</td><td><span class="badge-good">✓</span></td><td><span class="badge-bad">✗</span></td><td><span class="badge-bad">✗</span></td><td><span class="badge-bad">✗</span></td></tr>
+            <tr><td>导出/下载</td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td><td><span class="badge-good">✓</span></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="offline-edit">离线编辑与冲突合并</h2>
+
+        <h3 id="offline-buffer">1. 离线操作缓冲</h3>
+
+        <p>用户断网时，本地操作暂存到 <strong>IndexedDB</strong>，网络恢复后批量同步：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 客户端离线操作缓冲</span>
+<span class="kw">class</span> <span class="cls">OfflineBuffer</span> {
+    <span class="kw">private</span> pendingOps: ClientOperation[] = [];
+    <span class="kw">private</span> db: IDBDatabase;
+
+    <span class="kw">async</span> <span class="fn">buffer</span>(op: ClientOperation) {
+        <span class="cmt">// 本地立即应用（乐观更新）</span>
+        <span class="kw">this</span>.editor.applyLocal(op);
+        <span class="cmt">// 暂存到内存 + IndexedDB</span>
+        <span class="kw">this</span>.pendingOps.push(op);
+        <span class="kw">await</span> <span class="kw">this</span>.db.put(<span class="str">"pendingOps"</span>, op);
+    }
+
+    <span class="kw">async</span> <span class="fn">flush</span>() {
+        <span class="kw">if</span> (<span class="kw">this</span>.pendingOps.length === <span class="num">0</span>) <span class="kw">return</span>;
+
+        <span class="cmt">// 合并为批量请求</span>
+        <span class="kw">const</span> batch: ClientOperation[] = [...<span class="kw">this</span>.pendingOps];
+        <span class="kw">this</span>.pendingOps = [];
+
+        <span class="kw">try</span> {
+            <span class="cmt">// 发送到服务端，服务端逐个 Transform 后应用</span>
+            <span class="kw">const</span> results = <span class="kw">await</span> <span class="kw">this</span>.ws.sendBatch(batch);
+            <span class="cmt">// 清除 IndexedDB</span>
+            <span class="kw">await</span> <span class="kw">this</span>.db.clear(<span class="str">"pendingOps"</span>);
+        } <span class="kw">catch</span> (e) {
+            <span class="cmt">// 发送失败，重新入队</span>
+            <span class="kw">this</span>.pendingOps.unshift(...batch);
+        }
+    }
+}</pre>
+        </div>
+
+        <h3 id="reconnect-sync">2. 重连同步流程</h3>
+
+        <div class="arch-layers">
+          <div class="layer">
+            <span class="level">S1</span>
+            <span class="name">WebSocket 重连</span>
+            <span class="desc">指数退避重连，携带 lastSeq 标识</span>
+            <span class="tag">客户端</span>
+          </div>
+          <div class="layer">
+            <span class="level">S2</span>
+            <span class="name">拉取增量操作</span>
+            <span class="desc">服务端返回 [lastSeq+1, current] 的操作</span>
+            <span class="tag">服务端</span>
+          </div>
+          <div class="layer">
+            <span class="level">S3</span>
+            <span class="name">本地 Transform</span>
+            <span class="desc">客户端对暂存操作做 Transform，对齐版本</span>
+            <span class="tag">客户端</span>
+          </div>
+          <div class="layer">
+            <span class="level">S4</span>
+            <span class="name">批量提交</span>
+            <span class="desc">将离线期间的操作批量发送到服务端</span>
+            <span class="tag">客户端</span>
+          </div>
+          <div class="layer">
+            <span class="level">S5</span>
+            <span class="name">服务端 Transform</span>
+            <span class="desc">服务端逐个 Transform 后应用，返回新版本号</span>
+            <span class="tag">服务端</span>
+          </div>
+        </div>
+
+        <div class="highlight-box purple">
+          <div class="label">CRDT 离线优势</div>
+          <div class="content">CRDT 天然支持离线编辑：本地操作立即生效，上线后按 ID 偏序自动合并，无需 Transform。代价是元数据体积较大（每字符带 LamportTimestamp），但 Yjs 等框架通过二进制编码将开销压缩到可接受范围。</div>
+        </div>
+
+        <h2 id="presence">实时光标与选区同步</h2>
+        <p>除了文档内容同步，协同编辑还需要同步每位用户的<strong>光标位置、选区范围、头像信息</strong>，让协作者"看到彼此"：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** Presence Service — 光标/选区广播 */</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="cls">PresenceService</span> {
+    <span class="kw">private static final</span> String PRESENCE_KEY = <span class="str">"doc:presence:"</span>;
+
+    <span class="kw">public void</span> <span class="fn">updateCursor</span>(String docId, String userId, CursorPos pos) {
+        String key = PRESENCE_KEY + docId;
+        redisTemplate.opsForHash().put(key, userId, JSON.toJSONString(
+            PresenceInfo.builder().userId(userId).cursorPos(pos)
+                .timestamp(System.currentTimeMillis()).build()));
+        redisTemplate.expire(key, <span class="num">10</span>, TimeUnit.SECONDS);
+        crossNodeRouter.publish(docId, CollabMessage.cursor(userId, pos));
+    }
+
+    <span class="kw">public</span> Map&lt;String, PresenceInfo&gt; <span class="fn">getOnlineUsers</span>(String docId) {
+        Map&lt;Object, Object&gt; entries = redisTemplate.opsForHash()
+            .entries(PRESENCE_KEY + docId);
+        <span class="kw">return</span> entries.entrySet().stream()
+            .collect(Collectors.toMap(
+                e -> (String) e.getKey(),
+                e -> JSON.parseObject((String) e.getValue(), PresenceInfo.<span class="kw">class</span>)));
+    }
+}</pre>
+        </div>
+
+        <h2 id="version-history">版本管理与回滚</h2>
+        <h3 id="version-model">1. 版本模型</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">CREATE TABLE</span> doc_version (
+    id              <span class="str">BIGINT</span>       <span class="kw">PRIMARY KEY</span> AUTO_INCREMENT,
+    doc_id          <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    version         <span class="str">BIGINT</span>       <span class="kw">NOT NULL</span>,
+    seq             <span class="str">BIGINT</span>       <span class="kw">NOT NULL</span>,
+    title           <span class="str">VARCHAR</span>(<span class="num">200</span>),
+    snapshot_key    <span class="str">VARCHAR</span>(<span class="num">256</span>),
+    created_by      <span class="str">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+    created_at      <span class="str">DATETIME</span>     <span class="kw">DEFAULT</span> CURRENT_TIMESTAMP,
+    <span class="kw">UNIQUE KEY</span> uk_doc_version (doc_id, version)
+);
+
+<span class="cmt">/** 版本回滚 */</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="cls">VersionRollbackService</span> {
+    <span class="kw">public void</span> <span class="fn">rollbackTo</span>(String docId, <span class="kw">long</span> targetVersion) {
+        DocVersion ver = versionRepo.findByDocAndVersion(docId, targetVersion);
+        DocumentSnapshot snapshot = ossClient.getObject(
+            <span class="str">"doc-snapshots"</span>, ver.getSnapshotKey(), DocumentSnapshot.<span class="kw">class</span>);
+        documentHub.replaceDocument(docId, snapshot);
+        crossNodeRouter.publish(docId, CollabMessage.rollback(targetVersion));
+    }
+}</pre>
+        </div>
+
+        <h2 id="optimization">性能优化与工程实践</h2>
+
+        <h3 id="op-compression">1. 操作压缩</h3>
+        <p>连续的相同类型操作可以合并，减少传输和存储开销：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 操作压缩 — 合并连续同类操作 */</span>
+<span class="kw">public class</span> <span class="cls">OpCompressor</span> {
+    <span class="kw">public</span> List&lt;Operation&gt; <span class="fn">compress</span>(List&lt;Operation&gt; ops) {
+        <span class="kw">if</span> (ops.size() <= <span class="num">1</span>) <span class="kw">return</span> ops;
+        List&lt;Operation&gt; result = <span class="kw">new</span> ArrayList&lt;&gt;();
+        Operation merged = ops.get(<span class="num">0</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i < ops.size(); i++) {
+            Operation current = ops.get(i);
+            <span class="kw">if</span> (merged <span class="kw">instanceof</span> Insert mIns && current <span class="kw">instanceof</span> Insert cIns
+                && mIns.position + mIns.text.length() == cIns.position) {
+                merged = <span class="kw">new</span> Insert(mIns.position, mIns.text + cIns.text);
+            } <span class="kw">else if</span> (merged <span class="kw">instanceof</span> Delete mDel && current <span class="kw">instanceof</span> Delete cDel
+                && mDel.position == cDel.position) {
+                merged = <span class="kw">new</span> Delete(mDel.position, mDel.length + cDel.length);
+            } <span class="kw">else</span> { result.add(merged); merged = current; }
+        }
+        result.add(merged);
+        <span class="kw">return</span> result;
+    }
+}</pre>
+        </div>
+
+        <h3 id="monitoring">2. 全链路监控</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>监控指标</th><th>含义</th><th>告警阈值</th><th>动作</th></tr></thead>
+          <tbody>
+            <tr><td>Op 延迟</td><td>客户端发送 → 服务端 ACK</td><td>&gt; 200ms</td><td>检查 WS 节点负载</td></tr>
+            <tr><td>广播延迟</td><td>服务端收到 → 其他客户端收到</td><td>&gt; 100ms</td><td>检查 Redis Pub/Sub</td></tr>
+            <tr><td>文档体积</td><td>操作日志大小、快照大小</td><td>增长曲线异常</td><td>触发压缩/快照</td></tr>
+            <tr><td>快照延迟</td><td>距离上次快照的 Op 数</td><td>&gt; 1000 次</td><td>触发新快照</td></tr>
+            <tr><td>WS 连接数</td><td>单节点活跃连接</td><td>&gt; 50K</td><td>水平扩容</td></tr>
+            <tr><td>Transform 失败</td><td>OT Transform 异常</td><td>&gt; 0</td><td>告警 + 快照覆盖</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box">
+          <div class="label">全链路追踪</div>
+          <div class="content">每条 Op 应携带 <code>traceId</code>，贯穿"客户端生成 → WS 发送 → Hub 排序 → 持久化 → 广播 → 其他客户端应用"全流程。结合 OpenTelemetry 可实现端到端延迟可视化。</div>
+        </div>
+
+        <h3 id="scalability">3. 水平扩展策略</h3>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="title">WS 网关层</div>
+            <div class="desc">无状态，L7 负载均衡<br>按 docId 一致性哈希<br>单节点支撑 50K 连接</div>
+          </div>
+          <div class="col">
+            <div class="title">Document Hub</div>
+            <div class="desc">按 docId 分片<br>每分片独立排序<br>Redis Pub/Sub 跨节点路由</div>
+          </div>
+          <div class="col">
+            <div class="title">存储层</div>
+            <div class="desc">OpLog 按 docId 分区<br>快照存对象存储<br>元数据 MySQL 读写分离</div>
+          </div>
+        </div>
+
+        <h2 id="industry-cases">业界产品技术路线</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>产品</th><th>一致性算法</th><th>编辑器内核</th><th>后端架构</th><th>特色</th></tr></thead>
+          <tbody>
+            <tr><td>Google Docs</td><td>OT（优化版）</td><td>自研</td><td>中心化 C++ 服务器</td><td>行业标杆，OT 始祖</td></tr>
+            <tr><td>腾讯文档</td><td>OT + 自研协议</td><td>自研</td><td>中心化微服务</td><td>微信生态深度集成</td></tr>
+            <tr><td>飞书文档</td><td>混合（文本OT/表格CRDT）</td><td>自研</td><td>中心化 + 边缘节点</td><td>按数据类型选算法</td></tr>
+            <tr><td>Notion</td><td>CRDT</td><td>自研 Block 编辑器</td><td>CRDT + 中心化持久化</td><td>Block 级 CRDT</td></tr>
+            <tr><td>Figma</td><td>CRDT</td><td>WebGL + 自研</td><td>CRDT + Rust 服务端</td><td>实时矢量图协同</td></tr>
+            <tr><td>Linear</td><td>CRDT（Automerge）</td><td>React</td><td>Local-first 架构</td><td>离线优先设计</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box red">
+          <div class="label">工程忠告</div>
+          <div class="content"><strong>不要从零实现 OT</strong>：Transform 函数的组合爆炸是已知难题，Google 花了数年才稳定。建议基于成熟框架（Yjs/ShareDB）起步，或采用 CRDT 规避 Transform 复杂度。<strong>快照策略比算法选择更重要</strong>：无论 OT 还是 CRDT，没有快照的系统在长文档场景下都会崩溃。<strong>测试并发场景</strong>：必须用自动化测试覆盖所有操作组合的并发冲突，人工测试无法覆盖。</div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-iot-architecture.html" class="footer-nav-link">← IoT 架构</a>
+        <a href="doc-ecommerce-skills.html" class="footer-nav-link">全渠道零售架构 →</a>
+      </footer>
+    </article>
+
+    <aside class="toc-sidebar" aria-label="目录">
+      <div class="toc-container">
+        <div class="toc-sidebar-title"><span>☰</span> 目录</div>
+        <ul class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">协同编辑核心挑战</a></li>
+          <li class="toc-nav-item"><a href="#consistency-algorithm" class="toc-nav-link">一致性算法：OT vs CRDT</a></li>
+          <li class="toc-nav-item"><a href="#system-architecture" class="toc-nav-link">系统架构设计</a></li>
+          <li class="toc-nav-item"><a href="#websocket-layer" class="toc-nav-link">WebSocket 实时通信层</a></li>
+          <li class="toc-nav-item"><a href="#storage-model" class="toc-nav-link">存储模型：操作日志 + 快照</a></li>
+          <li class="toc-nav-item"><a href="#permission-control" class="toc-nav-link">权限控制体系</a></li>
+          <li class="toc-nav-item"><a href="#offline-edit" class="toc-nav-link">离线编辑与冲突合并</a></li>
+          <li class="toc-nav-item"><a href="#presence" class="toc-nav-link">实时光标与选区同步</a></li>
+          <li class="toc-nav-item"><a href="#version-history" class="toc-nav-link">版本管理与回滚</a></li>
+          <li class="toc-nav-item"><a href="#optimization" class="toc-nav-link">性能优化与工程实践</a></li>
+          <li class="toc-nav-item"><a href="#industry-cases" class="toc-nav-link">业界产品技术路线</a></li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+
+  <footer class="site-footer">
+    <p>© 2026 ISNOWSOFT · Built with precision</p>
+  </footer>
+
+  <script>
+    (function(){
+      const progress=document.getElementById('readingProgress');
+      const backToTop=document.getElementById('backToTop');
+      const sections=document.querySelectorAll('.collab-content h2[id],.collab-content h3[id]');
+      const tocLinks=document.querySelectorAll('.toc-nav-link');
+
+      window.addEventListener('scroll',()=>{
+        const scrollTop=window.scrollY;
+        const docHeight=document.documentElement.scrollHeight-window.innerHeight;
+        const pct=Math.min(scrollTop/docHeight,1);
+        progress.style.transform='scaleX('+pct+')';
+        backToTop.classList.toggle('visible',scrollTop>400);
+        let current='';
+        sections.forEach(s=>{if(s.getBoundingClientRect().top<=120)current=s.id;});
+        tocLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+current);});
+      });
+
+      backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+      document.querySelectorAll('.toc-nav-link').forEach(l=>{
+        l.addEventListener('click',e=>{
+          e.preventDefault();
+          const target=document.querySelector(l.getAttribute('href'));
+          if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+        });
+      });
+
+      const toggleBtn=document.querySelector('[data-theme-action="toggle"]');
+      if(toggleBtn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          toggleBtn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        toggleBtn.addEventListener('click',()=>{
+          const html=document.documentElement;
+          const next=html.getAttribute('data-theme')==='dark'?'light':'dark';
+          html.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+        const saved=localStorage.getItem('portfolio-theme');
+        if(saved)document.documentElement.setAttribute('data-theme',saved);
+        window.addEventListener('storage',function(e){
+          if(e.key==='portfolio-theme'&&e.newValue){
+            document.documentElement.setAttribute('data-theme',e.newValue);
+            updateLabel();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

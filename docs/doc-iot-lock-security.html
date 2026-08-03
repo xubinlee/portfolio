@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="门锁安全 — 通信 TLS 加密、设备 token 鉴权、防重放、非法开锁风控拦截">
+  <title>门锁安全通信与风控 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:#16161f;--text-primary:#e8e8f0;--text-secondary:#a0a0b8;--text-muted:#6b6b80;--accent-cyan:#00d4ff;--accent-purple:#8b5cf6;--accent-green:#22c55e;--accent-red:#ef4444;--border-color:rgba(255,255,255,0.08);--shadow-glow:rgba(0,212,255,0.15);--toc-width:260px;--code-blue:#6b8cff;--code-green:#34d399;--code-red:#f87171;--code-gold:#fbbf24;--code-muted:#5a5a78;--code-bg-blue:rgba(79,110,247,0.12);--code-bg-gray:rgba(255,255,255,0.06);--code-bg-green:rgba(34,197,94,0.08);--code-bg-purple:rgba(139,92,246,0.12);--code-bg-yellow:rgba(234,179,8,0.12);--code-bg-white:var(--bg-secondary);--code-border-subtle:var(--border-color);--code-border-red:rgba(248,113,113,0.3);--code-border-green:rgba(52,211,153,0.3);--hl-keyword:#c084fc;--hl-function:#22d3ee;--hl-string:#4ade80;--hl-number:#fb923c;--bg-danger:rgba(248,113,113,0.08);--bg-success:rgba(52,211,153,0.08);--badge-danger:#ef4444;--badge-success:#22c55e;--badge-danger-bg:rgba(239,68,68,0.15);--badge-success-bg:rgba(34,197,94,0.15);--highlight-gold:#eab308;--highlight-gold-bg:rgba(234,179,8,0.07);--highlight-green:#22c55e;--highlight-green-bg:rgba(34,197,94,0.07);--highlight-purple:#8b5cf6;--highlight-purple-bg:rgba(139,92,246,0.07);--highlight-red:#ef4444;--highlight-red-bg:rgba(239,68,68,0.07)}
+    [data-theme="light"]{--bg-primary:#f5f5fa;--bg-secondary:#ffffff;--bg-card:#ffffff;--text-primary:#1a1a2e;--text-secondary:#4a4a68;--text-muted:#8888a0;--accent-cyan:#0099cc;--accent-purple:#7c3aed;--accent-green:#16a34a;--accent-red:#dc2626;--border-color:rgba(0,0,0,0.08);--shadow-glow:rgba(0,153,204,0.12);--code-blue:#4f6ef7;--code-green:#1a8a5a;--code-red:#c0392b;--code-gold:#e8a838;--code-muted:#b0c0d0;--code-bg-blue:#f0f4ff;--code-bg-gray:#eef2f7;--code-bg-green:#f0f7f0;--code-bg-purple:#f5f0ff;--code-bg-yellow:#fdf0a0;--code-bg-white:#ffffff;--code-border-subtle:#eef0f4;--code-border-red:#f5c8c8;--code-border-green:#b8dcc8;--hl-keyword:#9333ea;--hl-function:#0891b2;--hl-string:#16a34a;--hl-number:#ea580c;--bg-danger:#fdf0f0;--bg-success:#f0f7f0;--badge-danger:#c0392b;--badge-success:#1a8a5a;--badge-danger-bg:rgba(192,57,43,0.12);--badge-success-bg:rgba(26,138,90,0.12);--highlight-gold:#ca8a04;--highlight-gold-bg:rgba(202,138,4,0.07);--highlight-green:#16a34a;--highlight-green-bg:rgba(22,163,74,0.07);--highlight-purple:#7c3aed;--highlight-purple-bg:rgba(124,58,237,0.07);--highlight-red:#dc2626;--highlight-red-bg:rgba(220,38,38,0.07)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.8;min-height:100vh}
+    .skip-link{position:absolute;top:-100%;left:16px;background:var(--accent-cyan);color:#000;padding:8px 16px;border-radius:4px;z-index:10000;text-decoration:none;font-weight:600}
+    .skip-link:focus{top:16px}
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);padding:16px 24px}
+    [data-theme="light"] .site-header{background:rgba(245,245,250,0.95)}
+    .header-content{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .header-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand-bracket{color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700}
+    .brand-text{font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .brand-dot{color:var(--accent-cyan);font-weight:900}
+    .brand-text-accent{color:var(--accent-purple);font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .header-nav{display:flex;align-items:center;gap:24px}
+    .nav-link{color:var(--text-secondary);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:0.88rem;transition:color 0.3s ease;display:flex;align-items:center;gap:8px}
+    .nav-link:hover,.nav-link:focus-visible{color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:9999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .article-layout{display:flex;max-width:1400px;margin:0 auto;gap:40px;padding:40px 24px 80px;position:relative}
+    .article-main{flex:1;min-width:0;max-width:900px}
+    .article-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-color)}
+    .article-breadcrumb{display:flex;align-items:center;gap:12px;margin-bottom:22px;font-size:0.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .breadcrumb-link{color:inherit;text-decoration:none;transition:color 0.3s}
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible{color:var(--accent-cyan)}
+    .breadcrumb-separator::before{content:'/';opacity:0.5}
+    .article-meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:18px;align-items:center}
+    .meta-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(0,212,255,0.12);color:var(--accent-cyan)}
+    .meta-date{font-size:0.84rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .meta-read-time{font-size:0.82rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .article-title{font-family:'JetBrains Mono',monospace;font-size:clamp(1.65rem,3.5vw,2.35rem);font-weight:700;line-height:1.3;color:var(--text-primary);margin-bottom:14px}
+    .article-subtitle{font-size:1.08rem;color:var(--text-secondary);line-height:1.6}
+    .iot-content{font-size:1.01rem;line-height:1.9}
+    .iot-content h2{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--accent-cyan);margin-top:44px;margin-bottom:18px;padding-bottom:11px;border-bottom:2px solid var(--border-color);scroll-margin-top:20px}
+    .iot-content h3{font-family:'JetBrains Mono',monospace;font-size:1.22rem;font-weight:600;color:var(--text-primary);margin-top:32px;margin-bottom:14px;scroll-margin-top:20px}
+    .iot-content h4{font-size:0.95rem;font-weight:600;color:var(--accent-purple);margin-top:0.8rem;margin-bottom:0.2rem}
+    .iot-content p{margin-bottom:0.7rem;color:var(--text-secondary)}
+    .iot-content strong{color:var(--text-primary);font-weight:600}
+    .iot-content ul,.iot-content ol{padding-left:1.8rem;margin-bottom:0.7rem;color:var(--text-secondary)}
+    .iot-content li{margin-bottom:0.2rem}
+    .iot-content code{background:var(--bg-secondary);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace}
+    .iot-content .code-block{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:22px;margin:22px 0;overflow-x:auto;position:relative}
+    .iot-content .code-block.light{background:var(--bg-secondary)}
+    .iot-content .code-block pre{margin:0;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;word-break:break-all}
+    .iot-content .code-block .cls{color:var(--code-gold)}
+    .iot-content .code-block .kw{color:var(--hl-keyword)}
+    .iot-content .code-block .fn{color:var(--hl-function)}
+    .iot-content .code-block .num{color:var(--hl-number)}
+    .iot-content .code-block .str{color:var(--hl-string)}
+    .iot-content .code-block .cmt{color:var(--text-muted)}
+    .iot-content .highlight-box{border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;border-left:4px solid var(--accent-cyan);background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(139,92,246,0.07))}
+    .iot-content .highlight-box .label{font-weight:600;color:var(--accent-cyan);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px}
+    .iot-content .highlight-box .content{margin-top:4px;color:var(--text-secondary)}
+    .iot-content .highlight-box.gold{border-left-color:var(--code-gold);background:var(--highlight-gold-bg)}
+    .iot-content .highlight-box.gold .label{color:var(--highlight-gold)}
+    .iot-content .highlight-box.green{border-left-color:var(--accent-green);background:var(--highlight-green-bg)}
+    .iot-content .highlight-box.green .label{color:var(--highlight-green)}
+    .iot-content .highlight-box.purple{border-left-color:var(--accent-purple);background:var(--highlight-purple-bg)}
+    .iot-content .highlight-box.purple .label{color:var(--highlight-purple)}
+    .iot-content .highlight-box.red{border-left-color:var(--accent-red);background:var(--highlight-red-bg)}
+    .iot-content .highlight-box.red .label{color:var(--highlight-red)}
+    .iot-content .compare-table{width:100%;border-collapse:collapse;font-size:0.9rem;margin:0.8rem 0}
+    .iot-content .compare-table th{background:var(--bg-secondary);text-align:left;padding:0.5rem 1rem;font-weight:600;color:var(--accent-purple);border-bottom:2px solid var(--border-color)}
+    .iot-content .compare-table td{padding:0.5rem 1rem;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}
+    .iot-content .compare-table tr:hover td{background:rgba(0,212,255,0.03)}
+    .iot-content .compare-table .badge-good{display:inline-block;background:rgba(34,197,94,0.15);color:var(--highlight-green);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .iot-content .compare-table .badge-bad{display:inline-block;background:rgba(239,68,68,0.15);color:var(--highlight-red);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .iot-content .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin:0.8rem 0}
+    .iot-content .three-col .col{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center}
+    .iot-content .three-col .col .title{font-weight:600;color:var(--accent-cyan);font-size:0.9rem;margin-bottom:0.3rem}
+    .iot-content .three-col .col .desc{font-size:0.85rem;color:var(--text-secondary);line-height:1.5}
+    .iot-content .arch-layers{margin:1rem 0}
+    .iot-content .arch-layers .layer{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;margin-bottom:0.4rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;border-left:4px solid var(--accent-cyan);font-size:0.88rem}
+    .iot-content .arch-layers .layer .level{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent-cyan);font-size:0.8rem;min-width:28px}
+    .iot-content .arch-layers .layer .name{font-weight:600;color:var(--text-primary);min-width:200px}
+    .iot-content .arch-layers .layer .desc{color:var(--text-secondary);flex:1;font-size:0.82rem}
+    .iot-content .arch-layers .layer .tag{font-size:0.7rem;padding:0.1rem 0.6rem;border-radius:10px;background:rgba(0,212,255,0.1);color:var(--accent-cyan);font-weight:600;white-space:nowrap}
+    .article-footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+    .footer-nav-link{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;text-decoration:none;color:var(--text-secondary);font-size:0.9rem;transition:all 0.3s ease}
+    .footer-nav-link:hover,.footer-nav-link:focus-visible{border-color:var(--accent-cyan);color:var(--accent-cyan);transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow-glow)}
+    .toc-sidebar{width:var(--toc-width);flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}
+    .toc-sidebar::-webkit-scrollbar-track{background:transparent}
+    .toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:toc-counter}
+    .toc-nav-item{position:relative;margin-bottom:6px;counter-increment:toc-counter}
+    .toc-nav-item::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:-22px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:8px 12px 8px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.86rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .back-to-top{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .back-to-top.visible{opacity:1;visibility:visible}
+    .back-to-top:hover,.back-to-top:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .site-footer{text-align:center;padding:36px 24px;border-top:1px solid var(--border-color);color:var(--text-muted);font-size:0.87rem;margin-top:60px}
+    @media(max-width:1024px){.toc-sidebar{display:none}.article-layout{padding:32px 20px 70px;gap:0}.article-main{max-width:100%}}
+    @media(max-width:768px){.header-nav{gap:12px;flex-wrap:wrap}.article-footer{flex-direction:column}.article-title{font-size:1.55rem}.iot-content h2{font-size:1.3rem}.iot-content .three-col{grid-template-columns:1fr}.iot-content .arch-layers .layer{flex-wrap:wrap}.iot-content .arch-layers .layer .name{min-width:auto}.iot-content .compare-table{font-size:0.82rem}.iot-content .compare-table th,.iot-content .compare-table td{padding:10px 8px}}
+    .theme-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border-color);border-radius:20px;padding:4px 12px;cursor:pointer;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:border-color 0.3s ease;flex-shrink:0}
+    .theme-toggle:hover{border-color:var(--accent-cyan)}
+    .theme-switch{width:32px;height:16px;background:var(--bg-secondary);border-radius:8px;position:relative;transition:background 0.3s ease}
+    .theme-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--accent-cyan);border-radius:50%;transition:transform 0.3s ease}
+    [data-theme="light"] .theme-knob{transform:translateX(16px);background:var(--accent-purple)}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand"><span class="brand-bracket">&lt;</span><span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span><span class="brand-bracket">/&gt;</span></a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← Docs</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle"><span aria-hidden="true">REALITY</span><span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span><span aria-hidden="true">SIM</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#iot-section" class="breadcrumb-link">IoT</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">SECURITY</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 28min</span>
+        </div>
+        <h1 class="article-title">🔐 门锁安全通信与风控</h1>
+        <p class="article-subtitle">通信 TLS 加密 · 设备 Token 鉴权 · 防重放攻击 · 非法开锁风控拦截 — 从传输层加密到业务层风控的纵深防御体系。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <h2 id="security-overview">安全威胁模型与纵深防御架构</h2>
+
+        <p>智能门锁作为物理世界与数字世界的交汇点，面临的安全威胁远超普通 IoT 设备。一次成功的攻击不仅意味着数据泄露，更可能导致物理入侵。本篇从<strong>传输层加密、身份鉴权、消息防重放、业务风控</strong>四个维度，构建纵深防御体系。</p>
+
+        <div style="background:var(--bg-secondary);border-radius:12px;padding:1.2rem 1rem;border:1px solid var(--border-color);overflow-x:auto;margin:0.8rem 0;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;font-size:0.85rem;">
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-border-subtle);text-align:center;min-width:100px;border-left:4px solid var(--accent-red);">
+              <div style="font-size:1.2rem;">⚠️</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">威胁层</div>
+              <div style="font-size:0.65rem;color:var(--accent-red);">窃听/篡改/伪造</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-border-green);text-align:center;min-width:100px;border-left:4px solid var(--accent-green);">
+              <div style="font-size:1.2rem;">🔒</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">L1 传输加密</div>
+              <div style="font-size:0.65rem;color:var(--accent-green);">mTLS 双向认证</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-blue);text-align:center;min-width:100px;border-left:4px solid var(--code-blue);">
+              <div style="font-size:1.2rem;">🔑</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">L2 身份鉴权</div>
+              <div style="font-size:0.65rem;color:var(--code-blue);">Token + ACL</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--code-gold);text-align:center;min-width:100px;border-left:4px solid var(--code-gold);">
+              <div style="font-size:1.2rem;">🛡️</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">L3 消息防护</div>
+              <div style="font-size:0.65rem;color:var(--code-gold);">防重放 + 签名</div>
+            </div>
+            <span style="color:var(--code-muted);font-size:1.2rem;">→</span>
+            <div style="background:var(--code-bg-white);border-radius:10px;padding:0.8rem 1.2rem;border:1px solid var(--accent-purple);text-align:center;min-width:100px;border-left:4px solid var(--accent-purple);">
+              <div style="font-size:1.2rem;">🚨</div>
+              <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">L4 业务风控</div>
+              <div style="font-size:0.65rem;color:var(--accent-purple);">异常检测拦截</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box red">
+          <div class="label">威胁全景</div>
+          <div class="content">智能门锁面临的核心安全威胁：<strong>中间人攻击</strong>（MQTT 明文窃听）、<strong>设备伪造</strong>（克隆设备身份接入）、<strong>指令重放</strong>（截获开锁指令重复发送）、<strong>暴力破解</strong>（穷举 Token/密码）、<strong>非法开锁</strong>（伪造授权身份开锁）。任何单点防护都不够，必须纵深部署。</div>
+        </div>
+
+        <h2 id="tls-encryption">通信 TLS 加密</h2>
+
+        <h3 id="mtls-architecture">1. mTLS 双向认证架构</h3>
+
+        <p>门锁设备与 EMQX Broker 之间采用 <strong>mTLS（Mutual TLS）</strong>双向证书认证，确保通信双方身份可信。与单向 TLS（仅服务端出示证书）不同，mTLS 要求<strong>设备也必须出示证书</strong>，杜绝伪造设备接入。</p>
+
+        <div class="arch-layers">
+          <div class="layer">
+            <span class="level">CA</span>
+            <span class="name">私有 PKI 根证书</span>
+            <span class="desc">自建 CA，签发服务端证书与设备客户端证书</span>
+            <span class="tag">信任锚</span>
+          </div>
+          <div class="layer">
+            <span class="level">Srv</span>
+            <span class="name">EMQX 服务端证书</span>
+            <span class="desc">由私有 CA 签发，绑定 Broker 域名/IP</span>
+            <span class="tag">服务端身份</span>
+          </div>
+          <div class="layer">
+            <span class="level">Dev</span>
+            <span class="name">设备客户端证书</span>
+            <span class="desc">出厂烧录，CN=deviceId，含设备唯一标识</span>
+            <span class="tag">设备身份</span>
+          </div>
+          <div class="layer">
+            <span class="level">CRL</span>
+            <span class="name">证书吊销列表</span>
+            <span class="desc">丢失/异常设备证书实时吊销，EMQX 定期拉取</span>
+            <span class="tag">吊销机制</span>
+          </div>
+        </div>
+
+        <h3 id="emqx-tls-config">2. EMQX TLS 配置</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">## emqx.conf — EMQX MQTT/TLS 监听器配置</span>
+
+listeners.ssl.<span class="fn">default</span> {
+  bind = <span class="str">"0.0.0.0:8883"</span>
+  enable = <span class="kw">true</span>
+
+  <span class="cmt">## 服务端证书</span>
+  ssl_options {
+    cacertfile = <span class="str">"/etc/emqx/certs/ca.crt"</span>
+    certfile   = <span class="str">"/etc/emqx/certs/server.crt"</span>
+    keyfile    = <span class="str">"/etc/emqx/certs/server.key"</span>
+
+    <span class="cmt">## 强制客户端证书认证（mTLS）</span>
+    verify     = <span class="fn">verify_peer</span>
+    fail_if_no_peer_cert = <span class="kw">true</span>
+
+    <span class="cmt">## TLS 协议版本限制</span>
+    versions = [<span class="str">"tlsv1.3"</span>, <span class="str">"tlsv1.2"</span>]
+
+    <span class="cmt">## 密码套件：优先 AEAD</span>
+    ciphers = [
+      <span class="str">"TLS_AES_256_GCM_SHA384"</span>,
+      <span class="str">"TLS_AES_128_GCM_SHA256"</span>,
+      <span class="str">"TLS_CHACHA20_POLY1305_SHA256"</span>,
+      <span class="str">"ECDHE-ECDSA-AES256-GCM-SHA384"</span>,
+      <span class="str">"ECDHE-ECDSA-AES128-GCM-SHA256"</span>
+    ]
+
+    <span class="cmt">## 证书吊销检查（OCSP Stapling）</span>
+    ocsp staple_enabled = <span class="kw">true</span>
+    ocsp responder_url = <span class="str">"http://pki.isnowsoft.local/ocsp"</span>
+  }
+
+  <span class="cmt">## 设备证书 CN 提取为 ClientID</span>
+  peer_cert_as_username = <span class="fn">cn</span>
+  peer_cert_as_clientid = <span class="fn">cn</span>
+}</pre>
+        </div>
+
+        <div class="highlight-box green">
+          <div class="label">TLS 1.3 优势</div>
+          <div class="content">TLS 1.3 将握手从 2-RTT 缩减到 <strong>1-RTT</strong>，支持 <strong>0-RTT 恢复</strong>（会话票证复用），对门锁这种低功耗设备尤为关键。同时移除了 RSA 密钥交换等不安全套件，仅保留 <strong>AEAD 加密</strong>（AES-GCM / ChaCha20-Poly1305），杜绝 BEAST、POODLE 等降级攻击。</div>
+        </div>
+
+        <h3 id="device-cert-burn">3. 设备证书烧录与轮换</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 设备证书出厂烧录流程 */</span>
+<span class="kw">public class</span> <span class="cls">DeviceCertBurnService</span> {
+
+    <span class="kw">private static final</span> String CA_KEY_PASSWORD = VaultConfig.get(<span class="str">"ca.key.password"</span>);
+
+    <span class="kw">public</span> DeviceCertResult <span class="fn">burnDeviceCert</span>(String deviceId, String productModel) {
+        <span class="cmt">// 1. 生成设备 ECC P-256 密钥对（安全芯片内）</span>
+        KeyPair keyPair = SecureChip.generateKeyPair(<span class="str">"EC"</span>, <span class="num">256</span>);
+
+        <span class="cmt">// 2. 构建 CSR（Certificate Signing Request）</span>
+        X500Name subject = <span class="kw">new</span> X500Name(
+            <span class="str">"CN="</span> + deviceId +
+            <span class="str">", O=ISNOWSOFT"</span> +
+            <span class="str">", OU="</span> + productModel
+        );
+        PKCS10CertificationRequest csr = CSRBuilder.build(subject, keyPair.getPublic());
+
+        <span class="cmt">// 3. 私有 CA 签发设备证书（有效期 10 年）</span>
+        X509Certificate deviceCert = PrivateCA.signCertificate(
+            csr,
+            Duration.ofDays(<span class="num">3650</span>),
+            KeyUsage.digitalSignature | KeyUsage.keyEncipherment,
+            ExtendedKeyUsage.clientAuth
+        );
+
+        <span class="cmt">// 4. 写入安全芯片（私钥不可导出）</span>
+        SecureChip.writePrivateKey(deviceId, keyPair.getPrivate());
+        SecureChip.writeCertificate(deviceId, deviceCert);
+
+        <span class="cmt">// 5. CA 证书链一并写入</span>
+        SecureChip.writeCACertChain(PrivateCA.getCertChain());
+
+        <span class="cmt">// 6. 录入设备注册表</span>
+        deviceRegistry.register(DeviceCertRecord.builder()
+            .deviceId(deviceId)
+            .certSerial(deviceCert.getSerialNumber())
+            .certFingerprint(HashUtil.sha256Fingerprint(deviceCert))
+            .notBefore(deviceCert.getNotBefore())
+            .notAfter(deviceCert.getNotAfter())
+            .status(CertStatus.ACTIVE)
+            .build());
+
+        <span class="kw">return new</span> DeviceCertResult(deviceId, <span class="str">"BURNED"</span>);
+    }
+}</pre>
+        </div>
+
+        <h3 id="cert-revocation">4. 证书吊销机制</h3>
+
+        <p>设备丢失或异常时，需立即吊销其证书，阻止重新接入。采用 <strong>CRL + OCSP</strong> 双机制：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 证书吊销服务 */</span>
+<span class="kw">public class</span> <span class="cls">CertRevocationService</span> {
+
+    <span class="kw">public</span> RevocationResult <span class="fn">revokeDeviceCert</span>(String deviceId, RevocationReason reason) {
+        <span class="cmt">// 1. 查询设备证书序列号</span>
+        DeviceCertRecord cert = deviceCertRepo.findByDeviceId(deviceId);
+        <span class="kw">if</span> (cert == <span class="kw">null</span>) {
+            <span class="kw">throw new</span> BusinessException(<span class="str">"设备证书不存在"</span>);
+        }
+
+        <span class="cmt">// 2. 加入 CRL（Certificate Revocation List）</span>
+        PrivateCA.addToCRL(cert.getCertSerial(), reason);
+
+        <span class="cmt">// 3. 更新 OCSP Responder</span>
+        ocspResponder.markRevoked(cert.getCertSerial(), reason, Instant.now());
+
+        <span class="cmt">// 4. 强制设备下线（踢出 MQTT 连接）</span>
+        emqxAdminApi.kickClient(deviceId);
+
+        <span class="cmt">// 5. 更新设备注册表状态</span>
+        cert.setStatus(CertStatus.REVOKED);
+        cert.setRevokedAt(Instant.now());
+        cert.setRevocationReason(reason);
+        deviceCertRepo.save(cert);
+
+        <span class="cmt">// 6. 记录审计日志</span>
+        auditLog.record(AuditEvent.builder()
+            .action(<span class="str">"CERT_REVOCATION"</span>)
+            .target(deviceId)
+            .detail(<span class="str">"reason="</span> + reason + <span class="str">", serial="</span> + cert.getCertSerial())
+            .build());
+
+        <span class="kw">return new</span> RevocationResult(deviceId, <span class="str">"REVOKED"</span>);
+    }
+}</pre>
+        </div>
+
+        <div class="highlight-box gold">
+          <div class="label">CRL vs OCSP</div>
+          <div class="content"><strong>CRL</strong>（证书吊销列表）：CA 定期发布被吊销证书列表，EMQX 定期拉取。延迟取决于拉取间隔。<strong>OCSP</strong>（在线证书状态协议）：实时查询证书状态，延迟更低。生产环境建议<strong>OCSP Stapling</strong>（服务端主动附带 OCSP 响应），避免客户端直接查询 OCSP 服务器带来的隐私泄露和性能瓶颈。</div>
+        </div>
+
+        <h2 id="token-auth">设备 Token 鉴权</h2>
+
+        <h3 id="token-architecture">1. 双层 Token 架构</h3>
+
+        <p>设备鉴权采用 <strong>激活 Token + 访问 Token</strong> 双层设计，与 mTLS 形成互补：</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>层次</th><th>机制</th><th>用途</th><th>生命周期</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>L1 传输层</strong></td><td>mTLS 证书</td><td>设备身份证明 + 通道加密</td><td>10 年（出厂烧录）</td></tr>
+            <tr><td><strong>L2 应用层</strong></td><td>激活 Token</td><td>设备首次激活凭证</td><td>一次性（激活后失效）</td></tr>
+            <tr><td><strong>L3 应用层</strong></td><td>访问 Token</td><td>日常通信鉴权</td><td>24h（可刷新）</td></tr>
+            <tr><td><strong>L4 业务层</strong></td><td>MQTT ACL</td><td>Topic 订阅/发布权限</td><td>与 Token 同步</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="challenge-response">2. 挑战-应答式激活</h3>
+
+        <p>设备首次上电时，通过<strong>挑战-应答（Challenge-Response）</strong>机制完成激活，避免激活凭证在网络中明文传输：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 设备激活 — 挑战应答流程 */</span>
+<span class="kw">public class</span> <span class="cls">DeviceActivationService</span> {
+
+    <span class="kw">public</span> ActivationResult <span class="fn">activate</span>(ActivationRequest request) {
+        <span class="cmt">// 1. 验证设备证书（mTLS 已完成，从连接上下文获取）</span>
+        String deviceId = MtlsContext.getClientCN();
+
+        <span class="cmt">// 2. 生成随机挑战码（32字节）</span>
+        String challenge = SecureRandomUtil.hex(<span class="num">32</span>);
+
+        <span class="cmt">// 3. 缓存挑战码，等待设备应答（有效期 60s）</span>
+        challengeCache.put(deviceId, challenge, <span class="num">60</span>, TimeUnit.SECONDS);
+
+        <span class="kw">return new</span> ActivationResult(deviceId, challenge);
+    }
+
+    <span class="kw">public</span> TokenPair <span class="fn">verifyAndIssueToken</span>(ChallengeResponse response) {
+        String deviceId = response.getDeviceId();
+        String cachedChallenge = challengeCache.get(deviceId);
+
+        <span class="cmt">// 1. 校验挑战码有效性</span>
+        <span class="kw">if</span> (cachedChallenge == <span class="kw">null</span>) {
+            <span class="kw">throw new</span> SecurityException(<span class="str">"挑战码已过期"</span>);
+        }
+
+        <span class="cmt">// 2. 用设备公钥验签应答</span>
+        <span class="cmt">// 设备端：sign = ECC_Sign(privateKey, challenge)</span>
+        <span class="kw">boolean</span> valid = EccUtil.verifySignature(
+            deviceCertRepo.getPublicKey(deviceId),
+            cachedChallenge,
+            response.getSignature()
+        );
+        <span class="kw">if</span> (!valid) {
+            <span class="kw">throw new</span> SecurityException(<span class="str">"签名验证失败"</span>);
+        }
+
+        <span class="cmt">// 3. 销毁挑战码（一次性）</span>
+        challengeCache.invalidate(deviceId);
+
+        <span class="cmt">// 4. 签发访问 Token 对</span>
+        TokenPair tokens = tokenService.generateDeviceToken(deviceId);
+
+        <span class="cmt">// 5. 更新设备激活状态</span>
+        deviceRepo.updateStatus(deviceId, DeviceStatus.ACTIVATED);
+
+        <span class="kw">return</span> tokens;
+    }
+}</pre>
+        </div>
+
+        <h3 id="mqtt-acl">3. MQTT ACL 权限控制</h3>
+
+        <p>Token 鉴权通过后，EMQX 基于 <strong>ACL 规则</strong>限制设备的 Topic 订阅/发布权限，实现最小权限原则：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** EMQX HTTP ACL 回调 — 设备权限校验 */</span>
+<span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/mqtt/acl"</span>)
+<span class="kw">public class</span> <span class="cls">MqttAclController</span> {
+
+    <span class="kw">@PostMapping</span>(<span class="str">"/check"</span>)
+    <span class="kw">public</span> AclResult <span class="fn">checkAcl</span>(<span class="kw">@RequestBody</span> AclRequest req) {
+        String clientId = req.getClientId();
+        String topic = req.getTopic();
+        String action = req.getAction(); <span class="cmt">// subscribe | publish</span>
+
+        <span class="cmt">// 1. 从 Redis 获取设备 ACL 规则</span>
+        DeviceAclRule rule = redisTemplate.opsForValue()
+            .get(<span class="str">"device:acl:"</span> + clientId);
+
+        <span class="kw">if</span> (rule == <span class="kw">null</span>) {
+            <span class="kw">return</span> AclResult.deny();
+        }
+
+        <span class="cmt">// 2. 校验 Topic 匹配规则</span>
+        <span class="cmt">//    设备只能订阅/发布自己 ID 下的 Topic</span>
+        <span class="kw">boolean</span> allowed = rule.getPatterns().stream()
+            .anyMatch(pattern -> {
+                <span class="cmt">// 允许: /hotel/lock/{deviceId}/#</span>
+                <span class="cmt">// 禁止: /hotel/lock/{otherDeviceId}/#</span>
+                String expected = <span class="str">"/hotel/lock/"</span> + clientId + <span class="str">"/"</span>;
+                <span class="kw">return</span> topic.startsWith(expected)
+                    && rule.getAllowedActions().contains(action);
+            });
+
+        <span class="kw">return</span> allowed ? AclResult.allow() : AclResult.deny();
+    }
+}
+
+<span class="cmt">/** ACL 规则示例 */</span>
+<span class="cmt">// 设备 LOCK-001 允许的 Topic：</span>
+<span class="cmt">//   SUB  /hotel/lock/LOCK-001/up/#     — 上报数据</span>
+<span class="cmt">//   SUB  /hotel/lock/LOCK-001/down/#   — 接收指令</span>
+<span class="cmt">//   PUB  /hotel/lock/LOCK-001/up/#     — 发布状态</span>
+<span class="cmt">//   PUB  /hotel/lock/LOCK-001/down/resp — 指令应答</span>
+<span class="cmt">// 禁止：</span>
+<span class="cmt">//   任何其他设备的 Topic</span>
+<span class="cmt">//   /hotel/gateway/# 网关级 Topic</span>
+<span class="cmt">//   /hotel/lock/+/down/cmd  跨设备指令</span></pre>
+        </div>
+
+        <div class="highlight-box purple">
+          <div class="label">最小权限原则</div>
+          <div class="content">ACL 规则遵循<strong>默认拒绝 + 白名单放行</strong>策略。设备只能操作 <code>/hotel/lock/{自己的ID}/</code> 下的 Topic，无法订阅其他设备数据，也无法发布到网关级 Topic。即使 Token 泄露，攻击者也无法操控其他设备。</div>
+        </div>
+
+        <h2 id="anti-replay">防重放攻击</h2>
+
+        <h3 id="replay-threat">1. 重放攻击场景</h3>
+
+        <p>攻击者截获一条合法的<strong>开锁指令</strong>，在稍后重新发送，试图再次开锁。如果服务端无法识别这是"旧消息"，门锁将被非法打开。</p>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="title">场景 A：指令重放</div>
+            <div class="desc">截获 <code>/down/cmd</code> 开锁指令，原样重发</div>
+          </div>
+          <div class="col">
+            <div class="title">场景 B：上报重放</div>
+            <div class="desc">截获设备上报消息，伪造重复事件</div>
+          </div>
+          <div class="col">
+            <div class="title">场景 C：激活重放</div>
+            <div class="desc">截获激活应答，重复激活伪造设备</div>
+          </div>
+        </div>
+
+        <h3 id="nonce-timestamp">2. Nonce + 时间戳方案</h3>
+
+        <p>每条消息携带<strong>递增序列号（Nonce）</strong>和<strong>时间戳（Timestamp）</strong>，服务端校验两者来识别重放：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 消息防重放校验器 */</span>
+<span class="kw">public class</span> <span class="cls">ReplayDefenseService</span> {
+
+    <span class="kw">private static final long</span> MAX_TIMESTAMP_DRIFT_MS = <span class="num">30_000</span>; <span class="cmt">// 30秒</span>
+
+    <span class="kw">public</span> ReplayCheckResult <span class="fn">checkMessage</span>(MqttMessage message) {
+        MessagePayload payload = JSON.parseObject(message.getPayload(), MessagePayload.<span class="kw">class</span>);
+
+        <span class="cmt">// 1. 时间戳校验 — 拒绝过期消息</span>
+        <span class="kw">long</span> now = System.currentTimeMillis();
+        <span class="kw">long</span> drift = Math.abs(now - payload.getTimestamp());
+        <span class="kw">if</span> (drift > MAX_TIMESTAMP_DRIFT_MS) {
+            <span class="kw">return</span> ReplayCheckResult.reject(<span class="str">"TIMESTAMP_EXPIRED"</span>,
+                <span class="str">"消息时间戳偏差 "</span> + drift + <span class="str">"ms 超过阈值"</span>);
+        }
+
+        <span class="cmt">// 2. Nonce 唯一性校验 — Redis SETNX 原子去重</span>
+        String nonceKey = <span class="str">"nonce:"</span> + payload.getDeviceId() + <span class="str">":"</span> + payload.getNonce();
+        <span class="kw">boolean</span> isNew = redisTemplate.opsForValue()
+            .setIfAbsent(nonceKey, <span class="str">"1"</span>, MAX_TIMESTAMP_DRIFT_MS, TimeUnit.MILLISECONDS);
+
+        <span class="kw">if</span> (!isNew) {
+            <span class="kw">return</span> ReplayCheckResult.reject(<span class="str">"NONCE_DUPLICATE"</span>,
+                <span class="str">"重复 Nonce: "</span> + payload.getNonce());
+        }
+
+        <span class="cmt">// 3. 序列号单调递增校验（设备维度）</span>
+        String seqKey = <span class="str">"seq:"</span> + payload.getDeviceId();
+        Long lastSeq = redisTemplate.opsForValue().get(seqKey);
+        <span class="kw">if</span> (lastSeq != <span class="kw">null</span> && payload.getSeq() <= lastSeq) {
+            <span class="kw">return</span> ReplayCheckResult.reject(<span class="str">"SEQ_REGRESSION"</span>,
+                <span class="str">"序列号回退: last="</span> + lastSeq + <span class="str">", current="</span> + payload.getSeq());
+        }
+
+        <span class="cmt">// 4. 更新最新序列号</span>
+        redisTemplate.opsForValue().set(seqKey, payload.getSeq(), <span class="num">7</span>, TimeUnit.DAYS);
+
+        <span class="kw">return</span> ReplayCheckResult.accept();
+    }
+}
+
+<span class="cmt">/** 消息载荷结构 */</span>
+{
+    <span class="str">"deviceId"</span>: <span class="str">"LOCK-001"</span>,
+    <span class="str">"nonce"</span>:    <span class="str">"a3f8c2e1d9"</span>,       <span class="cmt">// 随机数（防重放）</span>
+    <span class="str">"seq"</span>:      <span class="num">10247</span>,               <span class="cmt">// 递增序列号</span>
+    <span class="str">"timestamp"</span>: <span class="num">1722672000000</span>,      <span class="cmt">// 毫秒时间戳</span>
+    <span class="str">"signature"</span>: <span class="str">"MEUCIQ..."</span>,        <span class="cmt">// ECC 签名</span>
+    <span class="str">"payload"</span>:  { ... }                <span class="cmt">// 业务数据</span>
+}</pre>
+        </div>
+
+        <h3 id="message-signature">3. 消息签名验证</h3>
+
+        <p>即使 Nonce 和时间戳都合法，仍需验证<strong>消息签名</strong>，确保消息未被篡改：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 消息签名校验 */</span>
+<span class="kw">public class</span> <span class="cls">MessageSignatureVerifier</span> {
+
+    <span class="kw">public</span> VerifyResult <span class="fn">verify</span>(SignedMessage msg) {
+        <span class="cmt">// 1. 构建签名原文 = deviceId + nonce + seq + timestamp + payloadHash</span>
+        String signingContent = String.join(<span class="str">"|"</span>,
+            msg.getDeviceId(),
+            msg.getNonce(),
+            String.valueOf(msg.getSeq()),
+            String.valueOf(msg.getTimestamp()),
+            HashUtil.sha256Hex(msg.getPayloadJson())
+        );
+
+        <span class="cmt">// 2. 获取设备公钥</span>
+        PublicKey devicePublicKey = deviceCertRepo
+            .getPublicKey(msg.getDeviceId());
+
+        <span class="cmt">// 3. ECC-P256 签名验证</span>
+        <span class="kw">boolean</span> valid = EccUtil.verify(
+            devicePublicKey,
+            signingContent.getBytes(StandardCharsets.UTF_8),
+            Base64.getDecoder().decode(msg.getSignature())
+        );
+
+        <span class="kw">if</span> (!valid) {
+            <span class="cmt">// 签名失败 → 记录安全事件</span>
+            securityEventService.record(SecurityEvent.builder()
+                .type(<span class="str">"SIGNATURE_INVALID"</span>)
+                .deviceId(msg.getDeviceId())
+                .detail(<span class="str">"签名验证失败，可能消息被篡改"</span>)
+                .severity(SecuritySeverity.HIGH)
+                .build());
+        }
+
+        <span class="kw">return</span> valid ? VerifyResult.ok() : VerifyResult.fail(<span class="str">"签名不匹配"</span>);
+    }
+}</pre>
+        </div>
+
+        <div class="highlight-box">
+          <div class="label">三层防重放</div>
+          <div class="content"><strong>第一层：时间戳</strong> — 拒绝超过 30s 的过期消息；<strong>第二层：Nonce + Seq</strong> — Redis SETNX 原子去重 + 序列号单调递增校验；<strong>第三层：签名</strong> — ECC-P256 确保消息完整性和来源真实性。三层叠加，即使攻击者获取了合法消息，也无法在有效窗口内重放成功。</div>
+        </div>
+
+        <h2 id="risk-control">非法开锁风控拦截</h2>
+
+        <h3 id="risk-model">1. 风控模型设计</h3>
+
+        <p>风控系统在<strong>业务层</strong>对开锁行为进行实时评估，拦截异常开锁请求。核心思路：<strong>规则引擎 + 评分模型</strong>，在开锁指令下发前完成风险判定。</p>
+
+        <div class="arch-layers">
+          <div class="layer">
+            <span class="level">L1</span>
+            <span class="name">实时规则引擎</span>
+            <span class="desc">硬规则：时间/频率/地点/身份 → 直接拦截</span>
+            <span class="tag">毫秒级</span>
+          </div>
+          <div class="layer">
+            <span class="level">L2</span>
+            <span class="name">评分模型</span>
+            <span class="desc">多维度评分：设备/用户/环境 → 风险等级判定</span>
+            <span class="tag">准实时</span>
+          </div>
+          <div class="layer">
+            <span class="level">L3</span>
+            <span class="name">离线分析</span>
+            <span class="desc">行为基线建模：历史模式 → 异常检测 + 模型更新</span>
+            <span class="tag">T+1</span>
+          </div>
+        </div>
+
+        <h3 id="rule-engine">2. 实时规则引擎</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 开锁风控规则引擎 */</span>
+<span class="kw">public class</span> <span class="cls">UnlockRiskEngine</span> {
+
+    <span class="kw">private final</span> List&lt;RiskRule&gt; rules = List.of(
+        <span class="cmt">// R1: 异常时段开锁（酒店场景：凌晨 2:00-5:00）</span>
+        <span class="kw">new</span> TimeWindowRule(<span class="num">2</span>, <span class="num">5</span>, RiskLevel.MEDIUM),
+
+        <span class="cmt">// R2: 短时间高频开锁（5分钟内超过 5 次）</span>
+        <span class="kw">new</span> FrequencyRule(<span class="num">5</span>, <span class="num">5</span>, TimeUnit.MINUTES, RiskLevel.HIGH),
+
+        <span class="cmt">// R3: 跨地域开锁（同一用户 30min 内在两个城市开锁）</span>
+        <span class="kw">new</span> GeoJumpRule(<span class="num">30</span>, TimeUnit.MINUTES, RiskLevel.CRITICAL),
+
+        <span class="cmt">// R4: 退房后开锁（已办理退房，门锁再次被开）</span>
+        <span class="kw">new</span> PostCheckoutRule(RiskLevel.CRITICAL),
+
+        <span class="cmt">// R5: 未知身份开锁（无有效预订/授权记录）</span>
+        <span class="kw">new</span> UnknownIdentityRule(RiskLevel.HIGH),
+
+        <span class="cmt">// R6: 离线期间开锁记录上报（设备离线时的开锁事件）</span>
+        <span class="kw">new</span> OfflineUnlockRule(RiskLevel.MEDIUM),
+
+        <span class="cmt">// R7: 应急钥匙开锁（使用机械钥匙而非电子方式）</span>
+        <span class="kw">new</span> EmergencyKeyRule(RiskLevel.HIGH)
+    );
+
+    <span class="kw">public</span> RiskDecision <span class="fn">evaluate</span>(UnlockContext ctx) {
+        List&lt;RiskHit&gt; hits = <span class="kw">new</span> ArrayList&lt;&gt;();
+
+        <span class="kw">for</span> (RiskRule rule : rules) {
+            RiskHit hit = rule.evaluate(ctx);
+            <span class="kw">if</span> (hit.isHit()) {
+                hits.add(hit);
+            }
+        }
+
+        <span class="cmt">// 取最高风险等级</span>
+        RiskLevel maxLevel = hits.stream()
+            .map(RiskHit::getLevel)
+            .max(Comparator.naturalOrder())
+            .orElse(RiskLevel.LOW);
+
+        <span class="cmt">// 生成决策</span>
+        <span class="kw">return</span> RiskDecision.builder()
+            .level(maxLevel)
+            .hits(hits)
+            .action(resolveAction(maxLevel))
+            .build();
+    }
+
+    <span class="kw">private</span> RiskAction <span class="fn">resolveAction</span>(RiskLevel level) {
+        <span class="kw">return switch</span> (level) {
+            <span class="kw">case</span> LOW      -> RiskAction.ALLOW;
+            <span class="kw">case</span> MEDIUM   -> RiskAction.ALLOW_WITH_LOG;   <span class="cmt">// 放行 + 告警</span>
+            <span class="kw">case</span> HIGH     -> RiskAction.CHALLENGE;        <span class="cmt">// 二次验证</span>
+            <span class="kw">case</span> CRITICAL -> RiskAction.BLOCK;            <span class="cmt">// 直接拦截</span>
+        };
+    }
+}</pre>
+        </div>
+
+        <h3 id="risk-score">3. 多维度评分模型</h3>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 风险评分模型 — 加权多维评分 */</span>
+<span class="kw">public class</span> <span class="cls">RiskScoreModel</span> {
+
+    <span class="kw">public</span> RiskScore <span class="fn">calculate</span>(UnlockContext ctx) {
+        <span class="kw">double</span> score = <span class="num">0.0</span>; <span class="cmt">// 0=安全, 100=极危</span>
+        Map&lt;String, Double&gt; dimensions = <span class="kw">new</span> LinkedHashMap&lt;&gt;();
+
+        <span class="cmt">// D1: 设备维度（权重 25%）</span>
+        <span class="kw">double</span> deviceScore = evaluateDeviceRisk(ctx);
+        dimensions.put(<span class="str">"device"</span>, deviceScore);
+        score += deviceScore * <span class="num">0.25</span>;
+
+        <span class="cmt">// D2: 用户维度（权重 30%）</span>
+        <span class="kw">double</span> userScore = evaluateUserRisk(ctx);
+        dimensions.put(<span class="str">"user"</span>, userScore);
+        score += userScore * <span class="num">0.30</span>;
+
+        <span class="cmt">// D3: 环境维度（权重 25%）</span>
+        <span class="kw">double</span> envScore = evaluateEnvironmentRisk(ctx);
+        dimensions.put(<span class="str">"environment"</span>, envScore);
+        score += envScore * <span class="num">0.25</span>;
+
+        <span class="cmt">// D4: 行为维度（权重 20%）</span>
+        <span class="kw">double</span> behaviorScore = evaluateBehaviorRisk(ctx);
+        dimensions.put(<span class="str">"behavior"</span>, behaviorScore);
+        score += behaviorScore * <span class="num">0.20</span>;
+
+        <span class="kw">return new</span> RiskScore(score, dimensions);
+    }
+
+    <span class="kw">private double</span> <span class="fn">evaluateDeviceRisk</span>(UnlockContext ctx) {
+        <span class="kw">double</span> s = <span class="num">0</span>;
+        <span class="kw">if</span> (ctx.isDeviceTampered())     s += <span class="num">40</span>; <span class="cmt">// 防拆报警</span>
+        <span class="kw">if</span> (ctx.isLowBattery())         s += <span class="num">10</span>; <span class="cmt">// 低电量异常</span>
+        <span class="kw">if</span> (ctx.isFirmwareOutdated())   s += <span class="num">15</span>; <span class="cmt">// 固件过旧</span>
+        <span class="kw">if</span> (ctx.hasOfflineGap())        s += <span class="num">20</span>; <span class="cmt">// 离线空窗期</span>
+        <span class="kw">return</span> Math.min(s, <span class="num">100</span>);
+    }
+
+    <span class="kw">private double</span> <span class="fn">evaluateUserRisk</span>(UnlockContext ctx) {
+        <span class="kw">double</span> s = <span class="num">0</span>;
+        <span class="kw">if</span> (!ctx.hasActiveBooking())     s += <span class="num">50</span>; <span class="cmt">// 无有效预订</span>
+        <span class="kw">if</span> (ctx.isExpiredBooking())      s += <span class="num">40</span>; <span class="cmt">// 预订已过期</span>
+        <span class="kw">if</span> (ctx.isBlacklistedUser())     s += <span class="num">60</span>; <span class="cmt">// 黑名单用户</span>
+        <span class="kw">if</span> (ctx.isFirstTimeUser())       s += <span class="num">10</span>; <span class="cmt">// 首次使用</span>
+        <span class="kw">return</span> Math.min(s, <span class="num">100</span>);
+    }
+
+    <span class="kw">private double</span> <span class="fn">evaluateEnvironmentRisk</span>(UnlockContext ctx) {
+        <span class="kw">double</span> s = <span class="num">0</span>;
+        <span class="kw">if</span> (ctx.isAbnormalTime())        s += <span class="num">30</span>; <span class="cmt">// 异常时段</span>
+        <span class="kw">if</span> (ctx.isGeoAnomaly())          s += <span class="num">50</span>; <span class="cmt">// 地理异常</span>
+        <span class="kw">if</span> (ctx.isNetworkAnomaly())      s += <span class="num">20</span>; <span class="cmt">// 网络异常</span>
+        <span class="kw">return</span> Math.min(s, <span class="num">100</span>);
+    }
+
+    <span class="kw">private double</span> <span class="fn">evaluateBehaviorRisk</span>(UnlockContext ctx) {
+        <span class="kw">double</span> s = <span class="num">0</span>;
+        <span class="kw">if</span> (ctx.isHighFrequency())       s += <span class="num">40</span>; <span class="cmt">// 高频操作</span>
+        <span class="kw">if</span> (ctx.isUnlockPatternAnomaly()) s += <span class="num">35</span>; <span class="cmt">// 开锁模式异常</span>
+        <span class="kw">if</span> (ctx.isCredentialAnomaly())   s += <span class="num">30</span>; <span class="cmt">// 凭证异常</span>
+        <span class="kw">return</span> Math.min(s, <span class="num">100</span>);
+    }
+}</pre>
+        </div>
+
+        <h3 id="unlock-intercept">4. 开锁指令拦截流程</h3>
+
+        <p>开锁指令下发前，必须经过风控评估。高风险指令被拦截后，触发<strong>二次验证</strong>或<strong>人工审核</strong>：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 开锁指令风控拦截器 */</span>
+<span class="kw">public class</span> <span class="cls">UnlockCommandInterceptor</span> {
+
+    <span class="kw">public</span> InterceptResult <span class="fn">intercept</span>(UnlockCommand cmd) {
+        <span class="cmt">// 1. 构建风控上下文</span>
+        UnlockContext ctx = buildContext(cmd);
+
+        <span class="cmt">// 2. 规则引擎评估</span>
+        RiskDecision decision = riskEngine.evaluate(ctx);
+
+        <span class="cmt">// 3. 评分模型补充</span>
+        RiskScore score = scoreModel.calculate(ctx);
+
+        <span class="cmt">// 4. 综合决策</span>
+        <span class="kw">return switch</span> (decision.getAction()) {
+            <span class="kw">case</span> ALLOW         -> doAllow(cmd, decision, score);
+            <span class="kw">case</span> ALLOW_WITH_LOG -> doAllowWithAlert(cmd, decision, score);
+            <span class="kw">case</span> CHALLENGE     -> doChallenge(cmd, decision, score);
+            <span class="kw">case</span> BLOCK         -> doBlock(cmd, decision, score);
+        };
+    }
+
+    <span class="kw">private</span> InterceptResult <span class="fn">doChallenge</span>(UnlockCommand cmd, RiskDecision d, RiskScore s) {
+        <span class="cmt">// 发送二次验证请求到用户手机</span>
+        String challengeId = UUID.randomUUID().toString();
+        challengeService.sendVerification(cmd.getUserId(), challengeId);
+        challengeCache.put(challengeId, cmd, <span class="num">5</span>, TimeUnit.MINUTES);
+
+        <span class="kw">return</span> InterceptResult.challenge(challengeId, d, s);
+    }
+
+    <span class="kw">private</span> InterceptResult <span class="fn">doBlock</span>(UnlockCommand cmd, RiskDecision d, RiskScore s) {
+        <span class="cmt">// 记录拦截事件 + 触发告警</span>
+        alertService.sendSecurityAlert(SecurityAlert.builder()
+            .type(<span class="str">"UNLOCK_BLOCKED"</span>)
+            .deviceId(cmd.getDeviceId())
+            .userId(cmd.getUserId())
+            .riskLevel(d.getLevel())
+            .riskScore(s.getScore())
+            .hits(d.getHits())
+            .build());
+
+        <span class="kw">return</span> InterceptResult.blocked(d, s);
+    }
+}</pre>
+        </div>
+
+        <h3 id="alert-escalation">5. 告警升级与联动</h3>
+
+        <p>风控拦截后，告警按严重等级升级处理：</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>风险等级</th><th>处理动作</th><th>通知渠道</th><th>响应时效</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge-good">LOW</span></td><td>放行 + 记录</td><td>—</td><td>—</td></tr>
+            <tr><td><span class="badge-good">MEDIUM</span></td><td>放行 + 告警</td><td>站内消息</td><td>24h 内查看</td></tr>
+            <tr><td><span class="badge-bad">HIGH</span></td><td>二次验证</td><td>短信 + App Push</td><td>5min 内验证</td></tr>
+            <tr><td><span class="badge-bad">CRITICAL</span></td><td>拦截 + 锁定 + 人工</td><td>短信 + 电话 + 邮件</td><td>实时响应</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box red">
+          <div class="label">CRITICAL 级联动</div>
+          <div class="content">CRITICAL 级告警触发后：<strong>1)</strong> 立即拦截开锁指令；<strong>2)</strong> 设备进入锁定状态（仅管理员可解锁）；<strong>3)</strong> 通知酒店前台/物业；<strong>4)</strong> 同步推送至公安联网平台（合规要求）；<strong>5)</strong> 生成安全事件工单，人工复核。</div>
+        </div>
+
+        <h2 id="security-audit">安全审计与合规</h2>
+
+        <h3 id="audit-log">1. 全链路审计日志</h3>
+
+        <p>每一次开锁、每一次连接、每一次 Token 刷新，都必须记录不可篡改的审计日志：</p>
+
+        <div class="code-block light">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">/** 安全审计日志结构 */</span>
+<span class="kw">public class</span> <span class="cls">SecurityAuditLog</span> {
+    <span class="kw">private</span> String traceId;       <span class="cmt">// 链路追踪ID</span>
+    <span class="kw">private</span> String deviceId;      <span class="cmt">// 设备ID</span>
+    <span class="kw">private</span> String userId;        <span class="cmt">// 操作用户</span>
+    <span class="kw">private</span> String action;        <span class="cmt">// 操作类型</span>
+    <span class="kw">private</span> String result;        <span class="cmt">// ALLOW / BLOCK / CHALLENGE</span>
+    <span class="kw">private</span> String riskLevel;     <span class="cmt">// 风险等级</span>
+    <span class="kw">private</span> Double riskScore;     <span class="cmt">// 风险评分</span>
+    <span class="kw">private</span> String clientIp;      <span class="cmt">// 来源IP</span>
+    <span class="kw">private</span> String certSerial;    <span class="cmt">// 证书序列号</span>
+    <span class="kw">private</span> Long   timestamp;     <span class="cmt">// 事件时间</span>
+    <span class="kw">private</span> String signature;     <span class="cmt">// 日志防篡改签名</span>
+}</pre>
+        </div>
+
+        <h3 id="compliance">2. 合规要求</h3>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="title">GDPR / 个保法</div>
+            <div class="desc">用户数据最小采集、加密存储、定期清理、用户可删除</div>
+          </div>
+          <div class="col">
+            <div class="title">等保 2.0</div>
+            <div class="desc">通信加密、身份鉴别、访问控制、审计追踪、入侵防范</div>
+          </div>
+          <div class="col">
+            <div class="title">GA/T 规范</div>
+            <div class="desc">门锁开锁记录保存 ≥180天、异常告警实时上报公安平台</div>
+          </div>
+        </div>
+
+        <h2 id="security-summary">安全机制汇总</h2>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>防护层</th><th>机制</th><th>抵御威胁</th><th>实现组件</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>传输层</strong></td><td>mTLS 双向认证</td><td>窃听、中间人、伪造设备</td><td>EMQX + 私有 PKI</td></tr>
+            <tr><td><strong>传输层</strong></td><td>TLS 1.3 AEAD</td><td>数据泄露、篡改</td><td>EMQX SSL Listener</td></tr>
+            <tr><td><strong>传输层</strong></td><td>证书吊销（CRL/OCSP）</td><td>丢失设备重入</td><td>私有 CA + OCSP Responder</td></tr>
+            <tr><td><strong>身份层</strong></td><td>挑战-应答激活</td><td>激活凭证泄露</td><td>ECC-P256 签名</td></tr>
+            <tr><td><strong>身份层</strong></td><td>Token 鉴权 + 刷新</td><td>长期凭证泄露</td><td>Redis + JWT</td></tr>
+            <tr><td><strong>权限层</strong></td><td>MQTT ACL</td><td>越权操作</td><td>EMQX HTTP ACL</td></tr>
+            <tr><td><strong>消息层</strong></td><td>Nonce + 时间戳</td><td>消息重放</td><td>Redis SETNX</td></tr>
+            <tr><td><strong>消息层</strong></td><td>序列号递增</td><td>乱序/回退攻击</td><td>Redis 原子计数</td></tr>
+            <tr><td><strong>消息层</strong></td><td>ECC 签名</td><td>消息篡改、伪造</td><td>设备安全芯片</td></tr>
+            <tr><td><strong>业务层</strong></td><td>规则引擎风控</td><td>非法开锁</td><td>自研 RiskEngine</td></tr>
+            <tr><td><strong>业务层</strong></td><td>评分模型</td><td>隐蔽攻击</td><td>多维评分 + 离线基线</td></tr>
+            <tr><td><strong>审计层</strong></td><td>全链路审计日志</td><td>事后追溯</td><td>ES + 不可篡改存储</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box green">
+          <div class="label">纵深防御核心</div>
+          <div class="content">单一安全机制被突破时，下一层仍能拦截。mTLS 防窃听 → Token 鉴权防伪造 → Nonce+签名防重放 → 风控引擎防业务攻击 → 审计日志保追溯。<strong>任何单点突破不足以造成安全事故</strong>，这就是纵深防御的价值。</div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-iot-ota-upgrade.html" class="footer-nav-link">← 固件 OTA 升级链路</a>
+        <a href="doc-iot-multi-tenant.html" class="footer-nav-link">多租户 SaaS →</a>
+      </footer>
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#security-overview" class="toc-nav-link">安全威胁模型与纵深防御</a></li>
+          <li class="toc-nav-item"><a href="#tls-encryption" class="toc-nav-link">通信 TLS 加密</a></li>
+          <li class="toc-nav-item"><a href="#token-auth" class="toc-nav-link">设备 Token 鉴权</a></li>
+          <li class="toc-nav-item"><a href="#anti-replay" class="toc-nav-link">防重放攻击</a></li>
+          <li class="toc-nav-item"><a href="#risk-control" class="toc-nav-link">非法开锁风控拦截</a></li>
+          <li class="toc-nav-item"><a href="#security-audit" class="toc-nav-link">安全审计与合规</a></li>
+          <li class="toc-nav-item"><a href="#security-summary" class="toc-nav-link">安全机制汇总</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+  <footer class="site-footer"><p>&copy; 2026 ISNOWSOFT — All rights reserved.</p></footer>
+
+  <script>
+    const sections=document.querySelectorAll('.iot-content h2[id],.iot-content h3[id]');const tocLinks=document.querySelectorAll('.toc-nav-link,.toc-sub-link');
+    function updateActiveToc(){let c='';const s=window.scrollY+120;sections.forEach(sec=>{if(s>=sec.offsetTop)c=sec.id});tocLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})}
+    function updateReadingProgress(){const a=document.querySelector('.iot-content');if(!a)return;let p=(window.scrollY-a.offsetTop)/(a.offsetHeight-window.innerHeight);p=Math.min(Math.max(p,0),1);document.getElementById('readingProgress').style.transform='scaleX('+p+')'}
+    function toggleBackToTop(){const b=document.getElementById('backToTop');window.scrollY>400?b.classList.add('visible'):b.classList.remove('visible')}
+    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+    tocLinks.forEach(l=>{l.addEventListener('click',function(e){e.preventDefault();const t=document.getElementById(this.getAttribute('href').substring(1));if(t)window.scrollTo({top:t.offsetTop-20,behavior:'smooth'})})});
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){window.requestAnimationFrame(()=>{updateActiveToc();updateReadingProgress();toggleBackToTop();ticking=false});ticking=true}},{passive:true});updateActiveToc();
+    (function(){var s=localStorage.getItem('portfolio-theme');if(s)document.documentElement.setAttribute('data-theme',s);var b=document.querySelector('.theme-toggle');if(b){function u(){var t=document.documentElement.getAttribute('data-theme');b.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式')}u();b.addEventListener('click',function(){var c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('portfolio-theme',n);u()})}window.addEventListener('storage',function(e){if(e.key==='portfolio-theme'&&e.newValue){document.documentElement.setAttribute('data-theme',e.newValue);if(b)b.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式')}})})();
+  </script>
+</body>
+</html>

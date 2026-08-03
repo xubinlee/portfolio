@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="微服务通用底层架构 — Spring Boot 4.x + Spring Cloud 2025 + Spring Cloud Alibaba 2025 全栈微服务底座">
+  <title>微服务通用底层架构 | ISNOWSOFT Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:#16161f;--text-primary:#e8e8f0;--text-secondary:#a0a0b8;--text-muted:#6b6b80;--accent-cyan:#00d4ff;--accent-purple:#8b5cf6;--accent-green:#22c55e;--accent-red:#ef4444;--accent-gold:#eab308;--border-color:rgba(255,255,255,0.08);--shadow-glow:rgba(0,212,255,0.15);--toc-width:260px;--code-blue:#6b8cff;--code-green:#34d399;--code-red:#f87171;--code-gold:#fbbf24;--code-muted:#5a5a78;--code-bg-blue:rgba(79,110,247,0.12);--code-bg-gray:rgba(255,255,255,0.06);--code-bg-green:rgba(34,197,94,0.08);--code-bg-purple:rgba(139,92,246,0.12);--code-bg-white:var(--bg-secondary);--code-border-subtle:var(--border-color);--hl-keyword:#c084fc;--hl-function:#22d3ee;--hl-string:#4ade80;--hl-number:#fb923c;--highlight-gold:#eab308;--highlight-gold-bg:rgba(234,179,8,0.07);--highlight-green:#22c55e;--highlight-green-bg:rgba(34,197,94,0.07);--highlight-purple:#8b5cf6;--highlight-purple-bg:rgba(139,92,246,0.07);--highlight-red:#ef4444;--highlight-red-bg:rgba(239,68,68,0.07)}
+    [data-theme="light"]{--bg-primary:#f5f5fa;--bg-secondary:#ffffff;--bg-card:#ffffff;--text-primary:#1a1a2e;--text-secondary:#4a4a68;--text-muted:#8888a0;--accent-cyan:#0099cc;--accent-purple:#7c3aed;--accent-green:#16a34a;--accent-red:#dc2626;--accent-gold:#ca8a04;--border-color:rgba(0,0,0,0.08);--shadow-glow:rgba(0,153,204,0.12);--code-blue:#4f6ef7;--code-green:#1a8a5a;--code-red:#c0392b;--code-gold:#e8a838;--code-muted:#b0c0d0;--code-bg-blue:#f0f4ff;--code-bg-gray:#eef2f7;--code-bg-green:#f0f7f0;--code-bg-purple:#f5f0ff;--code-bg-white:#ffffff;--code-border-subtle:#eef0f4;--hl-keyword:#9333ea;--hl-function:#0891b2;--hl-string:#16a34a;--hl-number:#ea580c;--highlight-gold:#ca8a04;--highlight-gold-bg:rgba(202,138,4,0.07);--highlight-green:#16a34a;--highlight-green-bg:rgba(22,163,74,0.07);--highlight-purple:#7c3aed;--highlight-purple-bg:rgba(124,58,237,0.07);--highlight-red:#dc2626;--highlight-red-bg:rgba(220,38,38,0.07)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.8;min-height:100vh}
+    .skip-link{position:absolute;top:-100%;left:16px;background:var(--accent-cyan);color:#000;padding:8px 16px;border-radius:4px;z-index:10000;text-decoration:none;font-weight:600}
+    .skip-link:focus{top:16px}
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);padding:16px 24px}
+    [data-theme="light"] .site-header{background:rgba(245,245,250,0.95)}
+    .header-content{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .header-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand-bracket{color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700}
+    .brand-text{font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .brand-dot{color:var(--accent-cyan);font-weight:900}
+    .brand-text-accent{color:var(--accent-purple);font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .header-nav{display:flex;align-items:center;gap:24px}
+    .nav-link{color:var(--text-secondary);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:0.88rem;transition:color 0.3s ease;display:flex;align-items:center;gap:8px}
+    .nav-link:hover,.nav-link:focus-visible{color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:9999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .article-layout{display:flex;max-width:1400px;margin:0 auto;gap:40px;padding:40px 24px 80px;position:relative}
+    .article-main{flex:1;min-width:0;max-width:900px}
+    .article-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-color)}
+    .article-breadcrumb{display:flex;align-items:center;gap:12px;margin-bottom:22px;font-size:0.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .breadcrumb-link{color:inherit;text-decoration:none;transition:color 0.3s}
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible{color:var(--accent-cyan)}
+    .breadcrumb-separator::before{content:'/';opacity:0.5}
+    .article-meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:18px;align-items:center}
+    .meta-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(139,92,246,0.12);color:var(--accent-purple)}
+    .meta-date{font-size:0.84rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .meta-read-time{font-size:0.82rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .article-title{font-family:'JetBrains Mono',monospace;font-size:clamp(1.65rem,3.5vw,2.35rem);font-weight:700;line-height:1.3;color:var(--text-primary);margin-bottom:14px}
+    .article-subtitle{font-size:1.08rem;color:var(--text-secondary);line-height:1.6}
+    .msa-content{font-size:1.01rem;line-height:1.9}
+    .msa-content h2{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--accent-cyan);margin-top:44px;margin-bottom:18px;padding-bottom:11px;border-bottom:2px solid var(--border-color);scroll-margin-top:20px}
+    .msa-content h3{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--text-primary);margin-top:32px;margin-bottom:14px;scroll-margin-top:20px;padding-left:0.5rem;border-left:3px solid var(--accent-purple)}
+    .msa-content h4{font-size:0.95rem;font-weight:600;color:var(--accent-gold);margin-top:1.2rem;margin-bottom:0.4rem}
+    .msa-content p{margin-bottom:0.7rem;color:var(--text-secondary)}
+    .msa-content strong{color:var(--text-primary);font-weight:600}
+    .msa-content ul,.msa-content ol{padding-left:1.8rem;margin-bottom:0.7rem;color:var(--text-secondary)}
+    .msa-content li{margin-bottom:0.2rem}
+    .msa-content code{background:var(--bg-secondary);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.82rem;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace}
+    .msa-content .code-block{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:22px;margin:22px 0;overflow-x:auto;position:relative}
+    .msa-content .code-block pre{margin:0;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;word-break:break-all}
+    .msa-content .code-block .cls{color:var(--code-gold)}
+    .msa-content .code-block .kw{color:var(--hl-keyword)}
+    .msa-content .code-block .fn{color:var(--hl-function)}
+    .msa-content .code-block .num{color:var(--hl-number)}
+    .msa-content .code-block .str{color:var(--hl-string)}
+    .msa-content .code-block .cmt{color:var(--text-muted)}
+    .msa-content .highlight-box{border-radius:8px;padding:1rem 1.2rem;margin:1rem 0;border-left:4px solid var(--accent-cyan);background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(139,92,246,0.07))}
+    .msa-content .highlight-box .label{font-weight:600;color:var(--accent-cyan);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px}
+    .msa-content .highlight-box .content{margin-top:4px;color:var(--text-secondary)}
+    .msa-content .highlight-box.gold{border-left-color:var(--accent-gold);background:var(--highlight-gold-bg)}
+    .msa-content .highlight-box.gold .label{color:var(--highlight-gold)}
+    .msa-content .highlight-box.green{border-left-color:var(--accent-green);background:var(--highlight-green-bg)}
+    .msa-content .highlight-box.green .label{color:var(--highlight-green)}
+    .msa-content .highlight-box.purple{border-left-color:var(--accent-purple);background:var(--highlight-purple-bg)}
+    .msa-content .highlight-box.purple .label{color:var(--highlight-purple)}
+    .msa-content .highlight-box.red{border-left-color:var(--accent-red);background:var(--highlight-red-bg)}
+    .msa-content .highlight-box.red .label{color:var(--highlight-red)}
+    .msa-content .compare-table{width:100%;border-collapse:collapse;font-size:0.9rem;margin:0.8rem 0}
+    .msa-content .compare-table th{background:var(--bg-secondary);text-align:left;padding:0.5rem 1rem;font-weight:600;color:var(--accent-purple);border-bottom:2px solid var(--border-color)}
+    .msa-content .compare-table td{padding:0.5rem 1rem;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}
+    .msa-content .compare-table tr:hover td{background:rgba(0,212,255,0.03)}
+    .msa-content .compare-table .badge-good{display:inline-block;background:rgba(34,197,94,0.15);color:var(--highlight-green);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .msa-content .compare-table .badge-bad{display:inline-block;background:rgba(239,68,68,0.15);color:var(--highlight-red);padding:0.05rem 0.5rem;border-radius:12px;font-size:0.7rem}
+    .msa-content .domain-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}
+    .msa-content .domain{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:14px;transition:border-color 0.3s}
+    .msa-content .domain:hover{border-color:var(--accent-cyan)}
+    .msa-content .domain .name{font-weight:600;color:var(--accent-cyan);font-size:0.92rem;margin-bottom:6px}
+    .msa-content .domain .services{font-size:0.82rem;color:var(--text-muted);line-height:1.5}
+    .msa-content .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin:0.8rem 0}
+    .msa-content .three-col .col{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center}
+    .msa-content .three-col .col .title{font-weight:600;color:var(--accent-cyan);font-size:0.9rem;margin-bottom:0.3rem}
+    .msa-content .three-col .col .desc{font-size:0.85rem;color:var(--text-secondary);line-height:1.5}
+    .msa-content .arch-layers{margin:1rem 0}
+    .msa-content .arch-layers .layer{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;margin-bottom:0.4rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;border-left:4px solid var(--accent-cyan);font-size:0.88rem}
+    .msa-content .arch-layers .layer .level{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent-cyan);font-size:0.8rem;min-width:28px}
+    .msa-content .arch-layers .layer .name{font-weight:600;color:var(--text-primary);min-width:200px}
+    .msa-content .arch-layers .layer .desc{color:var(--text-secondary);flex:1;font-size:0.82rem}
+    .msa-content .arch-layers .layer .tag{font-size:0.7rem;padding:0.1rem 0.6rem;border-radius:10px;background:rgba(0,212,255,0.1);color:var(--accent-cyan);font-weight:600;white-space:nowrap}
+    .article-footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+    .footer-nav-link{display:flex;align-items:center;gap:10px;padding:13px 20px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;text-decoration:none;color:var(--text-secondary);font-size:0.9rem;transition:all 0.3s ease}
+    .footer-nav-link:hover,.footer-nav-link:focus-visible{border-color:var(--accent-cyan);color:var(--accent-cyan);transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow-glow)}
+    .toc-sidebar{width:var(--toc-width);flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}
+    .toc-sidebar::-webkit-scrollbar-track{background:transparent}
+    .toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:toc-counter}
+    .toc-nav-item{position:relative;margin-bottom:6px;counter-increment:toc-counter}
+    .toc-nav-item::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:-22px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:8px 12px 8px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.86rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .back-to-top{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .back-to-top.visible{opacity:1;visibility:visible}
+    .back-to-top:hover,.back-to-top:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .site-footer{text-align:center;padding:36px 24px;border-top:1px solid var(--border-color);color:var(--text-muted);font-size:0.87rem;margin-top:60px}
+    @media(max-width:1024px){.toc-sidebar{display:none}.article-layout{padding:32px 20px 70px;gap:0}.article-main{max-width:100%}}
+    @media(max-width:768px){.header-nav{gap:12px;flex-wrap:wrap}.article-footer{flex-direction:column}.article-title{font-size:1.55rem}.msa-content h2{font-size:1.3rem}.msa-content .domain-grid{grid-template-columns:1fr 1fr}.msa-content .three-col{grid-template-columns:1fr}.msa-content .arch-layers .layer{flex-wrap:wrap}.msa-content .arch-layers .layer .name{min-width:auto}.msa-content .compare-table{font-size:0.82rem}.msa-content .compare-table th,.msa-content .compare-table td{padding:10px 8px}}
+    .theme-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border-color);border-radius:20px;padding:4px 12px;cursor:pointer;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:border-color 0.3s ease;flex-shrink:0}
+    .theme-toggle:hover{border-color:var(--accent-cyan)}
+    .theme-switch{width:32px;height:16px;background:var(--bg-secondary);border-radius:8px;position:relative;transition:background 0.3s ease}
+    .theme-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--accent-cyan);border-radius:50%;transition:transform 0.3s ease}
+    [data-theme="light"] .theme-knob{transform:translateX(16px);background:var(--accent-purple)}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand"><span class="brand-bracket">&lt;</span><span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span><span class="brand-bracket">/&gt;</span></a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← Docs</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle"><span aria-hidden="true">REALITY</span><span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span><span aria-hidden="true">SIM</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#arch-section" class="breadcrumb-link">架构</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">ARCH</span>
+          <time class="meta-date" datetime="2026-08-03">2026-08-03</time>
+          <span class="meta-read-time">阅读时长: 35min</span>
+        </div>
+        <h1 class="article-title">🏗️ 微服务通用底层架构</h1>
+        <p class="article-subtitle">Spring Boot 4.x + Spring Cloud 2025 + Spring Cloud Alibaba 2025 — 多租户 SaaS · 多语言多币种 · 聚合支付 · 工作流引擎 · 灰度发布 · 幂等性 · 熔断降级全栈微服务底座。</p>
+      </header>
+
+      <div class="article-content msa-content">
+
+        <h2 id="overview">项目概述与技术栈</h2>
+
+        <p>本项目是一个基于 <strong>Spring Boot 4.x + Spring Cloud 2025 + Spring Cloud Alibaba 2025</strong> 的全栈微服务底层架构，覆盖从多语言、多币种、多渠道、熔断降级、幂等性、灰度发布等技术中台通用底座。采用 Java 17 微服务架构，支持多租户 SaaS 模式，面向全球多区域运营。</p>
+
+        <table class="compare-table">
+          <thead><tr><th>技术类别</th><th>具体技术</th><th>场景适配</th></tr></thead>
+          <tbody>
+            <tr><td>基础框架</td><td>Spring Boot 4.0.6, Spring Cloud 2025.1.1</td><td>微服务拆分，各业务域独立部署</td></tr>
+            <tr><td>安全认证</td><td>Spring Security OAuth2 Authorization Server</td><td>多租户商户认证、买家 SSO</td></tr>
+            <tr><td>注册/配置中心</td><td>Nacos 3.2.2（自定义封装）</td><td>多区域配置隔离、灰度发布</td></tr>
+            <tr><td>API 网关</td><td>Spring Cloud Gateway (WebFlux)</td><td>高并发流量入口、限流熔断</td></tr>
+            <tr><td>数据库</td><td>MySQL + MyBatis-Plus 3.5.16 + Druid</td><td>分库分表、多数据源切换</td></tr>
+            <tr><td>缓存</td><td>Redis (Reactive)</td><td>商品缓存、购物车、分布式锁</td></tr>
+            <tr><td>支付系统</td><td>自研聚合支付（微信/支付宝/国际支付）</td><td>多币种、多渠道、跨境结算</td></tr>
+            <tr><td>工作流</td><td>Flowable 8.0.0</td><td>采购审批、清关流程、退款审核</td></tr>
+            <tr><td>AI 智能体</td><td>AgentScope + Spring AI + MCP 协议</td><td>智能库存盘点、EDA 需求预测</td></tr>
+            <tr><td>任务调度</td><td>XXL-Job 3.4.0 / Quartz / Elastic-Job</td><td>定时同步汇率、库存对账</td></tr>
+            <tr><td>对象存储</td><td>AWS S3 / 阿里云 OSS / MinIO</td><td>商品图片、报关单据存储</td></tr>
+            <tr><td>分布式事务</td><td>Seata 2.5.0</td><td>下单+扣库存+支付一致性</td></tr>
+            <tr><td>API 文档</td><td>Knife4j + SpringDoc</td><td>多语言接口文档</td></tr>
+            <tr><td>容器化</td><td>Docker Compose</td><td>一键部署全链路环境</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="business-domain">业务域划分</h2>
+
+        <p>按照 DDD 思想，将跨境电商业务划分为四大核心域：</p>
+
+        <div class="domain-grid">
+          <div class="domain">
+            <div class="name">👤 用户域</div>
+            <div class="services">买家注册 · 商户入驻 · 角色权限 · 多租户 · SSO 登录</div>
+          </div>
+          <div class="domain">
+            <div class="name">📦 商品域</div>
+            <div class="services">商品管理 · SKU 管理 · 分类管理 · 价格管理 · 库存同步</div>
+          </div>
+          <div class="domain">
+            <div class="name">💰 交易域</div>
+            <div class="services">购物车 · 多币种支付 · 退款退货 · 对账结算 · 优惠活动</div>
+          </div>
+          <div class="domain">
+            <div class="name">🚚 履约域</div>
+            <div class="services">订单管理 · 物流追踪 · 清关申报 · 仓储管理 · 售后工单</div>
+          </div>
+        </div>
+
+        <h2 id="register">注册配置中心</h2>
+
+        <p>基于 <strong>Nacos 3.2.2</strong> 封装的多区域服务注册与配置管理中心：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>能力</th><th>业务场景</th></tr></thead>
+          <tbody>
+            <tr><td>服务注册发现</td><td>全球多区域服务节点动态注册</td></tr>
+            <tr><td>配置热更新</td><td>汇率、关税规则实时更新无需重启</td></tr>
+            <tr><td>灰度发布</td><td>新支付渠道灰度上线，降低风险</td></tr>
+            <tr><td>命名空间隔离</td><td>不同国家/区域配置隔离（CN/US/EU）</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box green">
+          <div class="label">技术实现要点</div>
+          <div class="content">1) 集成 JRaft 分布式一致性协议保证配置强一致；2) 多 Namespace 隔离不同国家区域配置；3) 内置 Nacos Console 管理界面；4) 配置变更通过长轮询实时推送到客户端，无需重启。</div>
+        </div>
+
+        <h2 id="gateway">API 网关服务</h2>
+
+        <p>基于 <strong>Spring Cloud Gateway (WebFlux)</strong> 的响应式网关，高并发流量入口 + 多端适配：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 全局请求过滤器 — 清洗内部标识、路径重写</span>
+<span class="kw">@Component</span>
+<span class="kw">public class</span> <span class="cls">RequestGlobalFilter</span> <span class="kw">implements</span> GlobalFilter, Ordered {
+
+    <span class="kw">@Override</span>
+    <span class="kw">public</span> Mono&lt;Void&gt; <span class="fn">filter</span>(ServerWebExchange exchange, GatewayFilterChain chain) {
+        <span class="cmt">// 1. 清洗 from 参数，防止外部伪造内部调用标识</span>
+        ServerHttpRequest request = exchange.getRequest().mutate()
+            .headers(headers -> headers.remove(<span class="str">"from"</span>))
+            .build();
+
+        <span class="cmt">// 2. 添加 X-Forwarded-Prefix，支持 Swagger 聚合文档</span>
+        String prefix = exchange.getRequest().getHeaders().getFirst(<span class="str">"X-Forwarded-Prefix"</span>);
+        <span class="kw">if</span> (StringUtils.hasText(prefix)) {
+            request = request.mutate()
+                .header(<span class="str">"X-Forwarded-Prefix"</span>, prefix)
+                .build();
+        }
+
+        <span class="kw">return</span> chain.filter(exchange.mutate().request(request).build());
+    }
+
+    <span class="kw">@Override</span>
+    <span class="kw">public int</span> <span class="fn">getOrder</span>() { <span class="kw">return</span> <span class="num">-1000</span>; }
+}</pre>
+        </div>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// IP 限流配置 — 应对秒杀/促销高并发</span>
+<span class="kw">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">RateLimiterConfiguration</span> {
+
+    <span class="kw">@Bean</span>(<span class="str">"remoteAddrKeyResolver"</span>)
+    <span class="kw">public</span> KeyResolver <span class="fn">remoteAddrKeyResolver</span>() {
+        <span class="kw">return</span> exchange -> Mono.just(
+            exchange.getRequest().getRemoteAddress()
+                .getAddress().getHostAddress()
+        );
+    }
+}</pre>
+        </div>
+
+        <table class="compare-table">
+          <thead><tr><th>增强能力</th><th>实现方式</th><th>业务场景</th></tr></thead>
+          <tbody>
+            <tr><td>动态路由</td><td>从数据库加载路由配置</td><td>新业务模块快速上线</td></tr>
+            <tr><td>IP 限流</td><td>Redis + 令牌桶算法</td><td>促销秒杀流量控制</td></tr>
+            <tr><td>请求清洗</td><td>GlobalFilter 清除内部标识</td><td>防止越权攻击</td></tr>
+            <tr><td>跨域支持</td><td>CORS 配置</td><td>多端（APP/小程序/H5）统一接入</td></tr>
+            <tr><td>预览模式</td><td>限制测试环境写操作</td><td>安全隔离</td></tr>
+            <tr><td>Basic 认证</td><td>内部监控端点保护</td><td>Actuator 安全</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="auth">统一认证授权中心</h2>
+
+        <p>基于 <strong>OAuth2 Authorization Server</strong>，买家/商户/运营多角色统一认证：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">AuthorizationServerConfiguration</span> {
+
+    <span class="cmt">// 多种认证模式:</span>
+    <span class="cmt">// ① 密码模式     → 商户后台登录</span>
+    <span class="cmt">// ② 短信验证码   → 买家APP快速登录</span>
+    <span class="cmt">// ③ 授权码模式   → 第三方平台OAuth接入</span>
+    <span class="cmt">// ④ 客户端凭证   → 微服务间内部调用</span>
+
+    <span class="cmt">// 安全过滤器链:</span>
+    <span class="cmt">// PasswordDecoderFilter          → 前端密码RSA解密</span>
+    <span class="cmt">// ValidateCodeFilter             → 图形/行为验证码校验</span>
+    <span class="cmt">// FormLoginValidateCodeFilter    → 表单登录增强</span>
+
+    <span class="cmt">// 自定义 Token 生成:</span>
+    <span class="cmt">// CustomeOAuth2AccessTokenGenerator</span>
+    <span class="cmt">// 支持 JWT / Opaque Token 双模式</span>
+}</pre>
+        </div>
+
+        <div class="highlight-box purple">
+          <div class="label">认证扩展点</div>
+          <div class="content"><strong>多租户感知登录</strong>：<code>TenantSavedRequestAwareAuthenticationSuccessHandler</code> — 根据商户 ID 隔离数据。<strong>登录事件审计</strong>：<code>AuthenticationSuccessEventHandler</code> — 记录登录 IP/设备/地区。<strong>SSO 单点登出</strong>：<code>SsoLogoutSuccessHandler</code> — 全端同步登出。</div>
+        </div>
+
+        <h2 id="upms">用户权限管理（UPMS）</h2>
+
+        <p><strong>RBAC + 多租户 + 数据权限</strong>，子模块结构：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+upms/
+├── upms-api/      <span class="cmt">// API 接口定义 + 实体类 (供其他服务Feign调用)</span>
+└── upms-biz/      <span class="cmt">// 业务逻辑实现</span></pre>
+        </div>
+
+        <h3 id="upms-entities">核心实体模型</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>实体类</th><th>业务场景</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>SysUser</td><td>买家/商户/运营人员</td><td>支持多角色绑定</td></tr>
+            <tr><td>SysRole</td><td>买家/商户/客服/运营</td><td>角色编码权限控制</td></tr>
+            <tr><td>SysMenu</td><td>菜单+按钮级权限</td><td>精细化权限管控</td></tr>
+            <tr><td>SysDept</td><td>商户组织架构</td><td>树形部门结构</td></tr>
+            <tr><td>SysTenant</td><td>多租户（多商户）</td><td>数据隔离核心</td></tr>
+            <tr><td>SysDict / SysDictItem</td><td>商品分类/国家/币种</td><td>数据字典</td></tr>
+            <tr><td>SysRouteConf</td><td>动态路由配置</td><td>网关路由动态管理</td></tr>
+            <tr><td>SysFile / SysFileGroup</td><td>商品图片/报关单据</td><td>文件管理</td></tr>
+            <tr><td>SysLog / SysAuditLog</td><td>操作日志/审计日志</td><td>合规审计</td></tr>
+            <tr><td>SysI18nEntity</td><td>多语言国际化</td><td>中/英/日/韩多语言</td></tr>
+            <tr><td>SysAreaEntity</td><td>国家/地区</td><td>跨境区域管理</td></tr>
+            <tr><td>SysApiKey</td><td>开放平台 API Key</td><td>第三方对接</td></tr>
+            <tr><td>SysSocialDetails</td><td>社交登录配置</td><td>微信/Google/Facebook</td></tr>
+            <tr><td>SysSensitiveWordEntity</td><td>敏感词</td><td>商品描述合规过滤</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="upms-controllers">核心 Controller 层</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>控制器</th><th>业务功能</th></tr></thead>
+          <tbody>
+            <tr><td>SysUserController</td><td>买家/商户账号管理</td></tr>
+            <tr><td>SysRoleController</td><td>角色权限分配</td></tr>
+            <tr><td>SysMenuController</td><td>菜单权限配置</td></tr>
+            <tr><td>SysDeptController</td><td>商户组织架构</td></tr>
+            <tr><td>SysTenantController</td><td>多商户租户管理</td></tr>
+            <tr><td>SysDictController</td><td>数据字典（国家/币种/分类）</td></tr>
+            <tr><td>SysFileController</td><td>商品图片/报关单据上传</td></tr>
+            <tr><td>SysRouteConfController</td><td>动态路由管理</td></tr>
+            <tr><td>SysI18nController</td><td>多语言配置</td></tr>
+            <tr><td>SysAreaController</td><td>国家/地区管理</td></tr>
+            <tr><td>SysApiKeyController</td><td>开放平台密钥管理</td></tr>
+            <tr><td>SysTokenController</td><td>Token 管理（踢人/续期）</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="pay">聚合支付</h2>
+
+        <p>多币种、多渠道、跨境结算，采用<strong>策略模式</strong>解耦支付渠道：</p>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 支付交易订单 — 支持多币种</span>
+<span class="kw">@TenantTable</span>
+<span class="kw">@TableName</span>(<span class="str">"pay_trade_order"</span>)
+<span class="kw">public class</span> <span class="cls">PayTradeOrder</span> {
+    <span class="kw">private</span> Long orderId;        <span class="cmt">// 支付订单号</span>
+    <span class="kw">private</span> String channelId;    <span class="cmt">// 支付渠道ID</span>
+    <span class="kw">private</span> String amount;       <span class="cmt">// 支付金额</span>
+    <span class="kw">private</span> String currency;     <span class="cmt">// 三位货币代码 (CNY/USD/EUR/JPY)</span>
+    <span class="kw">private</span> String status;       <span class="cmt">// 0-订单生成,1-支付中,2-支付成功,3-业务处理完成</span>
+    <span class="kw">private</span> String clientIp;     <span class="cmt">// 客户端IP</span>
+}
+
+<span class="cmt">// 支付渠道枚举 — 根据UA自动识别</span>
+<span class="kw">public enum</span> <span class="cls">PayChannelNameEnum</span> {
+    ALIPAY_WAP(<span class="str">"ALIPAY_WAP"</span>, <span class="str">"支付宝手机支付"</span>),
+    WEIXIN_WAP(<span class="str">"WEIXIN_WAP"</span>, <span class="str">"微信H5支付"</span>),
+    WEIXIN_MP(<span class="str">"WEIXIN_MP"</span>,  <span class="str">"微信公众号支付"</span>),
+    MERGE_PAY(<span class="str">"MERGE_PAY"</span>,  <span class="str">"聚合一码付"</span>);
+
+    <span class="kw">public static</span> Enum <span class="fn">getChannel</span>(String ua) { ... }
+}</pre>
+        </div>
+
+        <h3 id="pay-strategy">策略模式处理器</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 支付下单处理器</span>
+PayOrderHandler (接口)
+    ├── AbstractPayOrderHandler (抽象基类)
+    │       ├── createGoodsOrder()    → 创建商品订单
+    │       └── handle()             → 统一调用入口
+    ├── AlipayWapPayOrderHandler     → 支付宝WAP支付
+    ├── WeChatMpPayOrderHandler      → 微信公众号支付
+    └── YungouosMergePayOrderHandler → 聚合支付
+
+<span class="cmt">// 支付回调处理器</span>
+PayNotifyCallbackHandler (回调接口)
+    ├── AlipayPayNotifyCallbackHandler       → 支付宝回调
+    ├── WeChatPayNotifyCallbackHandler       → 微信回调
+    └── YungouosMergePayNotifyCallbackHandler → 聚合回调
+
+<span class="cmt">// 退款处理器</span>
+PayOrderRefundHandler (退款接口)
+    ├── AbstractPayOrderRefundHandler
+    └── AlipayPayOrderRefundHandler → 支付宝退款</pre>
+        </div>
+
+        <div class="highlight-box gold">
+          <div class="label">支付增强能力</div>
+          <div class="content"><strong>多币种支持</strong>：currency 字段支持 CNY/USD/EUR/JPY 等。<strong>幂等性保障</strong>：<code>MessageRedisDuplicateCheckerHandler</code> 防重复回调。<strong>敏感数据脱敏</strong>：<code>@Sensitive</code> 注解，商户密钥自动脱敏。<strong>分布式序列号</strong>：Sequence 生成全局唯一支付单号。<strong>灰度发布</strong>：集成 common-gray 支持新渠道灰度上线。</div>
+        </div>
+
+        <h2 id="flow">工作流引擎</h2>
+
+        <p>基于 <strong>Flowable 8.0.0</strong>，覆盖采购审批、清关流程、退款审核：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>实体</th><th>业务场景</th></tr></thead>
+          <tbody>
+            <tr><td>Process</td><td>流程定义（采购审批流/清关流/退款审核流）</td></tr>
+            <tr><td>ProcessInstanceRecord</td><td>流程实例（一笔采购单的审批过程）</td></tr>
+            <tr><td>ProcessNodeRecord</td><td>节点记录（部门经理审批→财务确认→总经理签批）</td></tr>
+            <tr><td>ProcessNodeData</td><td>节点表单数据（审批意见、金额确认）</td></tr>
+            <tr><td>ProcessCopy</td><td>抄送（通知相关方）</td></tr>
+            <tr><td>BpmPurchaseEntity</td><td>示例：采购审批</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="flow-controllers">核心 Controller</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>控制器</th><th>业务场景</th></tr></thead>
+          <tbody>
+            <tr><td>ProcessController</td><td>流程定义管理</td></tr>
+            <tr><td>ProcessInstanceController</td><td>流程实例操作（发起审批）</td></tr>
+            <tr><td>ProcessTaskController</td><td>待办任务处理（审批/驳回）</td></tr>
+            <tr><td>ProcessFlowController</td><td>流程流转控制</td></tr>
+            <tr><td>ProcessCopyController</td><td>抄送管理</td></tr>
+            <tr><td>ProcessCombinationController</td><td>流程组合</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box">
+          <div class="label">核心审批流</div>
+          <div class="content"><strong>采购审批</strong>：采购申请 → 部门经理审批 → 财务确认 → 采购执行 → 入库确认。<strong>退款审核</strong>：退款申请 → 客服初审 → 财务审核 → 退款执行 → 通知买家。<strong>清关申报</strong>：清关申报 → 资料审核 → 报关提交 → 海关放行 → 物流发货。</div>
+        </div>
+
+        <h2 id="common">公共组件库</h2>
+
+        <p>提供通用能力，避免重复造轮子。以下为 <strong>22 个公共子模块</strong>的完整清单：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>子模块</th><th>功能描述</th><th>关键注解/类</th></tr></thead>
+          <tbody>
+            <tr><td>common-core</td><td>核心工具包</td><td>R 统一响应体，UserContext 用户上下文</td></tr>
+            <tr><td>common-security</td><td>安全框架</td><td>@EnablePigxResourceServer, @Inner, @HasPermission</td></tr>
+            <tr><td>common-data</td><td>数据访问</td><td>MyBatis-Plus 分页插件，数据权限</td></tr>
+            <tr><td>common-datasource</td><td>动态数据源</td><td>@EnableDynamicDataSource 多数据源切换</td></tr>
+            <tr><td>common-feign</td><td>远程调用</td><td>@EnablePigxFeignClients, @NoToken</td></tr>
+            <tr><td>common-gateway</td><td>网关增强</td><td>@EnablePigxDynamicRoute 动态路由</td></tr>
+            <tr><td>common-log</td><td>操作日志</td><td>@SysLog AOP 日志记录</td></tr>
+            <tr><td>common-excel</td><td>Excel 处理</td><td>@ResponseExcel, @RequestExcel</td></tr>
+            <tr><td>common-idempotent</td><td>幂等性</td><td>@Idempotent 防重复提交</td></tr>
+            <tr><td>common-audit</td><td>数据审计</td><td>@Audit 变更追踪</td></tr>
+            <tr><td>common-sensitive</td><td>敏感词</td><td>@Sensitive 脱敏处理</td></tr>
+            <tr><td>common-sentinel</td><td>熔断限流</td><td>Sentinel 规则配置</td></tr>
+            <tr><td>common-seata</td><td>分布式事务</td><td>Seata AT 模式集成</td></tr>
+            <tr><td>common-oss</td><td>对象存储</td><td>AWS S3 / 阿里云 OSS / MinIO</td></tr>
+            <tr><td>common-swagger</td><td>API 文档</td><td>@EnableOpenApi</td></tr>
+            <tr><td>common-xss</td><td>XSS 防护</td><td>过滤恶意脚本</td></tr>
+            <tr><td>common-sse</td><td>服务端推送</td><td>SSE 实时通信</td></tr>
+            <tr><td>common-websocket</td><td>WebSocket</td><td>双向实时通信</td></tr>
+            <tr><td>common-gray</td><td>灰度发布</td><td>金丝雀发布策略</td></tr>
+            <tr><td>common-job</td><td>任务调度</td><td>XXL-Job 集成</td></tr>
+            <tr><td>common-encrypt-api</td><td>接口加密</td><td>@NoEncrypt 加解密</td></tr>
+            <tr><td>common-sequence</td><td>序列生成</td><td>分布式 ID 生成</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="common-r">统一响应体</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="kw">@Builder</span>
+<span class="kw">public class</span> <span class="cls">R</span>&lt;T&gt; <span class="kw">implements</span> Serializable {
+    <span class="kw">private</span> <span class="kw">int</span> code;     <span class="cmt">// 0=成功, 1=失败</span>
+    <span class="kw">private</span> String msg;   <span class="cmt">// 返回消息</span>
+    <span class="kw">private</span> T data;      <span class="cmt">// 数据对象</span>
+
+    <span class="kw">public static</span> &lt;T&gt; R&lt;T&gt; <span class="fn">ok</span>(T data) { ... }
+    <span class="kw">public static</span> &lt;T&gt; R&lt;T&gt; <span class="fn">fail</span>(String msg) { ... }
+    <span class="kw">public static</span> &lt;T&gt; R&lt;T&gt; <span class="fn">ok</span>() { ... }
+}</pre>
+        </div>
+
+        <h2 id="optimization">业界验证优化方案</h2>
+
+        <h3 id="multi-tenant-isolation">1. 多租户数据隔离</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 基于 @TenantTable 注解的行级隔离</span>
+<span class="kw">@TenantTable</span>
+<span class="kw">@TableName</span>(<span class="str">"pay_trade_order"</span>)
+<span class="kw">public class</span> <span class="cls">PayTradeOrder</span> { ... }
+
+<span class="cmt">// MyBatis-Plus 拦截器自动注入 tenant_id 条件</span>
+<span class="kw">@Component</span>
+<span class="kw">public class</span> <span class="cls">TenantLineInnerInterceptor</span> <span class="kw">extends</span> JsqlParserSupport {
+    <span class="kw">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">processSelectBody</span>(... ) {
+        <span class="cmt">// 自动为 SELECT 语句添加 WHERE tenant_id = ?</span>
+        <span class="cmt">// 自动为 INSERT 语句填充 tenant_id 字段</span>
+        <span class="cmt">// 自动为 UPDATE/DELETE 添加 tenant_id 条件</span>
+    }
+}</pre>
+        </div>
+
+        <div class="highlight-box green">
+          <div class="label">隔离策略对比</div>
+          <div class="content"><strong>共享数据库共享表</strong>（当前方案）：tenant_id 行级隔离，成本最低，适合 SaaS 场景。<strong>共享数据库独立 Schema</strong>：按租户分 Schema，隔离性更好但运维成本高。<strong>独立数据库</strong>：完全物理隔离，适合金融/政务等强合规场景。</div>
+        </div>
+
+        <h3 id="idempotent">2. 幂等性保障</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 基于 @Idempotent 注解的防重复提交</span>
+<span class="kw">@Idempotent</span>(key = <span class="str">"#orderId"</span>, timeout = <span class="num">3000</span>)
+<span class="kw">@PostMapping</span>(<span class="str">"/pay/submit"</span>)
+<span class="kw">public</span> R&lt;Void&gt; <span class="fn">submitPay</span>(@RequestBody PayRequest request) {
+    <span class="cmt">// 3秒内相同 orderId 的请求只执行一次</span>
+    <span class="kw">return</span> R.ok(payService.submit(request));
+}
+
+<span class="cmt">// 实现原理：Redis SETNX + 过期时间</span>
+<span class="cmt">// key = idempotent:className:methodName:orderId</span>
+<span class="cmt">// 首次请求 SETNX 成功 → 执行业务 → 返回结果</span>
+<span class="cmt">// 重复请求 SETNX 失败 → 直接返回"请勿重复提交"</span></pre>
+        </div>
+
+        <h3 id="gray-release">3. 灰度发布</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 基于 Nacos 元数据的灰度路由</span>
+<span class="kw">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">GrayRouteConfiguration</span> {
+
+    <span class="cmt">// 灰度标记：在 Nacos 实例元数据中设置 gray=true</span>
+    <span class="cmt">// 网关根据请求头 X-Gray-Tag 路由到灰度实例</span>
+    <span class="kw">@Bean</span>
+    <span class="kw">public</span> ReactiveLoadBalancerClientFilter <span class="fn">grayFilter</span>() {
+        <span class="kw">return new</span> GrayReactiveLoadBalancerClientFilter(
+            loadBalancerClient, properties, loadBalancerProperties);
+    }
+
+    <span class="cmt">// 灰度规则示例：</span>
+    <span class="cmt">// 1. 内部测试用户 → 路由到 gray=true 的实例</span>
+    <span class="cmt">// 2. 普通用户 → 路由到 gray=false 的实例</span>
+    <span class="cmt">// 3. 按百分比灰度：10% 流量到新版本</span>
+}</pre>
+        </div>
+
+        <h3 id="distributed-tx">4. 分布式事务</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 基于 Seata AT 模式的分布式事务</span>
+<span class="kw">@GlobalTransactional</span>(timeoutMills = <span class="num">60000</span>)
+<span class="kw">public void</span> <span class="fn">placeOrder</span>(OrderDTO orderDTO) {
+    <span class="cmt">// 1. 创建订单（订单服务）</span>
+    orderService.create(orderDTO);
+
+    <span class="cmt">// 2. 扣减库存（库存服务）</span>
+    inventoryService.deduct(orderDTO.getGoodsId(), orderDTO.getQuantity());
+
+    <span class="cmt">// 3. 扣减余额（支付服务）</span>
+    accountService.debit(orderDTO.getUserId(), orderDTO.getAmount());
+
+    <span class="cmt">// 任一步骤失败 → 自动回滚所有已执行操作</span>
+    <span class="cmt">// Seata AT 模式：一阶段拦截SQL生成undo_log，二阶段异步清理</span>
+}</pre>
+        </div>
+
+        <h3 id="circuit-breaker">5. 熔断限流</h3>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt">// 基于 Sentinel 的熔断降级配置</span>
+<span class="kw">@SentinelResource</span>(value = <span class="str">"queryGoods"</span>,
+    blockHandler = <span class="str">"queryGoodsBlock"</span>,
+    fallback = <span class="str">"queryGoodsFallback"</span>)
+<span class="kw">public</span> Goods <span class="fn">queryGoods</span>(String goodsId) {
+    <span class="kw">return</span> goodsService.getById(goodsId);
+}
+
+<span class="cmt">// 限流处理：QPS 超过阈值时触发</span>
+<span class="kw">public</span> Goods <span class="fn">queryGoodsBlock</span>(String goodsId, BlockException ex) {
+    <span class="kw">return</span> Goods.builder().name(<span class="str">"系统繁忙，请稍后再试"</span>).build();
+}
+
+<span class="cmt">// 降级处理：服务异常时触发</span>
+<span class="kw">public</span> Goods <span class="fn">queryGoodsFallback</span>(String goodsId, Throwable ex) {
+    <span class="kw">return</span> cacheService.getGoodsFromCache(goodsId);
+}</pre>
+        </div>
+
+        <h2 id="deployment">容器化部署</h2>
+
+        <div class="code-block">
+          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
+<span class="cmt"># Docker Compose 编排配置</span>
+<span class="kw">services</span>:
+  <span class="cmt"># 基础设施</span>
+  <span class="fn">mysql</span>:          <span class="cmt"># MySQL 8.0 数据库</span>
+  <span class="fn">redis</span>:          <span class="cmt"># Redis 缓存</span>
+
+  <span class="cmt"># 核心微服务</span>
+  <span class="fn">register</span>:       <span class="cmt"># Nacos 注册配置中心</span>
+  <span class="fn">gateway</span>:        <span class="cmt"># API 网关</span>
+  <span class="fn">auth</span>:           <span class="cmt"># 认证中心</span>
+  <span class="fn">upms</span>:           <span class="cmt"># 用户权限管理</span>
+  <span class="fn">flow-biz</span>:       <span class="cmt"># 工作流引擎</span>
+
+<span class="cmt"># 一键启动</span>
+<span class="kw">$</span> docker-compose up -d</pre>
+        </div>
+
+        <div class="highlight-box red">
+          <div class="label">生产部署忠告</div>
+          <div class="content"><strong>不要用 Docker Compose 上生产</strong>：生产环境请使用 Kubernetes + Helm Chart，支持自动扩缩容、滚动更新、健康检查。<strong>配置外部化</strong>：所有配置通过 Nacos 管理，不要硬编码在镜像中。<strong>日志统一收集</strong>：EFK（Elasticsearch + Fluentd + Kibana）集中管理微服务日志。<strong>监控告警</strong>：Prometheus + Grafana 全链路监控，Sentinel Dashboard 实时熔断可视化。</div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-collab-editor-architecture.html" class="footer-nav-link">← 协同文档编辑器架构</a>
+        <a href="doc-ecommerce-skills.html" class="footer-nav-link">全渠道零售架构 →</a>
+      </footer>
+    </article>
+
+    <aside class="toc-sidebar" aria-label="目录">
+      <div class="toc-container">
+        <div class="toc-sidebar-title"><span>☰</span> 目录</div>
+        <ul class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">项目概述与技术栈</a></li>
+          <li class="toc-nav-item"><a href="#business-domain" class="toc-nav-link">业务域划分</a></li>
+          <li class="toc-nav-item"><a href="#register" class="toc-nav-link">注册配置中心</a></li>
+          <li class="toc-nav-item"><a href="#gateway" class="toc-nav-link">API 网关服务</a></li>
+          <li class="toc-nav-item"><a href="#auth" class="toc-nav-link">统一认证授权中心</a></li>
+          <li class="toc-nav-item"><a href="#upms" class="toc-nav-link">用户权限管理</a></li>
+          <li class="toc-nav-item"><a href="#pay" class="toc-nav-link">聚合支付</a></li>
+          <li class="toc-nav-item"><a href="#flow" class="toc-nav-link">工作流引擎</a></li>
+          <li class="toc-nav-item"><a href="#common" class="toc-nav-link">公共组件库</a></li>
+          <li class="toc-nav-item"><a href="#optimization" class="toc-nav-link">业界验证优化方案</a></li>
+          <li class="toc-nav-item"><a href="#deployment" class="toc-nav-link">容器化部署</a></li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+
+  <footer class="site-footer">
+    <p>© 2026 ISNOWSOFT · Built with precision</p>
+  </footer>
+
+  <script>
+    (function(){
+      const progress=document.getElementById('readingProgress');
+      const backToTop=document.getElementById('backToTop');
+      const sections=document.querySelectorAll('.msa-content h2[id],.msa-content h3[id]');
+      const tocLinks=document.querySelectorAll('.toc-nav-link');
+
+      window.addEventListener('scroll',()=>{
+        const scrollTop=window.scrollY;
+        const docHeight=document.documentElement.scrollHeight-window.innerHeight;
+        const pct=Math.min(scrollTop/docHeight,1);
+        progress.style.transform='scaleX('+pct+')';
+        backToTop.classList.toggle('visible',scrollTop>400);
+        let current='';
+        sections.forEach(s=>{if(s.getBoundingClientRect().top<=120)current=s.id;});
+        tocLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+current);});
+      });
+
+      backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+      document.querySelectorAll('.toc-nav-link').forEach(l=>{
+        l.addEventListener('click',e=>{
+          e.preventDefault();
+          const target=document.querySelector(l.getAttribute('href'));
+          if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+        });
+      });
+
+      const toggleBtn=document.querySelector('[data-theme-action="toggle"]');
+      if(toggleBtn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          toggleBtn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        toggleBtn.addEventListener('click',()=>{
+          const html=document.documentElement;
+          const next=html.getAttribute('data-theme')==='dark'?'light':'dark';
+          html.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+        const saved=localStorage.getItem('portfolio-theme');
+        if(saved)document.documentElement.setAttribute('data-theme',saved);
+        window.addEventListener('storage',function(e){
+          if(e.key==='portfolio-theme'&&e.newValue){
+            document.documentElement.setAttribute('data-theme',e.newValue);
+            updateLabel();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
