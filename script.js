@@ -294,6 +294,23 @@
       }
 
       if (valid) {
+        var name = nameInput.value.trim();
+        var email = emailInput.value.trim();
+        var message = messageInput.value.trim();
+
+        var subject = "来自 " + name + " 的联系消息";
+        var body = "姓名: " + name + "\n";
+        body += "邮箱: " + email + "\n";
+        body += "消息: " + message;
+
+        var mailtoLink =
+          "mailto:bin0754@163.com?subject=" +
+          encodeURIComponent(subject) +
+          "&body=" +
+          encodeURIComponent(body);
+
+        window.location.href = mailtoLink;
+
         successMsg.hidden = false;
         form.reset();
         setTimeout(function () {
