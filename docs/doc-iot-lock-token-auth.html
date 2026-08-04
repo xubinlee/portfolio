@@ -513,6 +513,391 @@
       margin-top: 60px;
     }
 
+    /* ===== 可视化组件：时序图 ===== */
+    .iot-content .seq-diagram {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem 1rem 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .iot-content .seq-actors {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+      min-width: 560px;
+    }
+
+    .iot-content .seq-actor {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem 0.6rem;
+      text-align: center;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+    }
+
+    .iot-content .seq-actor::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      width: 0;
+      height: calc(100% * var(--seq-rows, 10) + 20px);
+      border-left: 2px dashed var(--border-color);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .iot-content .seq-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-width: 560px;
+      position: relative;
+    }
+
+    .iot-content .seq-msg {
+      display: grid;
+      align-items: center;
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      min-height: 32px;
+    }
+
+    .iot-content .seq-msg.request {
+      background: rgba(0, 212, 255, 0.06);
+      border-left: 3px solid var(--accent-cyan);
+    }
+
+    .iot-content .seq-msg.response {
+      background: rgba(139, 92, 246, 0.06);
+      border-left: 3px solid var(--accent-purple);
+    }
+
+    .iot-content .seq-msg.note {
+      background: rgba(234, 179, 8, 0.06);
+      border-left: 3px solid var(--highlight-gold);
+      font-style: italic;
+    }
+
+    .iot-content .seq-msg .seq-step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      font-size: 0.68rem;
+      font-weight: 700;
+      margin-right: 0.5rem;
+      color: var(--accent-cyan);
+      flex-shrink: 0;
+    }
+
+    .iot-content .seq-msg.response .seq-step { color: var(--accent-purple); }
+    .iot-content .seq-msg.note .seq-step { color: var(--highlight-gold); }
+
+    .iot-content .seq-msg .seq-arrow {
+      color: var(--text-muted);
+      margin: 0 0.35rem;
+      font-weight: 700;
+    }
+
+    .iot-content .seq-msg .seq-from {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .iot-content .seq-msg .seq-to {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .iot-content .seq-msg .seq-payload {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      margin-left: 0.4rem;
+    }
+
+    .iot-content .seq-msg .seq-desc {
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+    }
+
+    .iot-content .seq-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.8rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border-color);
+      justify-content: center;
+    }
+
+    .iot-content .seq-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .iot-content .seq-legend-bar {
+      width: 14px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    /* ===== 可视化组件：树形图 ===== */
+    .iot-content .tree-view {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem 1rem;
+      margin: 1rem 0;
+    }
+
+    .iot-content .tree-node {
+      position: relative;
+      padding: 0.4rem 0.6rem 0.4rem 1.6rem;
+      margin: 0.15rem 0;
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .iot-content .tree-node:hover { background: rgba(0, 212, 255, 0.04); }
+
+    .iot-content .tree-node::before {
+      content: '';
+      position: absolute;
+      left: 0.4rem;
+      top: 0;
+      bottom: 50%;
+      border-left: 2px solid var(--border-color);
+      border-bottom: 2px solid var(--border-color);
+      width: 0.8rem;
+      border-bottom-left-radius: 6px;
+    }
+
+    .iot-content .tree-node:not(:first-child)::before {
+      top: -0.4rem;
+      bottom: 50%;
+    }
+
+    .iot-content .tree-node.root {
+      padding-left: 0.6rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-size: 0.84rem;
+    }
+
+    .iot-content .tree-node.root::before { display: none; }
+
+    .iot-content .tree-node .tn-label {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .iot-content .tree-node .tn-desc {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      margin-left: 0.4rem;
+    }
+
+    .iot-content .tree-node .tn-tag {
+      display: inline-block;
+      font-size: 0.64rem;
+      padding: 0.05rem 0.4rem;
+      border-radius: 8px;
+      margin-left: 0.4rem;
+      font-weight: 600;
+    }
+
+    .iot-content .tree-node.tn-branch .tn-label { color: var(--accent-purple); }
+    .iot-content .tree-node.tn-leaf .tn-label { color: var(--text-secondary); }
+
+    /* ===== 可视化组件：Redis 键值图 ===== */
+    .iot-content .redis-keys {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .iot-content .redis-keys-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .iot-content .redis-key-row {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.4fr) 1fr auto;
+      gap: 0.8rem;
+      align-items: center;
+      padding: 0.5rem 0.7rem;
+      border-radius: 6px;
+      margin-bottom: 0.3rem;
+      border-left: 3px solid var(--border-color);
+      background: var(--bg-card);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      transition: transform 0.2s ease;
+    }
+
+    .iot-content .redis-key-row:hover { transform: translateX(2px); }
+
+    .iot-content .redis-key-row.rk-access { border-left-color: var(--accent-cyan); }
+    .iot-content .redis-key-row.rk-refresh { border-left-color: var(--accent-purple); }
+    .iot-content .redis-key-row.rk-tenant { border-left-color: var(--accent-green); }
+    .iot-content .redis-key-row.rk-mqtt { border-left-color: var(--highlight-gold); }
+    .iot-content .redis-key-row.rk-challenge { border-left-color: var(--accent-red); }
+    .iot-content .redis-key-row.rk-username { border-left-color: #f472b6; }
+
+    .iot-content .redis-key-row .rk-key {
+      color: var(--text-primary);
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .iot-content .redis-key-row .rk-key .rk-seg {
+      color: var(--text-muted);
+    }
+
+    .iot-content .redis-key-row .rk-key .rk-var {
+      color: var(--accent-cyan);
+      font-style: italic;
+    }
+
+    .iot-content .redis-key-row .rk-value {
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+    }
+
+    .iot-content .redis-key-row .rk-purpose {
+      font-size: 0.66rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      background: var(--bg-primary);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .iot-content .redis-key-row.rk-access .rk-purpose { color: var(--accent-cyan); }
+    .iot-content .redis-key-row.rk-refresh .rk-purpose { color: var(--accent-purple); }
+    .iot-content .redis-key-row.rk-tenant .rk-purpose { color: var(--accent-green); }
+    .iot-content .redis-key-row.rk-mqtt .rk-purpose { color: var(--highlight-gold); }
+    .iot-content .redis-key-row.rk-challenge .rk-purpose { color: var(--accent-red); }
+    .iot-content .redis-key-row.rk-username .rk-purpose { color: #f472b6; }
+
+    .iot-content .redis-key-note {
+      margin-top: 0.8rem;
+      padding: 0.6rem 0.8rem;
+      background: var(--bg-card);
+      border-radius: 6px;
+      border-left: 3px solid var(--text-muted);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .iot-content .redis-key-note .rkn-seg { color: var(--text-muted); }
+    .iot-content .redis-key-note .rkn-var { color: var(--accent-cyan); font-style: italic; }
+    .iot-content .redis-key-note .rkn-arrow { color: var(--text-muted); margin: 0 0.3rem; }
+
+    /* ===== 可视化组件：流程步骤图 ===== */
+    .iot-content .flow-steps {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem 1rem;
+      margin: 1rem 0;
+    }
+
+    .iot-content .flow-step {
+      display: flex;
+      gap: 0.8rem;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+
+    .iot-content .flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 44px;
+      bottom: -4px;
+      width: 2px;
+      background: var(--border-color);
+    }
+
+    .iot-content .flow-step-num {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--bg-card);
+      border: 2px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      z-index: 1;
+    }
+
+    .iot-content .flow-step-body {
+      flex: 1;
+      padding-top: 0.1rem;
+    }
+
+    .iot-content .flow-step-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .iot-content .flow-step-desc {
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .iot-content .flow-step-desc code {
+      font-size: 0.72rem;
+    }
+
+    .iot-content .flow-step-desc .fs-warn {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+
     @media (max-width: 1024px) {
       .toc-sidebar { display: none; }
       .article-layout { padding: 32px 20px 70px; gap: 0; }
@@ -664,12 +1049,22 @@
 
         <h3 id="pki-preparation">步骤 1：PKI 证书体系准备</h3>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-根CA (Root CA)
-  └── 中间CA (Intermediate CA) —— 专门签发设备证书
-        ├── 门锁设备证书 (client.crt)  —— CN=&lt;deviceId&gt;, OU=&lt;productModel&gt;
-        └── 网关设备证书 (client.crt)  —— CN=&lt;gatewayMac&gt;</pre>
+        <div class="tree-view">
+          <div class="tree-node root">🔐 根CA (Root CA)</div>
+          <div class="tree-node tn-branch">
+            <span class="tn-label">└── 中间CA (Intermediate CA)</span>
+            <span class="tn-desc">专门签发设备证书</span>
+          </div>
+          <div class="tree-node tn-leaf" style="margin-left:1.4rem;">
+            <span class="tn-label">├── 门锁设备证书 (client.crt)</span>
+            <span class="tn-desc">CN=&lt;deviceId&gt;, OU=&lt;productModel&gt;</span>
+            <span class="tn-tag" style="background:rgba(0,212,255,0.15);color:var(--accent-cyan);">LOCK</span>
+          </div>
+          <div class="tree-node tn-leaf" style="margin-left:1.4rem;">
+            <span class="tn-label">└── 网关设备证书 (client.crt)</span>
+            <span class="tn-desc">CN=&lt;gatewayMac&gt;</span>
+            <span class="tn-tag" style="background:rgba(139,92,246,0.15);color:var(--accent-purple);">GATEWAY</span>
+          </div>
         </div>
 
         <h4>证书规格</h4>
@@ -693,24 +1088,42 @@
           <div class="content">私钥永远不离开安全芯片。签名操作在 SE 内部完成，外部只能传入待签名数据、获取签名结果。</div>
         </div>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-工厂产线工站
-  │
-  ├── 1. 触发密钥对生成（HSM/安全工站内）
-  │      ├── 公钥 → 发送至云端CA申请签发证书
-  │      └── 私钥 → 直接写入安全芯片，<span class="cls">永不离开芯片</span>
-  │
-  ├── 2. 云端CA签发设备唯一证书 (client.crt)
-  │      └── 证书序列号 = 设备唯一标识
-  │
-  ├── 3. 证书写入安全芯片
-  │      ├── client.crt    → SE/TrustZone 安全存储区
-  │      ├── 私钥           → SE 私钥槽位（不可读出，只可签名）
-  │      └── server-ca.crt → 根CA证书（验证Broker用）
-  │
-  └── 4. 产测验证
-         └── 设备首次上电，通过 MQTT + mTLS 连接验证证书链有效性</pre>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-step-num">1</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">触发密钥对生成（HSM / 安全工站内）</div>
+              <div class="flow-step-desc">
+                <strong style="color:var(--accent-cyan);">公钥</strong> → 发送至云端 CA 申请签发证书<br>
+                <strong style="color:var(--accent-red);">私钥</strong> → 直接写入安全芯片，<span class="fs-warn">永不离开芯片</span>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">2</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">云端 CA 签发设备唯一证书 (client.crt)</div>
+              <div class="flow-step-desc">证书序列号 = 设备唯一标识</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">3</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">证书写入安全芯片</div>
+              <div class="flow-step-desc">
+                <code>client.crt</code> → SE/TrustZone 安全存储区<br>
+                <code>私钥</code> → SE 私钥槽位（不可读出，只可签名）<br>
+                <code>server-ca.crt</code> → 根 CA 证书（验证 Broker 用）
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">4</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">产测验证</div>
+              <div class="flow-step-desc">设备首次上电，通过 MQTT + mTLS 连接验证证书链有效性</div>
+            </div>
+          </div>
         </div>
 
         <h4>证书加载代码（SSLUtils.java）</h4>
@@ -819,32 +1232,61 @@ options.<span class="fn">setSocketFactory</span>(socketFactory);</pre>
           <div class="content">私钥永远不离开安全芯片。设备用 SE 内私钥对挑战码签名，云端用存储的公钥验签，证明设备持有私钥。</div>
         </div>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-门锁设备                          云端激活服务 (LockDeviceAuthService)
-   │                                      │
-   │  ── POST /lock/device/challenge ───► │  ① 请求挑战码
-   │     { deviceId: "LOCK-XXXX" }        │
-   │                                      │
-   │  ◄── { challenge: "a3f8b2..." } ──── │  ② 返回随机挑战码
-   │                                      │     Redis存储，5分钟有效
-   │                                      │     一次性使用（getAndDelete）
-   │                                      │
-   │  ── SE内签名（私钥不离开芯片） ──      │
-   │     signature = SE.sign(challenge)   │
-   │                                      │
-   │  ── POST /lock/device/activate ────► │  ③ 提交签名+租户信息
-   │     { deviceId, signedChallenge,     │
-   │       tenantId }                     │
-   │                                      │
-   │                               ④ 取出并删除挑战码
-   │                               ⑤ 用设备证书公钥验签
-   │                               ⑥ 校验设备状态
-   │                               ⑦ TenantBroker.applyAs() 执行激活
-   │                                      │
-   │  ◄── { accessToken, refreshToken,   │  ⑧ 返回完整凭证
-   │         mqttUsername, mqttPassword,  │
-   │         expiresIn }                  │</pre>
+        <div class="seq-diagram">
+          <div class="seq-actors" style="grid-template-columns:1fr 1fr;">
+            <div class="seq-actor" style="--seq-rows:8;">🔒 门锁设备</div>
+            <div class="seq-actor" style="--seq-rows:8;">☁️ 云端激活服务<br><span style="font-size:0.66rem;color:var(--text-muted);font-weight:400;">LockDeviceAuthService</span></div>
+          </div>
+          <div class="seq-body">
+            <div class="seq-msg request">
+              <span class="seq-step">①</span>
+              <span class="seq-from">门锁</span><span class="seq-arrow">──►</span><span class="seq-to">云端</span>
+              <span class="seq-payload">POST /lock/device/challenge</span>
+              <span class="seq-desc">{ deviceId: "LOCK-XXXX" }</span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">②</span>
+              <span class="seq-from">云端</span><span class="seq-arrow">◄──</span><span class="seq-to">门锁</span>
+              <span class="seq-payload">{ challenge: "a3f8b2..." }</span>
+              <span class="seq-desc">Redis 存储 · 5分钟有效 · 一次性使用（getAndDelete）</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">🔐</span>
+              <span class="seq-desc">SE 内签名（私钥不离开芯片）：signature = SE.sign(challenge)</span>
+            </div>
+            <div class="seq-msg request">
+              <span class="seq-step">③</span>
+              <span class="seq-from">门锁</span><span class="seq-arrow">──►</span><span class="seq-to">云端</span>
+              <span class="seq-payload">POST /lock/device/activate</span>
+              <span class="seq-desc">{ deviceId, signedChallenge, tenantId }</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">④</span>
+              <span class="seq-desc">取出并删除挑战码</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑤</span>
+              <span class="seq-desc">用设备证书公钥验签</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑥</span>
+              <span class="seq-desc">校验设备状态</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑦</span>
+              <span class="seq-desc">TenantBroker.applyAs() 执行激活</span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">⑧</span>
+              <span class="seq-from">云端</span><span class="seq-arrow">◄──</span><span class="seq-to">门锁</span>
+              <span class="seq-payload">{ accessToken, refreshToken, mqttUsername, mqttPassword, expiresIn }</span>
+            </div>
+          </div>
+          <div class="seq-legend">
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--accent-cyan);"></span>请求 (Request)</div>
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--accent-purple);"></span>响应 (Response)</div>
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--highlight-gold);"></span>内部处理 (Note)</div>
+          </div>
         </div>
 
         <h4>挑战码生成与验证</h4>
@@ -943,16 +1385,33 @@ String challenge = (String) redisTemplate.opsForValue().<span class="fn">getAndD
 
         <p>参照 <code>PigxRedisOAuth2AuthorizationService</code> 的多维索引设计：</p>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-Redis Key 设计：
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ lock:device:token:access::{deviceId}        → accessToken值                 │  ← 按设备查Token
-│ lock:device:token:refresh::{deviceId}       → refreshToken值                │  ← 刷新Token查
-│ lock:device:token:tenant::{tenantId}::{deviceId} → accessToken值            │  ← 按租户查设备
-│ lock:device:mqtt::{deviceId}                → {username, password}          │  ← MQTT认证用
-│ lock:device:challenge::{deviceId}           → challenge码                   │  ← 挑战码（5分钟）
-└──────────────────────────────────────────────────────────────────────────────┘</pre>
+        <div class="redis-keys">
+          <div class="redis-keys-title">🗂️ Redis Key 设计 — 设备 Token 多维索引</div>
+          <div class="redis-key-row rk-access">
+            <div class="rk-key"><span class="rk-seg">lock:device:token:access::</span><span class="rk-var">{deviceId}</span></div>
+            <div class="rk-value">→ accessToken 值</div>
+            <div class="rk-purpose">按设备查 Token</div>
+          </div>
+          <div class="redis-key-row rk-refresh">
+            <div class="rk-key"><span class="rk-seg">lock:device:token:refresh::</span><span class="rk-var">{deviceId}</span></div>
+            <div class="rk-value">→ refreshToken 值</div>
+            <div class="rk-purpose">刷新 Token 查</div>
+          </div>
+          <div class="redis-key-row rk-tenant">
+            <div class="rk-key"><span class="rk-seg">lock:device:token:tenant::</span><span class="rk-var">{tenantId}</span><span class="rk-seg">::</span><span class="rk-var">{deviceId}</span></div>
+            <div class="rk-value">→ accessToken 值</div>
+            <div class="rk-purpose">按租户查设备</div>
+          </div>
+          <div class="redis-key-row rk-mqtt">
+            <div class="rk-key"><span class="rk-seg">lock:device:mqtt::</span><span class="rk-var">{deviceId}</span></div>
+            <div class="rk-value">→ { username, password }</div>
+            <div class="rk-purpose">MQTT 认证用</div>
+          </div>
+          <div class="redis-key-row rk-challenge">
+            <div class="rk-key"><span class="rk-seg">lock:device:challenge::</span><span class="rk-var">{deviceId}</span></div>
+            <div class="rk-value">→ challenge 码</div>
+            <div class="rk-purpose">挑战码（5分钟）</div>
+          </div>
         </div>
 
         <h3 id="tenant-broker">步骤 9：TenantBroker 保护租户上下文</h3>
@@ -987,25 +1446,59 @@ Redis Key 设计：
 
         <p>mTLS 在传输层验证证书有效性后，EMQX 在 MQTT CONNECT 阶段再回调云端接口验证凭证：</p>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-门锁设备         EMQX Broker                    云端 /mqtt/auth
-   │                │                               │
-   │  CONNECT       │                               │
-   │  (username,    │                               │
-   │   password)    │                               │
-   │ ──────────────►│                               │
-   │                │  HTTP POST /mqtt/auth          │
-   │                │ ──────────────────────────────►│
-   │                │                               │
-   │                │                        ① 查Redis获取存储的MQTT凭证
-   │                │                        ② HMAC-SHA256 验证密码
-   │                │                        ③ 检查设备Token是否过期
-   │                │                        ④ 检查设备黑名单
-   │                │                        ⑤ 返回 ACL 权限
-   │                │ ◄─── allow + ACL ──────────────│
-   │                │                               │
-   │  ◄── CONNACK ──│                               │</pre>
+        <div class="seq-diagram">
+          <div class="seq-actors" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="seq-actor" style="--seq-rows:8;">🔒 门锁设备</div>
+            <div class="seq-actor" style="--seq-rows:8;">📡 EMQX Broker</div>
+            <div class="seq-actor" style="--seq-rows:8;">☁️ 云端 /mqtt/auth</div>
+          </div>
+          <div class="seq-body">
+            <div class="seq-msg request">
+              <span class="seq-step">1</span>
+              <span class="seq-from">门锁</span><span class="seq-arrow">──►</span><span class="seq-to">EMQX</span>
+              <span class="seq-payload">CONNECT (username, password)</span>
+            </div>
+            <div class="seq-msg request">
+              <span class="seq-step">2</span>
+              <span class="seq-from">EMQX</span><span class="seq-arrow">──►</span><span class="seq-to">云端</span>
+              <span class="seq-payload">HTTP POST /mqtt/auth</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">①</span>
+              <span class="seq-desc">查 Redis 获取存储的 MQTT 凭证</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">②</span>
+              <span class="seq-desc">HMAC-SHA256 验证密码</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">③</span>
+              <span class="seq-desc">检查设备 Token 是否过期</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">④</span>
+              <span class="seq-desc">检查设备黑名单</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑤</span>
+              <span class="seq-desc">返回 ACL 权限</span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">3</span>
+              <span class="seq-from">云端</span><span class="seq-arrow">◄──</span><span class="seq-to">EMQX</span>
+              <span class="seq-payload">allow + ACL</span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">4</span>
+              <span class="seq-from">EMQX</span><span class="seq-arrow">◄──</span><span class="seq-to">门锁</span>
+              <span class="seq-payload">CONNACK</span>
+            </div>
+          </div>
+          <div class="seq-legend">
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--accent-cyan);"></span>请求 (Request)</div>
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--accent-purple);"></span>响应 (Response)</div>
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--highlight-gold);"></span>云端处理 (Note)</div>
+          </div>
         </div>
 
         <h4>ACL 最小权限控制</h4>
@@ -1044,56 +1537,65 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
 
         <h3 id="user-login">步骤 11：OAuth2 Token 获取（用户登录）</h3>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-客户端(App/小程序/Web)              pigx-auth 服务
-       │                                │
-       │  POST /oauth2/token            │
-       │  ┌──────────────────────────┐  │
-       │  │ grant_type=password      │  │
-       │  │ username=admin           │  │
-       │  │ password=***             │  │
-       │  │ scope=server             │  │
-       │  │ TENANT-ID: 1             │  │  ← 租户ID通过Header传递
-       │  │ Authorization: Basic XXX │  │  ← 客户端凭证(Base64)
-       │  └──────────────────────────┘  │
-       │ ──────────────────────────────►│
-       │                                │
-       │  ◄─── {                        │
-       │        access_token: "eyJ...", │
-       │        refresh_token: "xxx",   │
-       │        token_type: "Bearer",   │
-       │        expires_in: 3600        │
-       │      }                         │</pre>
+        <div class="seq-diagram">
+          <div class="seq-actors" style="grid-template-columns:1fr 1fr;">
+            <div class="seq-actor" style="--seq-rows:3;">📱 客户端 (App/小程序/Web)</div>
+            <div class="seq-actor" style="--seq-rows:3;">🔑 pigx-auth 服务</div>
+          </div>
+          <div class="seq-body">
+            <div class="seq-msg request">
+              <span class="seq-step">1</span>
+              <span class="seq-from">客户端</span><span class="seq-arrow">──►</span><span class="seq-to">pigx-auth</span>
+              <span class="seq-payload">POST /oauth2/token</span>
+              <span class="seq-desc">
+                grant_type=password · username=admin · password=*** · scope=server<br>
+                <strong style="color:var(--highlight-gold);">TENANT-ID: 1</strong>（租户ID通过Header传递）·
+                <strong style="color:var(--accent-cyan);">Authorization: Basic XXX</strong>（客户端凭证Base64）
+              </span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">2</span>
+              <span class="seq-from">pigx-auth</span><span class="seq-arrow">◄──</span><span class="seq-to">客户端</span>
+              <span class="seq-payload">{ access_token: "eyJ...", refresh_token: "xxx", token_type: "Bearer", expires_in: 3600 }</span>
+            </div>
+          </div>
         </div>
 
         <h4>完整认证链路</h4>
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-1. 请求进入 → DelegatingAuthenticationConverter 识别 grant_type
-      │
-      ├─ password → OAuth2ResourceOwnerPasswordAuthenticationConverter
-      ├─ sms      → OAuth2ResourceOwnerSmsAuthenticationConverter
-      ├─ refresh_token → PigxOAuth2RefreshTokenAuthenticationConverter
-      ├─ client_credentials → OAuth2ClientCredentialsAuthenticationConverter
-      └─ authorization_code → OAuth2AuthorizationCodeAuthenticationConverter
-
-2. 对应 Provider 执行认证
-      │
-      ├─ checkClient(registeredClient)  → 校验客户端是否支持此模式
-      ├─ authenticationManager.authenticate() → 调用DaoAuthenticationProvider
-      │      └─ PigxDaoAuthenticationProvider.retrieveUser()
-      │           ├─ 根据clientId + grantType选择UserDetailsService
-      │           ├─ loadUserByUsername() → 返回PigxUser（含tenantId）
-      │           └─ TenantContextHolder.setTenantId(pigxUser.getTenantId())
-      │
-      ├─ 并发控制检查（ONLINE_QUANTITY 配置）
-      │
-      └─ generatAuthenticationToken() → 生成Token
-           ├─ tokenGenerator.generate() → 生成 AccessToken (JWT)
-           │    └─ CustomeOAuth2TokenCustomizer.customize() 注入claims
-           ├─ 生成 RefreshToken
-           └─ authorizationService.save() → 存入Redis</pre>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--accent-cyan);color:var(--accent-cyan);">1</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">请求进入 → DelegatingAuthenticationConverter 识别 grant_type</div>
+              <div class="flow-step-desc">
+                <span style="color:var(--accent-purple);">password</span> → OAuth2ResourceOwnerPasswordAuthenticationConverter<br>
+                <span style="color:var(--accent-purple);">sms</span> → OAuth2ResourceOwnerSmsAuthenticationConverter<br>
+                <span style="color:var(--accent-purple);">refresh_token</span> → PigxOAuth2RefreshTokenAuthenticationConverter<br>
+                <span style="color:var(--accent-purple);">client_credentials</span> → OAuth2ClientCredentialsAuthenticationConverter<br>
+                <span style="color:var(--accent-purple);">authorization_code</span> → OAuth2AuthorizationCodeAuthenticationConverter
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--accent-purple);color:var(--accent-purple);">2</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">对应 Provider 执行认证</div>
+              <div class="flow-step-desc">
+                <code>checkClient(registeredClient)</code> → 校验客户端是否支持此模式<br>
+                <code>authenticationManager.authenticate()</code> → 调用 DaoAuthenticationProvider<br>
+                &nbsp;&nbsp;└─ <code>PigxDaoAuthenticationProvider.retrieveUser()</code><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;├─ 根据 clientId + grantType 选择 UserDetailsService<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;├─ <code>loadUserByUsername()</code> → 返回 PigxUser（含 tenantId）<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;└─ <code>TenantContextHolder.setTenantId()</code><br>
+                <strong style="color:var(--highlight-gold);">并发控制检查</strong>（ONLINE_QUANTITY 配置）<br>
+                <code>generatAuthenticationToken()</code> → 生成 Token<br>
+                &nbsp;&nbsp;├─ <code>tokenGenerator.generate()</code> → AccessToken (JWT)<br>
+                &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└─ <code>CustomeOAuth2TokenCustomizer.customize()</code> 注入 claims<br>
+                &nbsp;&nbsp;├─ 生成 RefreshToken<br>
+                &nbsp;&nbsp;└─ <code>authorizationService.save()</code> → 存入 Redis
+              </div>
+            </div>
+          </div>
         </div>
 
         <h3 id="token-claims">步骤 12：Token Claims 增强</h3>
@@ -1117,20 +1619,31 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
 
         <h3 id="user-token-redis">步骤 13：用户 Token 存储 — Redis 多维索引</h3>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-Redis Key 设计：
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ token::access_token::eyJhbG...  →  OAuth2Authorization对象                      │  ← 按Token值查
-│ token::refresh_token::xxxxx    →  OAuth2Authorization对象                      │  ← 刷新Token查
-│ token::username::admin::test::1::eyJhbG...  →  accessToken值                  │  ← 按用户名+租户查
-│       │          │      │    │    │
-│       │          │      │    │    └── accessToken值                             │
-│       │          │      │    └── tenantId (pigxUser.getTenantId())              │
-│       │          │      └── clientId (registeredClientId)                       │
-│       │          └── username (principalName)                                    │
-│       └── 固定前缀 "token"                                                       │
-└─────────────────────────────────────────────────────────────────────────────────┘</pre>
+        <div class="redis-keys">
+          <div class="redis-keys-title">🗂️ Redis Key 设计 — 用户 Token 多维索引</div>
+          <div class="redis-key-row rk-access">
+            <div class="rk-key"><span class="rk-seg">token::access_token::</span><span class="rk-var">eyJhbG...</span></div>
+            <div class="rk-value">→ OAuth2Authorization 对象</div>
+            <div class="rk-purpose">按 Token 值查</div>
+          </div>
+          <div class="redis-key-row rk-refresh">
+            <div class="rk-key"><span class="rk-seg">token::refresh_token::</span><span class="rk-var">xxxxx</span></div>
+            <div class="rk-value">→ OAuth2Authorization 对象</div>
+            <div class="rk-purpose">刷新 Token 查</div>
+          </div>
+          <div class="redis-key-row rk-username">
+            <div class="rk-key"><span class="rk-seg">token::username::</span><span class="rk-var">admin</span><span class="rk-seg">::</span><span class="rk-var">test</span><span class="rk-seg">::</span><span class="rk-var">1</span><span class="rk-seg">::</span><span class="rk-var">eyJhbG...</span></div>
+            <div class="rk-value">→ accessToken 值</div>
+            <div class="rk-purpose">按用户名+租户查</div>
+          </div>
+          <div class="redis-key-note">
+            <strong style="color:var(--text-primary);">Key 段位解析：</strong><br>
+            <span class="rkn-seg">token::</span><span class="rkn-var">username</span><span class="rkn-seg">::</span><span class="rkn-var">clientId</span><span class="rkn-seg">::</span><span class="rkn-var">tenantId</span><span class="rkn-seg">::</span><span class="rkn-var">tokenId</span><br>
+            <span class="rkn-arrow">└─</span> <span class="rkn-var">username</span> → principalName（用户主体名）<br>
+            <span class="rkn-arrow">└─</span> <span class="rkn-var">clientId</span> → registeredClientId（注册客户端ID）<br>
+            <span class="rkn-arrow">└─</span> <span class="rkn-var">tenantId</span> → pigxUser.getTenantId()（租户ID）<br>
+            <span class="rkn-arrow">└─</span> <span class="rkn-var">tokenId</span> → accessToken 值（JWT 的 jti）
+          </div>
         </div>
 
         <!-- ========================================================= -->
@@ -1140,46 +1653,82 @@ Redis Key 设计：
 
         <h3 id="api-call-chain">步骤 14：用户通过 App 操作门锁</h3>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-用户App                         API Gateway              pigx-auth           业务服务
-   │                               │                       │                   │
-   │ POST /lock/unlock             │                       │                   │
-   │ Authorization: Bearer eyJ... │                       │                   │
-   │ TENANT-ID: 1                 │                       │                   │
-   │ ────────────────────────────►│                       │                   │
-   │                               │                       │                   │
-   │                        ① 提取Token                  │                   │
-   │                        ② 校验签名/过期               │                   │
-   │                        ③ 查Redis验证Token有效性      │                   │
-   │                               │                       │                   │
-   │                               │  ④ 如需内省            │                   │
-   │                               │ ─────────────────────►│                   │
-   │                               │                       │                   │
-   │                               │  PigxCustomOpaque-    │                   │
-   │                               │  TokenIntrospector    │                   │
-   │                               │  .introspect(token)   │                   │
-   │                               │                       │                   │
-   │                               │  ⑤a 查Redis中Token    │                   │
-   │                               │  ⑤b 加载用户详情       │                   │
-   │                               │  ⑤c 检查账号状态       │                   │
-   │                               │ ◄─── PigxUser ────────│                   │
-   │                               │                       │                   │
-   │                               │  ⑥ 设置上下文          │                   │
-   │                               │  - TenantContextHolder │                   │
-   │                               │  - SecurityContext     │                   │
-   │                               │ ──────────────────────────────────────────►│
-   │                               │                       │                   │
-   │                               │                       │            ⑦ 业务鉴权
-   │                               │                       │            - 用户是否有此门锁权限
-   │                               │                       │            - 租户隔离校验
-   │                               │                       │            - 设备归属校验
-   │                               │                       │                   │
-   │                               │                       │            ⑧ 下发MQTT指令
-   │                               │                       │            → /hotel/gateway/{mac}/down
-   │                               │                       │                   │
-   │ ◄─────────────────────────────────────────────────────────────────────────│
-   │        { result: "00" }       │                       │                   │</pre>
+        <div class="seq-diagram">
+          <div class="seq-actors" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+            <div class="seq-actor" style="--seq-rows:10;">📱 用户App</div>
+            <div class="seq-actor" style="--seq-rows:10;">🌐 API Gateway</div>
+            <div class="seq-actor" style="--seq-rows:10;">🔑 pigx-auth</div>
+            <div class="seq-actor" style="--seq-rows:10;">⚙️ 业务服务</div>
+          </div>
+          <div class="seq-body">
+            <div class="seq-msg request">
+              <span class="seq-step">1</span>
+              <span class="seq-from">App</span><span class="seq-arrow">──►</span><span class="seq-to">Gateway</span>
+              <span class="seq-payload">POST /lock/unlock</span>
+              <span class="seq-desc">Authorization: Bearer eyJ... · TENANT-ID: 1</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">①</span>
+              <span class="seq-desc">提取 Token</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">②</span>
+              <span class="seq-desc">校验签名 / 过期</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">③</span>
+              <span class="seq-desc">查 Redis 验证 Token 有效性</span>
+            </div>
+            <div class="seq-msg request">
+              <span class="seq-step">④</span>
+              <span class="seq-from">Gateway</span><span class="seq-arrow">──►</span><span class="seq-to">pigx-auth</span>
+              <span class="seq-payload">如需内省：PigxCustomOpaqueTokenIntrospector.introspect(token)</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑤a</span>
+              <span class="seq-desc">查 Redis 中 Token</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑤b</span>
+              <span class="seq-desc">加载用户详情</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑤c</span>
+              <span class="seq-desc">检查账号状态</span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">5</span>
+              <span class="seq-from">pigx-auth</span><span class="seq-arrow">◄──</span><span class="seq-to">Gateway</span>
+              <span class="seq-payload">PigxUser</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑥</span>
+              <span class="seq-desc">设置上下文：TenantContextHolder + SecurityContext</span>
+            </div>
+            <div class="seq-msg request">
+              <span class="seq-step">6</span>
+              <span class="seq-from">Gateway</span><span class="seq-arrow">──►</span><span class="seq-to">业务服务</span>
+              <span class="seq-payload">转发请求（含上下文）</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑦</span>
+              <span class="seq-desc">业务鉴权：用户是否有此门锁权限 · 租户隔离校验 · 设备归属校验</span>
+            </div>
+            <div class="seq-msg note">
+              <span class="seq-step">⑧</span>
+              <span class="seq-desc">下发 MQTT 指令 → /hotel/gateway/{mac}/down</span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">7</span>
+              <span class="seq-from">业务服务</span><span class="seq-arrow">◄──</span><span class="seq-to">App</span>
+              <span class="seq-payload">{ result: "00" }</span>
+            </div>
+          </div>
+          <div class="seq-legend">
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--accent-cyan);"></span>请求 (Request)</div>
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--accent-purple);"></span>响应 (Response)</div>
+            <div class="seq-legend-item"><span class="seq-legend-bar" style="background:var(--highlight-gold);"></span>内部处理 (Note)</div>
+          </div>
         </div>
 
         <h4>Token 内省逻辑</h4>
@@ -1217,26 +1766,32 @@ Redis Key 设计：
 
         <h3 id="command-flow">步骤 15：MQTT 指令下发与应答</h3>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-云端服务                              门锁设备
-   │                                     │
-   │  PUBLISH /hotel/gateway/{mac}/down  │
-   │  ┌─────────────────────────────┐    │
-   │  │ cmd: "19" (开锁指令)         │    │
-   │  │ msgId: 42                    │    │  ← Redis生成唯一msgId (0~255)
-   │  │ data: AES加密的业务数据       │    │
-   │  │ tenantId: 1                  │    │
-   │  └─────────────────────────────┘    │
-   │ ───────────────────────────────────►│
-   │                                     │
-   │  ◄── PUBLISH /hotel/gateway/publish │
-   │  ┌─────────────────────────────┐    │
-   │  │ gateway: "AABBCCDDEEFF0001" │    │
-   │  │ cmd: "19"                   │    │
-   │  │ result: "00" (成功)          │    │
-   │  │ msgId: 42                   │    │
-   │  └─────────────────────────────┘    │</pre>
+        <div class="seq-diagram">
+          <div class="seq-actors" style="grid-template-columns:1fr 1fr;">
+            <div class="seq-actor" style="--seq-rows:3;">☁️ 云端服务</div>
+            <div class="seq-actor" style="--seq-rows:3;">🔒 门锁设备</div>
+          </div>
+          <div class="seq-body">
+            <div class="seq-msg request">
+              <span class="seq-step">1</span>
+              <span class="seq-from">云端</span><span class="seq-arrow">──►</span><span class="seq-to">门锁</span>
+              <span class="seq-payload">PUBLISH /hotel/gateway/{mac}/down</span>
+              <span class="seq-desc">
+                cmd: "19"（开锁指令）· msgId: 42
+                <strong style="color:var(--highlight-gold);">← Redis 生成唯一 msgId (0~255)</strong><br>
+                data: AES 加密的业务数据 · tenantId: 1
+              </span>
+            </div>
+            <div class="seq-msg response">
+              <span class="seq-step">2</span>
+              <span class="seq-from">门锁</span><span class="seq-arrow">◄──</span><span class="seq-to">云端</span>
+              <span class="seq-payload">PUBLISH /hotel/gateway/publish</span>
+              <span class="seq-desc">
+                gateway: "AABBCCDDEEFF0001" · cmd: "19"<br>
+                <strong style="color:var(--accent-green);">result: "00"（成功）</strong> · msgId: 42
+              </span>
+            </div>
+          </div>
         </div>
 
         <h4>msgId 防重机制</h4>
@@ -1386,48 +1941,82 @@ redisService.<span class="fn">removeByUsername</span>(usernamePasswordAuthentica
         <!-- ========================================================= -->
         <h2 id="e2e-sequence">端到端完整时序图</h2>
 
-        <div class="code-block light">
-          <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
-工厂产线        安全芯片       门锁设备      MQTT Broker    云端激活服务    pigx-auth     用户App
-  │               │             │              │              │             │            │
-  │─生成密钥对──►│              │              │              │             │            │
-  │◄──公钥──────│              │              │              │             │            │
-  │──申请证书──────────────────────────────────────────────────────────────►│            │
-  │◄──签发client.crt───────────────────────────────────────────────────────│            │
-  │──写入cert─────────────────►│              │              │             │            │
-  │  (私钥不可读出SE)           │              │              │             │            │
-  │              │              │              │              │             │            │
-  │              │     ──── mTLS CONNECT ─────►│              │             │            │
-  │              │     ◄─── CONNACK ──────────│              │             │            │
-  │              │              │              │              │             │            │
-  │              │              │──请求挑战码─────────────────►│             │            │
-  │              │              │◄──challenge────────────────│             │            │
-  │              │──SE签名─────►│              │              │             │            │
-  │              │              │──提交签名+tenantId─────────►│             │            │
-  │              │              │              │              │             │            │
-  │              │              │              │       验签+状态校验          │            │
-  │              │              │              │       TenantBroker.applyAs │            │
-  │              │              │              │       生成Token+MQTT凭证   │            │
-  │              │              │              │       Redis多维索引存储     │            │
-  │              │              │◄──accessToken+mqttCreds────│             │            │
-  │              │              │              │              │             │            │
-  │              │              │──MQTT CONNECT(mqttCreds)──►│             │            │
-  │              │              │              │──HTTP Auth──►│             │            │
-  │              │              │              │◄──allow+ACL─│             │            │
-  │              │              │◄──CONNACK─────────────────│              │            │
-  │              │              │              │              │             │            │
-  │              │              │              │              │             │──登录────►│
-  │              │              │              │              │             │◄─credentials
-  │              │              │              │              │             │──JWT──────►│
-  │              │              │              │              │             │            │
-  │              │              │              │              │             │  ──开锁──►│
-  │              │              │              │              │             │◄─Bearer──│
-  │              │              │              │              │  Token内省   │            │
-  │              │              │              │              │  租户隔离    │            │
-  │              │              │              │              │  权限校验    │            │
-  │              │              │◄─MQTT指令────│◄─────────────│             │            │
-  │              │              │──执行开锁───►│              │             │            │
-  │              │              │──上报结果────►│─────────────►│             │──结果────►│</pre>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--highlight-gold);color:var(--highlight-gold);">🏭</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title" style="color:var(--highlight-gold);">阶段 A：出厂证书烧录</div>
+              <div class="flow-step-desc">
+                <strong>工厂产线</strong> <span style="color:var(--accent-cyan);">─生成密钥对─►</span> <strong>安全芯片</strong> ·
+                <strong>工厂</strong> <span style="color:var(--accent-purple);">◄──公钥──</span> <strong>SE</strong><br>
+                <strong>工厂</strong> <span style="color:var(--accent-cyan);">──申请证书─────────────────►</span> <strong>云端CA</strong> ·
+                <strong>工厂</strong> <span style="color:var(--accent-purple);">◄──签发 client.crt──────────</span> <strong>云端</strong><br>
+                <strong>工厂</strong> <span style="color:var(--accent-cyan);">──写入 cert─►</span> <strong>门锁设备</strong>
+                <span style="color:var(--accent-red);">（私钥不可读出 SE）</span>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--accent-cyan);color:var(--accent-cyan);">🔗</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title" style="color:var(--accent-cyan);">阶段 B：mTLS 建立传输通道</div>
+              <div class="flow-step-desc">
+                <strong>门锁设备</strong> <span style="color:var(--accent-cyan);">──── mTLS CONNECT ────►</span> <strong>MQTT Broker</strong><br>
+                <strong>门锁设备</strong> <span style="color:var(--accent-purple);">◄─── CONNACK ────────</span> <strong>MQTT Broker</strong>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--accent-purple);color:var(--accent-purple);">🔐</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title" style="color:var(--accent-purple);">阶段 C：挑战-应答激活</div>
+              <div class="flow-step-desc">
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──请求挑战码─────────►</span> <strong>云端激活服务</strong> ·
+                <strong>门锁</strong> <span style="color:var(--accent-purple);">◄──challenge────────</span> <strong>云端</strong><br>
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──SE 签名─►</span> <strong>SE</strong> ·
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──提交签名+tenantId─►</span> <strong>云端</strong><br>
+                <span style="color:var(--highlight-gold);">云端处理：验签+状态校验 → TenantBroker.applyAs → 生成 Token+MQTT 凭证 → Redis 多维索引存储</span><br>
+                <strong>门锁</strong> <span style="color:var(--accent-purple);">◄──accessToken + mqttCreds────</span> <strong>云端</strong>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--highlight-gold);color:var(--highlight-gold);">📡</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title" style="color:var(--highlight-gold);">阶段 D：MQTT 应用层认证</div>
+              <div class="flow-step-desc">
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──MQTT CONNECT(mqttCreds)──►</span> <strong>Broker</strong><br>
+                <strong>Broker</strong> <span style="color:var(--accent-cyan);">──HTTP Auth──►</span> <strong>云端</strong> ·
+                <strong>Broker</strong> <span style="color:var(--accent-purple);">◄──allow+ACL──</span> <strong>云端</strong><br>
+                <strong>门锁</strong> <span style="color:var(--accent-purple);">◄──CONNACK─────────</span> <strong>Broker</strong>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--accent-green);color:var(--accent-green);">👤</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title" style="color:var(--accent-green);">阶段 E：用户登录获取 Token</div>
+              <div class="flow-step-desc">
+                <strong>pigx-auth</strong> <span style="color:var(--accent-cyan);">──登录────►</span> <strong>用户App</strong> ·
+                <strong>pigx-auth</strong> <span style="color:var(--accent-purple);">◄─credentials</span> <strong>App</strong><br>
+                <strong>pigx-auth</strong> <span style="color:var(--accent-cyan);">──JWT──────►</span> <strong>用户App</strong>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num" style="border-color:var(--accent-red);color:var(--accent-red);">🔓</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title" style="color:var(--accent-red);">阶段 F：开锁指令端到端</div>
+              <div class="flow-step-desc">
+                <strong>App</strong> <span style="color:var(--accent-cyan);">──开锁──►</span> <strong>pigx-auth</strong> ·
+                <strong>App</strong> <span style="color:var(--accent-purple);">◄─Bearer──</span> <strong>pigx-auth</strong><br>
+                <span style="color:var(--highlight-gold);">云端处理：Token 内省 → 租户隔离 → 权限校验</span><br>
+                <strong>门锁</strong> <span style="color:var(--accent-purple);">◄─MQTT指令────</span> <strong>Broker</strong> <span style="color:var(--accent-purple);">◄─────────────</span> <strong>pigx-auth</strong><br>
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──执行开锁───►</span> <strong>Broker</strong> ·
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──上报结果────►</span> <strong>Broker</strong> <span style="color:var(--accent-cyan);">─────────────►</span> <strong>pigx-auth</strong> <span style="color:var(--accent-cyan);">──结果────►</span> <strong>App</strong>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ========================================================= -->
