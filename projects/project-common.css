@@ -108,6 +108,19 @@
   padding: var(--spacing-3xl) var(--spacing-lg);
 }
 
+.project-layout {
+  display: flex;
+  gap: 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+}
+
+.project-content-area {
+  flex: 1;
+  min-width: 0;
+}
+
 .project-section {
   margin-bottom: var(--spacing-3xl);
 }
@@ -355,6 +368,16 @@
 
 .project-nav-next::after {
   content: ' →';
+}
+
+@media (max-width: 1024px) {
+  .toc-sidebar {
+    display: none;
+  }
+
+  .project-layout {
+    padding: var(--spacing-2xl) var(--spacing-md);
+  }
 }
 
 @media (max-width: 768px) {
