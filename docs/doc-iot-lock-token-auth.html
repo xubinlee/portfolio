@@ -1025,7 +1025,7 @@
             <div style="background:var(--code-bg-white); border-radius:10px; padding:0.8rem 1.2rem; border:1px solid var(--code-border-subtle); text-align:center; min-width:120px; border-left:4px solid var(--accent-purple);">
               <div style="font-size:1.5rem;">☁️</div>
               <div style="font-weight:600; color:var(--text-primary);">云端服务集群</div>
-              <div style="font-size:0.7rem; color:var(--accent-purple);">pigx-auth 等</div>
+              <div style="font-size:0.7rem; color:var(--accent-purple);">lxb-auth 等</div>
             </div>
           </div>
           <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px 24px; margin-top:12px; font-size:0.78rem; color:var(--text-muted);">
@@ -1380,7 +1380,7 @@ String challenge = (String) redisTemplate.opsForValue().<span class="fn">getAndD
 
         <h3 id="redis-storage">步骤 8：Redis 多维索引存储</h3>
 
-        <p>参照 <code>PigxRedisOAuth2AuthorizationService</code> 的多维索引设计：</p>
+        <p>参照 <code>LxbRedisOAuth2AuthorizationService</code> 的多维索引设计：</p>
 
         <div class="redis-keys">
           <div class="redis-keys-title">🗂️ Redis Key 设计 — 设备 Token 多维索引</div>
@@ -1431,7 +1431,7 @@ String challenge = (String) redisTemplate.opsForValue().<span class="fn">getAndD
 
         <div class="highlight-box gold">
           <div class="label">📌 为什么必须用 TenantBroker</div>
-          <div class="content"><code>PigxTenantHandler</code> 会在 SQL 层自动拼接 <code>tenant_id</code> 条件。如果不用 TenantBroker，设备激活写入的 <code>tenant_id</code> 会取到错误的值或 null。</div>
+          <div class="content"><code>LxbTenantHandler</code> 会在 SQL 层自动拼接 <code>tenant_id</code> 条件。如果不用 TenantBroker，设备激活写入的 <code>tenant_id</code> 会取到错误的值或 null。</div>
         </div>
 
         <!-- ========================================================= -->
@@ -1520,7 +1520,7 @@ String challenge = (String) redisTemplate.opsForValue().<span class="fn">getAndD
 <span class="cls">@PostMapping</span>(<span class="str">"/mqtt/auth"</span>)
 <span class="kw">public</span> MqttAuthResponse <span class="fn">authenticate</span>(<span class="cls">@RequestBody</span> MqttAuthRequest request) { ... }
 
-<span class="cmt">// PigxSecurityInnerAspect 验证逻辑</span>
+<span class="cmt">// LxbSecurityInnerAspect 验证逻辑</span>
 String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM);  <span class="cmt">// "from"</span>
 <span class="kw">if</span> (inner.value() && !StrUtil.equals(SecurityConstants.FROM_IN, header)) {  <span class="cmt">// "Y"</span>
     <span class="kw">throw new</span> AccessDeniedException(<span class="str">"Access is denied"</span>);
@@ -1537,12 +1537,12 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
         <div class="seq-diagram">
           <div class="seq-actors" style="grid-template-columns:1fr 1fr;">
             <div class="seq-actor" style="--seq-rows:3;">📱 客户端 (App/小程序/Web)</div>
-            <div class="seq-actor" style="--seq-rows:3;">🔑 pigx-auth 服务</div>
+            <div class="seq-actor" style="--seq-rows:3;">🔑 lxb-auth 服务</div>
           </div>
           <div class="seq-body">
             <div class="seq-msg request">
               <span class="seq-step">1</span>
-              <span class="seq-from">客户端</span><span class="seq-arrow">──►</span><span class="seq-to">pigx-auth</span>
+              <span class="seq-from">客户端</span><span class="seq-arrow">──►</span><span class="seq-to">lxb-auth</span>
               <span class="seq-payload">POST /oauth2/token</span>
               <span class="seq-desc">
                 grant_type=password · username=admin · password=*** · scope=server<br>
@@ -1552,7 +1552,7 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
             </div>
             <div class="seq-msg response">
               <span class="seq-step">2</span>
-              <span class="seq-from">pigx-auth</span><span class="seq-arrow">◄──</span><span class="seq-to">客户端</span>
+              <span class="seq-from">lxb-auth</span><span class="seq-arrow">◄──</span><span class="seq-to">客户端</span>
               <span class="seq-payload">{ access_token: "eyJ...", refresh_token: "xxx", token_type: "Bearer", expires_in: 3600 }</span>
             </div>
           </div>
@@ -1567,7 +1567,7 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
               <div class="flow-step-desc">
                 <span style="color:var(--accent-purple);">password</span> → OAuth2ResourceOwnerPasswordAuthenticationConverter<br>
                 <span style="color:var(--accent-purple);">sms</span> → OAuth2ResourceOwnerSmsAuthenticationConverter<br>
-                <span style="color:var(--accent-purple);">refresh_token</span> → PigxOAuth2RefreshTokenAuthenticationConverter<br>
+                <span style="color:var(--accent-purple);">refresh_token</span> → LxbOAuth2RefreshTokenAuthenticationConverter<br>
                 <span style="color:var(--accent-purple);">client_credentials</span> → OAuth2ClientCredentialsAuthenticationConverter<br>
                 <span style="color:var(--accent-purple);">authorization_code</span> → OAuth2AuthorizationCodeAuthenticationConverter
               </div>
@@ -1580,9 +1580,9 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
               <div class="flow-step-desc">
                 <code>checkClient(registeredClient)</code> → 校验客户端是否支持此模式<br>
                 <code>authenticationManager.authenticate()</code> → 调用 DaoAuthenticationProvider<br>
-                &nbsp;&nbsp;└─ <code>PigxDaoAuthenticationProvider.retrieveUser()</code><br>
+                &nbsp;&nbsp;└─ <code>LxbDaoAuthenticationProvider.retrieveUser()</code><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;├─ 根据 clientId + grantType 选择 UserDetailsService<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;├─ <code>loadUserByUsername()</code> → 返回 PigxUser（含 tenantId）<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;├─ <code>loadUserByUsername()</code> → 返回 LxbUser（含 tenantId）<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;└─ <code>TenantContextHolder.setTenantId()</code><br>
                 <strong style="color:var(--highlight-gold);">并发控制检查</strong>（ONLINE_QUANTITY 配置）<br>
                 <code>generatAuthenticationToken()</code> → 生成 Token<br>
@@ -1601,16 +1601,16 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
           <pre style="margin:0;white-space:pre-wrap;word-break:break-all;">
 <span class="kw">public void</span> <span class="fn">customize</span>(OAuth2TokenClaimsContext context) {
     OAuth2TokenClaimsSet.Builder claims = context.<span class="fn">getClaims</span>();
-    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_LICENSE, SecurityConstants.PIGX_LICENSE);
+    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_LICENSE, SecurityConstants.LXB_LICENSE);
     claims.<span class="fn">claim</span>(SecurityConstants.CLIENT_ID, clientId);
     claims.<span class="fn">claim</span>(SecurityConstants.ACTIVE, Boolean.TRUE);
 
     <span class="cmt">// 客户端模式不返回具体用户信息</span>
     <span class="kw">if</span> (SecurityConstants.CLIENT_CREDENTIALS.equals(...)) <span class="kw">return</span>;
 
-    PigxUser pigxUser = (PigxUser) context.<span class="fn">getPrincipal</span>().<span class="fn">getPrincipal</span>();
-    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_USER_ID, pigxUser.getId().toString());
-    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_USERNAME, pigxUser.getUsername());
+    LxbUser lxbUser = (LxbUser) context.<span class="fn">getPrincipal</span>().<span class="fn">getPrincipal</span>();
+    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_USER_ID, lxbUser.getId().toString());
+    claims.<span class="fn">claim</span>(SecurityConstants.DETAILS_USERNAME, lxbUser.getUsername());
 }</pre>
         </div>
 
@@ -1638,7 +1638,7 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
             <span class="rkn-seg">token::</span><span class="rkn-var">username</span><span class="rkn-seg">::</span><span class="rkn-var">clientId</span><span class="rkn-seg">::</span><span class="rkn-var">tenantId</span><span class="rkn-seg">::</span><span class="rkn-var">tokenId</span><br>
             <span class="rkn-arrow">└─</span> <span class="rkn-var">username</span> → principalName（用户主体名）<br>
             <span class="rkn-arrow">└─</span> <span class="rkn-var">clientId</span> → registeredClientId（注册客户端ID）<br>
-            <span class="rkn-arrow">└─</span> <span class="rkn-var">tenantId</span> → pigxUser.getTenantId()（租户ID）<br>
+            <span class="rkn-arrow">└─</span> <span class="rkn-var">tenantId</span> → lxbUser.getTenantId()（租户ID）<br>
             <span class="rkn-arrow">└─</span> <span class="rkn-var">tokenId</span> → accessToken 值（JWT 的 jti）
           </div>
         </div>
@@ -1654,7 +1654,7 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
           <div class="seq-actors" style="grid-template-columns:1fr 1fr 1fr 1fr;">
             <div class="seq-actor" style="--seq-rows:10;">📱 用户App</div>
             <div class="seq-actor" style="--seq-rows:10;">🌐 API Gateway</div>
-            <div class="seq-actor" style="--seq-rows:10;">🔑 pigx-auth</div>
+            <div class="seq-actor" style="--seq-rows:10;">🔑 lxb-auth</div>
             <div class="seq-actor" style="--seq-rows:10;">⚙️ 业务服务</div>
           </div>
           <div class="seq-body">
@@ -1678,8 +1678,8 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
             </div>
             <div class="seq-msg request">
               <span class="seq-step">④</span>
-              <span class="seq-from">Gateway</span><span class="seq-arrow">──►</span><span class="seq-to">pigx-auth</span>
-              <span class="seq-payload">如需内省：PigxCustomOpaqueTokenIntrospector.introspect(token)</span>
+              <span class="seq-from">Gateway</span><span class="seq-arrow">──►</span><span class="seq-to">lxb-auth</span>
+              <span class="seq-payload">如需内省：LxbCustomOpaqueTokenIntrospector.introspect(token)</span>
             </div>
             <div class="seq-msg note">
               <span class="seq-step">⑤a</span>
@@ -1695,8 +1695,8 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
             </div>
             <div class="seq-msg response">
               <span class="seq-step">5</span>
-              <span class="seq-from">pigx-auth</span><span class="seq-arrow">◄──</span><span class="seq-to">Gateway</span>
-              <span class="seq-payload">PigxUser</span>
+              <span class="seq-from">lxb-auth</span><span class="seq-arrow">◄──</span><span class="seq-to">Gateway</span>
+              <span class="seq-payload">LxbUser</span>
             </div>
             <div class="seq-msg note">
               <span class="seq-step">⑥</span>
@@ -1744,15 +1744,15 @@ String header = request.<span class="fn">getHeader</span>(SecurityConstants.FROM
     }
 
     <span class="cmt">// 2. 加载用户详情</span>
-    UserDetails userDetails = optional.get().<span class="fn">loadUserByUser</span>((PigxUser) tokenPrincipal);
+    UserDetails userDetails = optional.get().<span class="fn">loadUserByUser</span>((LxbUser) tokenPrincipal);
 
     <span class="cmt">// 3. 检查账号状态</span>
     <span class="kw">if</span> (isLocked) <span class="kw">throw new</span> InvalidBearerTokenException(token);
     <span class="kw">if</span> (isExpired) <span class="kw">throw new</span> InvalidBearerTokenException(token);
 
     <span class="cmt">// 4. 注入客户端信息</span>
-    pigxUser.getAttributes().<span class="fn">put</span>(SecurityConstants.CLIENT_ID, oldAuthorization.getRegisteredClientId());
-    <span class="kw">return</span> pigxUser;
+    lxbUser.getAttributes().<span class="fn">put</span>(SecurityConstants.CLIENT_ID, oldAuthorization.getRegisteredClientId());
+    <span class="kw">return</span> lxbUser;
 }</pre>
         </div>
 
@@ -1880,8 +1880,8 @@ Object onlineQuantity = registeredClient.getClientSettings()
 }
 
 <span class="cmt">// 不允许同时在线 → 先删除该用户所有已有Token，再生成新Token</span>
-PigxRedisOAuth2AuthorizationService redisService =
-    (PigxRedisOAuth2AuthorizationService) <span class="kw">this</span>.authorizationService;
+LxbRedisOAuth2AuthorizationService redisService =
+    (LxbRedisOAuth2AuthorizationService) <span class="kw">this</span>.authorizationService;
 redisService.<span class="fn">removeByUsername</span>(usernamePasswordAuthentication);
 <span class="kw">return</span> <span class="fn">generatAuthenticationToken</span>(...);</pre>
         </div>
@@ -1921,14 +1921,14 @@ redisService.<span class="fn">removeByUsername</span>(usernamePasswordAuthentica
             <tr><td><strong>设备身份</strong></td><td>X.509 证书 CN=deviceId + 挑战-应答签名</td><td><span class="badge-iot">MqttConfig.java</span></td></tr>
             <tr><td><strong>MQTT应用层</strong></td><td>EMQX HTTP Auth 回调 + HMAC-SHA256</td><td><span class="badge-iot">LockDeviceAuthService</span></td></tr>
             <tr><td><strong>应用认证</strong></td><td>OAuth2 多模式 (password/sms/client_credentials)</td><td><span class="badge-iot">AuthorizationServerConfiguration</span></td></tr>
-            <tr><td><strong>Token安全</strong></td><td>JWT + Redis 双重验证</td><td><span class="badge-iot">PigxRedisOAuth2AuthorizationService</span></td></tr>
-            <tr><td><strong>Token内省</strong></td><td>OpaqueTokenIntrospector + API-KEY支持</td><td><span class="badge-iot">PigxCustomOpaqueTokenIntrospector</span></td></tr>
+            <tr><td><strong>Token安全</strong></td><td>JWT + Redis 双重验证</td><td><span class="badge-iot">LxbRedisOAuth2AuthorizationService</span></td></tr>
+            <tr><td><strong>Token内省</strong></td><td>OpaqueTokenIntrospector + API-KEY支持</td><td><span class="badge-iot">LxbCustomOpaqueTokenIntrospector</span></td></tr>
             <tr><td><strong>租户隔离</strong></td><td>TTL线程传递 + SQL自动拼接 + TenantBroker</td><td><span class="badge-iot">TenantContextHolder + TenantBroker</span></td></tr>
             <tr><td><strong>密码传输</strong></td><td>AES-CFB/SM4 加密 + ENC_FLAG 动态控制</td><td><span class="badge-iot">PasswordDecoderFilter</span></td></tr>
             <tr><td><strong>指令防重</strong></td><td>Redis Set 去重 msgId (0~255)</td><td><span class="badge-iot">MqttCommon.java</span></td></tr>
-            <tr><td><strong>暴力破解</strong></td><td>登录失败计数 + 自动锁定</td><td><span class="badge-iot">PigxAuthenticationFailureEventHandler</span></td></tr>
+            <tr><td><strong>暴力破解</strong></td><td>登录失败计数 + 自动锁定</td><td><span class="badge-iot">LxbAuthenticationFailureEventHandler</span></td></tr>
             <tr><td><strong>并发控制</strong></td><td>ONLINE_QUANTITY 配置踢人</td><td><span class="badge-iot">OAuth2ResourceOwnerBaseAuthenticationProvider</span></td></tr>
-            <tr><td><strong>内部调用</strong></td><td>@Inner + FROM Header 验证</td><td><span class="badge-iot">Inner.java + PigxSecurityInnerAspect</span></td></tr>
+            <tr><td><strong>内部调用</strong></td><td>@Inner + FROM Header 验证</td><td><span class="badge-iot">Inner.java + LxbSecurityInnerAspect</span></td></tr>
             <tr><td><strong>ACL控制</strong></td><td>Topic级最小权限（pub/sub分离）</td><td><span class="badge-iot">MqttConstants.java</span></td></tr>
           </tbody>
         </table>
@@ -1994,9 +1994,9 @@ redisService.<span class="fn">removeByUsername</span>(usernamePasswordAuthentica
             <div class="flow-step-body">
               <div class="flow-step-title" style="color:var(--accent-green);">阶段 E：用户登录获取 Token</div>
               <div class="flow-step-desc">
-                <strong>pigx-auth</strong> <span style="color:var(--accent-cyan);">──登录────►</span> <strong>用户App</strong> ·
-                <strong>pigx-auth</strong> <span style="color:var(--accent-purple);">◄─credentials</span> <strong>App</strong><br>
-                <strong>pigx-auth</strong> <span style="color:var(--accent-cyan);">──JWT──────►</span> <strong>用户App</strong>
+                <strong>lxb-auth</strong> <span style="color:var(--accent-cyan);">──登录────►</span> <strong>用户App</strong> ·
+                <strong>lxb-auth</strong> <span style="color:var(--accent-purple);">◄─credentials</span> <strong>App</strong><br>
+                <strong>lxb-auth</strong> <span style="color:var(--accent-cyan);">──JWT──────►</span> <strong>用户App</strong>
               </div>
             </div>
           </div>
@@ -2005,12 +2005,12 @@ redisService.<span class="fn">removeByUsername</span>(usernamePasswordAuthentica
             <div class="flow-step-body">
               <div class="flow-step-title" style="color:var(--accent-red);">阶段 F：开锁指令端到端</div>
               <div class="flow-step-desc">
-                <strong>App</strong> <span style="color:var(--accent-cyan);">──开锁──►</span> <strong>pigx-auth</strong> ·
-                <strong>App</strong> <span style="color:var(--accent-purple);">◄─Bearer──</span> <strong>pigx-auth</strong><br>
+                <strong>App</strong> <span style="color:var(--accent-cyan);">──开锁──►</span> <strong>lxb-auth</strong> ·
+                <strong>App</strong> <span style="color:var(--accent-purple);">◄─Bearer──</span> <strong>lxb-auth</strong><br>
                 <span style="color:var(--highlight-gold);">云端处理：Token 内省 → 租户隔离 → 权限校验</span><br>
-                <strong>门锁</strong> <span style="color:var(--accent-purple);">◄─MQTT指令────</span> <strong>Broker</strong> <span style="color:var(--accent-purple);">◄─────────────</span> <strong>pigx-auth</strong><br>
+                <strong>门锁</strong> <span style="color:var(--accent-purple);">◄─MQTT指令────</span> <strong>Broker</strong> <span style="color:var(--accent-purple);">◄─────────────</span> <strong>lxb-auth</strong><br>
                 <strong>门锁</strong> <span style="color:var(--accent-cyan);">──执行开锁───►</span> <strong>Broker</strong> ·
-                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──上报结果────►</span> <strong>Broker</strong> <span style="color:var(--accent-cyan);">─────────────►</span> <strong>pigx-auth</strong> <span style="color:var(--accent-cyan);">──结果────►</span> <strong>App</strong>
+                <strong>门锁</strong> <span style="color:var(--accent-cyan);">──上报结果────►</span> <strong>Broker</strong> <span style="color:var(--accent-cyan);">─────────────►</span> <strong>lxb-auth</strong> <span style="color:var(--accent-cyan);">──结果────►</span> <strong>App</strong>
               </div>
             </div>
           </div>

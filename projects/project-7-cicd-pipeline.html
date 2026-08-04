@@ -223,7 +223,7 @@ Jenkins 触发Pipeline
           <li><strong>参数化构建(Parameters)</strong>：
             <ul style="padding-left:var(--spacing-xl);margin-top:var(--spacing-xs);">
               <li>`CUSTOM_BRANCH`：选择目标分支(dev/test/mes_1)</li>
-              <li>`CUSTOM_PROJECT`：指定项目名称(如pigx-auth)</li>
+              <li>`CUSTOM_PROJECT`：指定项目名称(如lxb-auth)</li>
               <li>`CUSTOM_ENVIRONMENT`：选择部署环境(dev/test)</li>
               <li>`CUSTOM_VERSION`：自定义版本号(留空则用分支名)</li>
               <li>`SKIP_TESTS`：是否跳过测试(默认true加速构建)</li>
@@ -304,7 +304,7 @@ pipeline {
               初始化运行时参数：<br>
               • 判断是否前端项目(IS_FRONTEND)<br>
               • 加载环境配置(getEnvConfig获取ServiceHost/RancherStack)<br>
-              • 解析Git仓库名映射(getGitProject处理pigx-common→klhbs等特殊情况)<br>
+              • 解析Git仓库名映射(getGitProject处理lxb-common→klhbs等特殊情况)<br>
               • 参数必填校验，缺失则中断Pipeline并报错<br>
               • 打印初始化日志供调试
             </div>
@@ -334,7 +334,7 @@ pipeline {
               <strong>后端项目</strong>：<br>
               • Maven clean install<br>
               • -Dmaven.test.skip=${SKIP_TESTS}控制是否跳过测试<br>
-              • getBackendDir()解析子模块路径(pigx-upms-biz等)
+              • getBackendDir()解析子模块路径(lxb-upms-biz等)
             </div>
           </div>
           
@@ -548,12 +548,12 @@ def getEnvConfig(String env, String group) {
 // Git仓库名映射（处理单体仓库内的多模块情况）
 def getGitProject(String project) {
     def gitMap = [
-        'pigx-common': 'klhbs',
-        'pigx-register': 'klhbs',
-        'pigx-auth': 'klhbs',
-        'pigx-gateway': 'klhbs',
-        'pigx-xxl-job-admin': 'klhbs',
-        'pigx-monitor': 'klhbs'
+        'lxb-common': 'klhbs',
+        'lxb-register': 'klhbs',
+        'lxb-auth': 'klhbs',
+        'lxb-gateway': 'klhbs',
+        'lxb-xxl-job-admin': 'klhbs',
+        'lxb-monitor': 'klhbs'
     ]
     return gitMap[project] ?: project
 }
@@ -561,10 +561,10 @@ def getGitProject(String project) {
 // 后端项目构建目录映射
 def getBackendDir(String project) {
     def dirMap = [
-        'klhbs': 'pigx-common',
-        'pigx-xxl-job-admin': 'pigx-visual/pigx-xxl-job-admin',
-        'pigx-monitor': 'pigx-visual/pigx-monitor',
-        'upms': 'pigx-upms-biz'
+        'klhbs': 'lxb-common',
+        'lxb-xxl-job-admin': 'lxb-visual/lxb-xxl-job-admin',
+        'lxb-monitor': 'lxb-visual/lxb-monitor',
+        'upms': 'lxb-upms-biz'
     ]
     return dirMap[project] ?: "${project}-biz"
 }

@@ -702,7 +702,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
     <span class="cmt">// ===== 全局环境变量 =====</span>
     <span class="kw">environment</span> {
-        <span class="fn">IMAGE_NAME</span>   = <span class="str">"pigx-gateway"</span>
+        <span class="fn">IMAGE_NAME</span>   = <span class="str">"lxb-gateway"</span>
         <span class="fn">REGISTRY</span>     = <span class="str">"registry.cn-hangzhou.aliyuncs.com"</span>
         <span class="fn">VERSION</span>      = <span class="str">"${env.BUILD_NUMBER}"</span>
         <span class="fn">CREDENTIALS</span>  = <span class="fn">credentials</span>(<span class="str">'docker-registry-cred'</span>)
@@ -864,9 +864,9 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 <span class="kw">@Library</span>(<span class="str">'jenkins-shared-library@main'</span>) _
 
 standardPipeline(
-    appName: <span class="str">'pigx-gateway'</span>,
+    appName: <span class="str">'lxb-gateway'</span>,
     registry: <span class="str">'registry.cn-hangzhou.aliyuncs.com'</span>,
-    buildCmd: <span class="str">'mvn clean package -pl pigx-gateway -am'</span>
+    buildCmd: <span class="str">'mvn clean package -pl lxb-gateway -am'</span>
 )
             </pre></div>
         <div class="highlight-box" style="margin: 1rem 0;">

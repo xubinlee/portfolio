@@ -480,34 +480,34 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>pigx-common-core</strong></td>
+                <td><strong>lxb-common-core</strong></td>
                 <td>核心工具类、常量定义、统一响应封装</td>
-                <td>com.pig4cloud:pigx-common-core</td>
+                <td>com.lxb4cloud:lxb-common-core</td>
               </tr>
               <tr>
-                <td><strong>pigx-common-security</strong></td>
+                <td><strong>lxb-common-security</strong></td>
                 <td>OAuth2认证授权、资源服务器配置</td>
-                <td>com.pig4cloud:pigx-common-security</td>
+                <td>com.lxb4cloud:lxb-common-security</td>
               </tr>
               <tr>
-                <td><strong>pigx-common-data-scope</strong></td>
+                <td><strong>lxb-common-data-scope</strong></td>
                 <td>数据权限控制（部门/角色维度）</td>
-                <td>com.pig4cloud:pigx-common-data-scope</td>
+                <td>com.lxb4cloud:lxb-common-data-scope</td>
               </tr>
               <tr>
-                <td><strong>pigx-common-log</strong></td>
+                <td><strong>lxb-common-log</strong></td>
                 <td>操作日志记录、审计追踪</td>
-                <td>com.pig4cloud:pigx-common-log</td>
+                <td>com.lxb4cloud:lxb-common-log</td>
               </tr>
               <tr>
-                <td><strong>pigx-upms-biz</strong></td>
+                <td><strong>lxb-upms-biz</strong></td>
                 <td>用户权限管理（RBAC模型）</td>
-                <td>com.pig4cloud:pigx-upms-biz</td>
+                <td>com.lxb4cloud:lxb-upms-biz</td>
               </tr>
               <tr>
-                <td><strong>pigx-gateway</strong></td>
+                <td><strong>lxb-gateway</strong></td>
                 <td>API网关（路由/限流/鉴权）</td>
-                <td>com.pig4cloud:pigx-gateway</td>
+                <td>com.lxb4cloud:lxb-gateway</td>
               </tr>
             </tbody>
           </table>
@@ -528,7 +528,7 @@
           <h3>项目初始化</h3>
           <div class="code-block" data-lang="bash">
 <pre># 克隆框架模板
-git clone https://gitlab.example.com/hbs4cloud/pigx-template.git my-service
+git clone https://gitlab.example.com/hbs4cloud/lxb-template.git my-service
 
 cd my-service
 
@@ -571,9 +571,9 @@ spring:
     client:
       client-id: my-service
       client-secret: ${OAUTH2_SECRET}
-      access-token-uri: http://pigx-auth/oauth/token
+      access-token-uri: http://lxb-auth/oauth/token
     resource:
-      token-info-uri: http://pigx-auth/oauth/check_token
+      token-info-uri: http://lxb-auth/oauth/check_token
     ignore-urls:
       - /actuator/**
       - /v3/api-docs/**</pre>
@@ -680,8 +680,8 @@ public R&lt;IPage&lt;UserVO&gt;&gt; list(Page page, UserQuery query) {
           <h3>Q3: 如何添加新的业务模块？</h3>
           <p><strong>A:</strong> 参考以下步骤：</p>
           <ol>
-            <li>新建 Maven 子模块 pigx-{module}-biz</li>
-            <li>继承 pigx-common-parent 父 POM</li>
+            <li>新建 Maven 子模块 lxb-{module}-biz</li>
+            <li>继承 lxb-common-parent 父 POM</li>
             <li>添加所需依赖(common-security/data-scope/log 等)</li>
             <li>编写 Controller → Service → Mapper 标准三层结构</li>
             <li>在 Nacos 中配置独立的 application-{module}.yml</li>
@@ -736,7 +736,7 @@ public R&lt;IPage&lt;UserVO&gt;&gt; list(Page page, UserQuery query) {
 
           <div class="info-box">
             <h4>📌 相关链接</h4>
-            <p>• 框架源码：<a href="https://github.com/pig4cloud/pig" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan)">https://github.com/pig4cloud/pig</a><br>
+            <p>• 框架源码：<a href="https://github.com/lxb4cloud/lxb" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan)">https://github.com/lxb4cloud/lxb</a><br>
             • 技术博客：<a href="article-spring-cloud-alibaba.html" style="color:var(--accent-cyan)">Spring Cloud Alibaba 实战</a><br>
             • 问题反馈：<a href="#" style="color:var(--accent-cyan)">提交 Issue →</a></p>
           </div>
