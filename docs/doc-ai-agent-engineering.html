@@ -1,14 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="AI Agent 工程实战 — 从 ReAct 推理到多智能体协同的完整构建指南">
   <title>AI Agent 工程实战 | ISNOWSOFT Docs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
       --bg-primary: #0a0a0f;
@@ -567,11 +563,11 @@
       <div class="cicd-content">
         <div class="container">
 
-    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回文档列表</a>
+    <a href="index.html" class="back-link">← 返回文档列表</a>
 
 ﻿    <section class="card">
         <div class="card-title" id="overview">
-            <i class="fas fa-robot"></i> AI Agent 工程概述
+            🤖 AI Agent 工程概述
             <span class="badge">核心概念</span>
         </div>
         <p style="color: var(--text-secondary); font-size: 1.05rem;">
@@ -617,7 +613,7 @@
 
     <section class="card">
         <div class="card-title" id="architecture">
-            <i class="fas fa-sitemap"></i> Agent 架构设计
+            🗺️ Agent 架构设计
             <span class="badge">分层架构</span>
         </div>
         <p style="color: var(--text-secondary);">一个完整的 AI Agent 系统采用分层架构，各层职责清晰、解耦设计。以下为生产级 Agent 的标准架构：</p>
@@ -663,7 +659,7 @@
 
     <section class="card">
         <div class="card-title" id="environment">
-            <i class="fas fa-cog"></i> 开发环境搭建
+            ⚙️ 开发环境搭建
             <span class="badge">快速开始</span>
         </div>
         <p style="color: var(--text-secondary);">基于 Python + LangChain 构建 Agent 开发环境，推荐使用虚拟环境隔离依赖：</p>
@@ -712,7 +708,7 @@ python -c <span class="str">"from langchain_openai import ChatOpenAI; print('OK'
 
     <section class="card">
         <div class="card-title" id="react-pattern">
-            <i class="fas fa-sync-alt"></i> ReAct 推理模式
+            🔄 ReAct 推理模式
             <span class="badge">核心范式</span>
         </div>
         <p style="color: var(--text-secondary);">ReAct（Reasoning + Acting）是 Agent 最经典的推理范式，交替进行"思考"与"行动"，将复杂任务分解为可执行步骤。</p>
@@ -775,7 +771,7 @@ result = executor.<span class="fn">invoke</span>({<span class="str">"input"</spa
 
     <section class="card">
         <div class="card-title" id="function-calling">
-            <i class="fas fa-plug"></i> Function Calling 工具调用
+            🔌 Function Calling 工具调用
             <span class="badge">OpenAI 标准</span>
         </div>
         <p style="color: var(--text-secondary);">Function Calling 是 OpenAI 提出的标准化工具调用协议，LLM 根据函数描述自动选择并生成调用参数，是 Agent 工具层的核心实现。</p>
@@ -848,7 +844,7 @@ response = client.chat.completions.<span class="fn">create</span>(
 
     <section class="card">
         <div class="card-title" id="memory">
-            <i class="fas fa-database"></i> 记忆系统设计
+            🗄️ 记忆系统设计
             <span class="badge">RAG 检索增强</span>
         </div>
         <p style="color: var(--text-secondary);">Agent 的记忆系统分为短期记忆（对话上下文）与长期记忆（向量存储），是处理长任务与个性化交互的关键。</p>
@@ -907,7 +903,7 @@ vector_store = <span class="fn">Chroma</span>(
 
     <section class="card">
         <div class="card-title" id="multi-agent">
-            <i class="fas fa-users"></i> 多 Agent 协同
+            👥 多 Agent 协同
             <span class="badge">LangGraph 编排</span>
         </div>
         <p style="color: var(--text-secondary);">复杂任务需要多个专业 Agent 协同完成。LangGraph 基于图结构编排 Agent 工作流，支持条件分支、循环与人工介入。</p>
@@ -978,7 +974,7 @@ result = app.<span class="fn">invoke</span>({<span class="str">"task"</span>: <s
 
     <section class="card">
         <div class="card-title" id="mcp-protocol">
-            <i class="fas fa-project-diagram"></i> MCP 协议集成
+            📊 MCP 协议集成
             <span class="badge">Model Context Protocol</span>
         </div>
         <p style="color: var(--text-secondary);">MCP（Model Context Protocol）是 Anthropic 提出的开放协议，标准化 LLM 与外部工具/数据源的连接方式，实现"一次集成，处处可用"。</p>
@@ -1038,7 +1034,7 @@ server = <span class="fn">Server</span>(<span class="str">"custom-tools"</span>)
 
     <section class="card">
         <div class="card-title" id="observability">
-            <i class="fas fa-chart-line"></i> 可观测性与评估
+            📈 可观测性与评估
             <span class="badge">LangSmith 监控</span>
         </div>
         <p style="color: var(--text-secondary);">Agent 的非确定性使其调试与监控极具挑战。LangSmith 提供全链路追踪、Token 成本分析与质量评估能力。</p>
@@ -1101,7 +1097,7 @@ client.<span class="fn">run_on_dataset</span>(
 
     <section class="card">
         <div class="card-title" id="best-practices">
-            <i class="fas fa-award"></i> 生产最佳实践
+            🏆 生产最佳实践
             <span class="badge">经验总结</span>
         </div>
         <div class="cap-grid">
@@ -1211,7 +1207,7 @@ executor = <span class="fn">AgentExecutor</span>(
 
     <section class="card">
         <div class="card-title" id="summary">
-            <i class="fas fa-flag-checkered"></i> 总结与展望
+            🏁 总结与展望
             <span class="badge">核心要点</span>
         </div>
         <p style="color: var(--text-secondary);">

@@ -1,14 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Jenkins Pipeline 指南 — 从入门到生产级流水线实践">
   <title>Jenkins Pipeline 指南 | ISNOWSOFT Docs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
       --bg-primary: #0a0a0f;
@@ -567,12 +563,12 @@
       <div class="cicd-content">
         <div class="container">
 
-    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回文档列表</a>
+    <a href="index.html" class="back-link">← 返回文档列表</a>
 
 
 ﻿    <section class="card">
         <div class="card-title" id="overview">
-            <i class="fas fa-project-diagram"></i> Jenkins Pipeline 概述
+            📊 Jenkins Pipeline 概述
             <span class="badge">核心概念</span>
         </div>
         <p style="color: var(--text-secondary); font-size: 1.05rem;">
@@ -615,7 +611,7 @@
 
     <section class="card">
         <div class="card-title" id="install">
-            <i class="fas fa-server"></i> Jenkins 环境搭建
+            🖥️ Jenkins 环境搭建
             <span class="badge">安装与配置</span>
         </div>
         <p style="color: var(--text-secondary);">推荐采用 Docker 方式部署 Jenkins，便于版本升级与环境隔离。以下为生产环境部署步骤：</p>
@@ -662,7 +658,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
     <section class="card">
         <div class="card-title" id="concepts">
-            <i class="fas fa-cubes"></i> 核心概念与术语
+            🧊 核心概念与术语
             <span class="badge">6 大概念</span>
         </div>
         <p style="color: var(--text-secondary);">理解 Pipeline 的核心概念是编写高质量流水线的基础。以下为关键术语详解：</p>
@@ -697,7 +693,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
     <section class="card">
         <div class="card-title" id="declarative">
-            <i class="fas fa-code"></i> 声明式流水线语法
+            💻 声明式流水线语法
             <span class="badge">推荐方式</span>
         </div>
         <p style="color: var(--text-secondary);">声明式流水线是 Jenkins 官方推荐语法，结构清晰、易于维护。以下为完整语法结构示例：</p>
@@ -771,7 +767,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
     <section class="card">
         <div class="card-title" id="scripted">
-            <i class="fas fa-terminal"></i> 脚本式流水线
+            ⌨️ 脚本式流水线
             <span class="badge">灵活控制</span>
         </div>
         <p style="color: var(--text-secondary);">脚本式流水线基于 Groovy DSL，提供更强的编程能力，适合复杂条件分支与循环场景：</p>
@@ -816,7 +812,7 @@ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
     <section class="card">
         <div class="card-title" id="shared-library">
-            <i class="fas fa-book"></i> 共享库 (Shared Library)
+            📖 共享库 (Shared Library)
             <span class="badge">代码复用</span>
         </div>
         <p style="color: var(--text-secondary);">共享库允许将公共流水线逻辑抽取为独立 Git 仓库，在多个 Jenkins 项目间复用，是大型团队标准化 CI/CD 的关键手段。</p>
@@ -881,12 +877,12 @@ standardPipeline(
 
     <section class="card">
         <div class="card-title" id="multibranch">
-            <i class="fas fa-code-branch"></i> 多分支流水线
+            🌿 多分支流水线
             <span class="badge">分支策略</span>
         </div>
         <p style="color: var(--text-secondary);">Multibranch Pipeline 自动为每个分支创建独立作业，实现环境隔离与分支级流水线配置。</p>
         <div class="phase-group">
-            <i class="fas fa-sitemap"></i> 分支策略设计
+            🗺️ 分支策略设计
         </div>
         <table class="param-table">
             <thead>
@@ -933,7 +929,7 @@ standardPipeline(
 
     <section class="card">
         <div class="card-title" id="credentials">
-            <i class="fas fa-key"></i> 凭据管理
+            🔑 凭据管理
             <span class="badge">安全实践</span>
         </div>
         <p style="color: var(--text-secondary);">Jenkins 提供统一的凭据存储，支持用户名密码、密钥、Secret Text、证书等多种类型，避免敏感信息硬编码。</p>
@@ -977,7 +973,7 @@ standardPipeline(
 
     <section class="card">
         <div class="card-title" id="notifications">
-            <i class="fas fa-bell"></i> 通知与集成
+            🔔 通知与集成
             <span class="badge">实时反馈</span>
         </div>
         <p style="color: var(--text-secondary);">构建状态实时通知是 DevOps 协作的关键环节，支持企业微信、钉钉、邮件、Slack 等多种渠道。</p>
@@ -1020,7 +1016,7 @@ standardPipeline(
 
     <section class="card">
         <div class="card-title" id="best-practices">
-            <i class="fas fa-award"></i> 生产最佳实践
+            🏆 生产最佳实践
             <span class="badge">经验总结</span>
         </div>
         <div class="cap-grid">
@@ -1130,7 +1126,7 @@ spec:
 
     <section class="card">
         <div class="card-title" id="summary">
-            <i class="fas fa-flag-checkered"></i> 总结
+            🏁 总结
             <span class="badge">核心要点</span>
         </div>
         <p style="color: var(--text-secondary);">

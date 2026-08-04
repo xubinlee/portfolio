@@ -1,14 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="CI/CD 自动化部署 — Jenkins Pipeline 全链路流水线设计与实践">
   <title>CI/CD 自动化部署 | ISNOWSOFT Docs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
       --bg-primary: #0a0a0f;
@@ -571,12 +567,12 @@
     
 
     
-    <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回项目列表</a>
+    <a href="../index.html" class="back-link">← 返回项目列表</a>
 
     
     <section class="card">
         <div class="card-title" id="overview">
-            <i class="fas fa-project-diagram"></i> 项目概述
+            📊 项目概述
             <span class="badge">生产级 · 已落地</span>
         </div>
         <p style="color: var(--text-secondary); font-size: 1.05rem;">
@@ -587,19 +583,19 @@
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1rem;">
             <span style="background:var(--code-bg-gray); padding:0.2rem 1rem; border-radius:20px; font-size:0.85rem; color:var(--text-secondary);">
-                <i class="fas fa-check-circle" style="color:var(--code-blue);"></i> 多分支支持
+                ✅ 多分支支持
             </span>
             <span style="background:var(--code-bg-gray); padding:0.2rem 1rem; border-radius:20px; font-size:0.85rem; color:var(--text-secondary);">
-                <i class="fas fa-check-circle" style="color:var(--code-blue);"></i> SonarQube 质量门禁
+                ✅ SonarQube 质量门禁
             </span>
             <span style="background:var(--code-bg-gray); padding:0.2rem 1rem; border-radius:20px; font-size:0.85rem; color:var(--text-secondary);">
-                <i class="fas fa-check-circle" style="color:var(--code-blue);"></i> Docker + K8s 部署
+                ✅ Docker + K8s 部署
             </span>
             <span style="background:var(--code-bg-gray); padding:0.2rem 1rem; border-radius:20px; font-size:0.85rem; color:var(--text-secondary);">
-                <i class="fas fa-check-circle" style="color:var(--code-blue);"></i> 企业微信通知
+                ✅ 企业微信通知
             </span>
             <span style="background:var(--code-bg-gray); padding:0.2rem 1rem; border-radius:20px; font-size:0.85rem; color:var(--text-secondary);">
-                <i class="fas fa-check-circle" style="color:var(--code-blue);"></i> 覆盖率报告归档
+                ✅ 覆盖率报告归档
             </span>
         </div>
     </section>
@@ -607,7 +603,7 @@
     
     <section class="card">
         <div class="card-title" id="capabilities">
-            <i class="fas fa-star"></i> 核心能力
+            ⭐ 核心能力
             <span class="badge">6 大特性</span>
         </div>
         <div class="cap-grid">
@@ -647,7 +643,7 @@
     
     <section class="card">
         <div class="card-title" id="architecture">
-            <i class="fas fa-sitemap"></i> 部署架构图
+            🗺️ 部署架构图
             <span class="badge">CI/CD 端到端自动化部署架构</span>
         </div>
 		<div style="
@@ -707,7 +703,7 @@
 
     
     <section class="card">
-        <div class="card-title" id="build-params"><i class="fas fa-sliders-h"></i> 构建参数
+        <div class="card-title" id="build-params">🎛️ 构建参数
             <span class="badge">6 个参数</span>
         </div>
         <table class="param-table">
@@ -762,24 +758,24 @@
 
     
     <section class="card">
-        <div class="card-title" id="pipeline-steps"><i class="fas fa-stream"></i> 流水线步骤
+        <div class="card-title" id="pipeline-steps">📜 流水线步骤
             <span class="badge">8 个阶段</span>
         </div>
 
         
         <div class="phase-group">
-            <i class="fas fa-cog"></i> ① 环境配置
+            ⚙️ ① 环境配置
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">1</span>
-                <span class="icon"><i class="fas fa-sliders-h"></i></span>
+                <span class="icon">🎛️</span>
                 <span class="desc">参数解析与校验（分支/项目/环境/版本）</span>
                 <span class="badge-step">初始化</span>
             </div>
             <div class="pipeline-step">
                 <span class="num">2</span>
-                <span class="icon"><i class="fas fa-map-pin"></i></span>
+                <span class="icon">📍</span>
                 <span class="desc">环境变量注入（JDK/Maven/镜像仓库/Sonar）</span>
                 <span class="badge-step">配置</span>
             </div>
@@ -787,12 +783,12 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-code-branch"></i> ② 拉取代码
+            🌿 ② 拉取代码
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">3</span>
-                <span class="icon"><i class="fas fa-download"></i></span>
+                <span class="icon">⬇️</span>
                 <span class="desc">Git 拉取指定分支代码（含凭据认证）</span>
                 <span class="badge-step">Git</span>
             </div>
@@ -800,18 +796,18 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-hammer"></i> ③ 编译构建
+            🔨 ③ 编译构建
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">4</span>
-                <span class="icon"><i class="fas fa-cogs"></i></span>
+                <span class="icon">⚙️</span>
                 <span class="desc">后端：Maven clean install（可跳过测试）</span>
                 <span class="badge-step">Maven</span>
             </div>
             <div class="pipeline-step">
                 <span class="num">5</span>
-                <span class="icon"><i class="fab fa-vuejs"></i></span>
+                <span class="icon">💚</span>
                 <span class="desc">前端：npm install + build（环境差异化构建）</span>
                 <span class="badge-step">NPM</span>
             </div>
@@ -819,18 +815,18 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-vial"></i> ④ 单元测试与覆盖率
+            🧪 ④ 单元测试与覆盖率
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">6</span>
-                <span class="icon"><i class="fas fa-flask"></i></span>
+                <span class="icon">🧪</span>
                 <span class="desc">后端：mvn test + JaCoCo 覆盖率报告</span>
                 <span class="badge-step">JaCoCo</span>
             </div>
             <div class="pipeline-step">
                 <span class="num">7</span>
-                <span class="icon"><i class="fas fa-flask"></i></span>
+                <span class="icon">🧪</span>
                 <span class="desc">前端：npm run test:unit --coverage</span>
                 <span class="badge-step">Jest</span>
             </div>
@@ -838,12 +834,12 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-search"></i> ⑤ SonarQube 分析
+            🔍 ⑤ SonarQube 分析
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">8</span>
-                <span class="icon"><i class="fas fa-code"></i></span>
+                <span class="icon">💻</span>
                 <span class="desc">SonarScanner 代码质量扫描（Bug/漏洞/异味/覆盖率）</span>
                 <span class="badge-step">SonarQube</span>
             </div>
@@ -851,24 +847,24 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-docker"></i> ⑥ 镜像打包与部署
+            🐳 ⑥ 镜像打包与部署
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">9</span>
-                <span class="icon"><i class="fab fa-docker"></i></span>
+                <span class="icon">🐳</span>
                 <span class="desc">Docker 镜像构建（Dockerfile）</span>
                 <span class="badge-step">Build</span>
             </div>
             <div class="pipeline-step">
                 <span class="num">10</span>
-                <span class="icon"><i class="fas fa-upload"></i></span>
+                <span class="icon">⬆️</span>
                 <span class="desc">镜像推送到私有仓库（docker login + push）</span>
                 <span class="badge-step">Push</span>
             </div>
             <div class="pipeline-step">
                 <span class="num">11</span>
-                <span class="icon"><i class="fas fa-play"></i></span>
+                <span class="icon">▶️</span>
                 <span class="desc">Kubernetes 滚动部署（kubectl set image + rollout）</span>
                 <span class="badge-step">Deploy</span>
             </div>
@@ -876,12 +872,12 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-archive"></i> ⑦ 覆盖率报告归档
+            📦 ⑦ 覆盖率报告归档
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">12</span>
-                <span class="icon"><i class="fas fa-file-alt"></i></span>
+                <span class="icon">📄</span>
                 <span class="desc">归档 JaCoCo / Jest 覆盖率报告（HTML + lcov.info）</span>
                 <span class="badge-step">Archive</span>
             </div>
@@ -889,12 +885,12 @@
 
         
         <div class="phase-group">
-            <i class="fas fa-bell"></i> ⑧ 构建后通知
+            🔔 ⑧ 构建后通知
         </div>
         <div class="pipeline-flow">
             <div class="pipeline-step">
                 <span class="num">13</span>
-                <span class="icon"><i class="fab fa-weixin"></i></span>
+                <span class="icon">💬</span>
                 <span class="desc">企业微信通知（成功/失败/不稳定/取消）</span>
                 <span class="badge-step">Notify</span>
             </div>
@@ -903,7 +899,7 @@
 
     
     <section class="card">
-        <div class="card-title" id="pipeline-code"><i class="fas fa-code"></i> Pipeline 核心代码
+        <div class="card-title" id="pipeline-code">💻 Pipeline 核心代码
             <span class="badge">Declarative Pipeline</span>
         </div>
         <div class="pipeline-code">
@@ -970,7 +966,7 @@
 
     
     <section class="card">
-        <div class="card-title" id="tech-stack"><i class="fas fa-microchip"></i> 技术栈
+        <div class="card-title" id="tech-stack">🔧 技术栈
             <span class="badge">工具链</span>
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:10px 20px; font-size:0.95rem; color:var(--text-primary);">
