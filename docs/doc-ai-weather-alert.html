@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="智能门锁天气/暴雨预警提示词工程方案 — 竞品对标+多源数据融合+分级预警+智能家居联动">
+  <title>天气暴雨预警提示词方案 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-gold: #eab308;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --accent-blue: #3b82f6;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+      --highlight-orange: #f59e0b;
+      --highlight-orange-bg: rgba(245, 158, 11, 0.07);
+      --highlight-blue: #3b82f6;
+      --highlight-blue-bg: rgba(59, 130, 246, 0.07);
+      --highlight-cyan: #00d4ff;
+      --highlight-cyan-bg: rgba(0, 212, 255, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-gold: #ca8a04;
+      --accent-red: #dc2626;
+      --accent-orange: #d97706;
+      --accent-blue: #2563eb;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+      --highlight-orange: #d97706;
+      --highlight-orange-bg: rgba(217, 119, 6, 0.07);
+      --highlight-blue: #2563eb;
+      --highlight-blue-bg: rgba(37, 99, 235, 0.07);
+      --highlight-cyan: #0099cc;
+      --highlight-cyan-bg: rgba(0, 153, 204, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      transform: scaleX(0); transform-origin: left; z-index: 9999;
+      transition: transform 0.1s linear;
+    }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+    [data-theme="light"] .site-header { background: rgba(245, 245, 250, 0.95); }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+    .brand-bracket { color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; }
+    .brand-text { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 1px; }
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+    .brand-text-accent { color: var(--accent-purple); font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 1px; }
+
+    .header-nav { display: flex; align-items: center; gap: 16px; }
+    .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-link:hover { color: var(--accent-cyan); }
+
+    .theme-toggle {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 4px 12px; cursor: pointer;
+      color: var(--text-secondary); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+      display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px; background: var(--border-color);
+      border-radius: 8px; position: relative; transition: background 0.3s;
+    }
+    .theme-knob {
+      width: 12px; height: 12px; background: var(--accent-cyan);
+      border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.3s;
+    }
+    [data-theme="light"] .theme-knob { transform: translateX(16px); }
+
+    .article-layout {
+      max-width: 1400px; margin: 0 auto; padding: 32px 24px;
+      display: grid; grid-template-columns: 1fr var(--toc-width); gap: 48px;
+    }
+
+    .article-main { min-width: 0; }
+
+    .article-header { margin-bottom: 40px; }
+    .article-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 0.85rem; }
+    .breadcrumb-link { color: var(--accent-cyan); text-decoration: none; }
+    .breadcrumb-link:hover { text-decoration: underline; }
+    .breadcrumb-separator { color: var(--text-muted); }
+    .breadcrumb-separator::before { content: '/'; }
+
+    .article-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .meta-tag {
+      background: rgba(59, 130, 246, 0.12); color: var(--accent-blue);
+      padding: 4px 12px; border-radius: 4px; font-size: 0.75rem;
+      font-weight: 600; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace;
+    }
+    .meta-date { color: var(--text-muted); font-size: 0.85rem; }
+    .meta-read-time { color: var(--text-muted); font-size: 0.85rem; }
+
+    .article-title {
+      font-size: 2rem; font-weight: 700; line-height: 1.3; margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .article-subtitle { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; }
+
+    .iot-content h2 {
+      font-size: 1.5rem; font-weight: 700; margin: 48px 0 20px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    .iot-content h3 {
+      font-size: 1.2rem; font-weight: 600; margin: 32px 0 16px;
+      color: var(--text-primary);
+    }
+    .iot-content h4 {
+      font-size: 1.05rem; font-weight: 600; margin: 24px 0 12px;
+      color: var(--accent-purple);
+    }
+    .iot-content p { margin: 12px 0; color: var(--text-secondary); }
+    .iot-content ul, .iot-content ol { margin: 12px 0 12px 24px; color: var(--text-secondary); }
+    .iot-content li { margin: 6px 0; }
+    .iot-content strong { color: var(--text-primary); }
+    .iot-content code {
+      background: var(--code-bg-gray); padding: 2px 6px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9em;
+      color: var(--code-blue);
+    }
+    .iot-content pre {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 20px; margin: 16px 0; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      line-height: 1.6; color: var(--text-primary);
+    }
+    .iot-content pre code { background: none; padding: 0; color: inherit; }
+
+    .compare-table {
+      width: 100%; border-collapse: collapse; margin: 20px 0;
+      font-size: 0.9rem;
+    }
+    .compare-table th {
+      background: var(--bg-card); color: var(--accent-blue);
+      padding: 12px 16px; text-align: left; font-weight: 600;
+      border-bottom: 2px solid var(--accent-blue); font-size: 0.85rem;
+    }
+    .compare-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary); vertical-align: top;
+    }
+    .compare-table tr:hover td { background: rgba(59, 130, 246, 0.03); }
+
+    .matrix-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .matrix-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 20px; text-align: center;
+      transition: all 0.3s;
+    }
+    .matrix-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59, 130, 246, 0.1); }
+    .mc-icon { font-size: 2rem; margin-bottom: 8px; }
+    .mc-title { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; font-size: 0.95rem; }
+    .mc-desc { color: var(--text-muted); font-size: 0.8rem; }
+
+    .highlight-box {
+      background: var(--highlight-blue-bg); border-left: 4px solid var(--accent-blue);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0;
+    }
+    .highlight-box-cyan { background: var(--highlight-cyan-bg); border-left-color: var(--accent-cyan); }
+    .highlight-box-red { background: var(--highlight-red-bg); border-left-color: var(--highlight-red); }
+    .highlight-box-green { background: var(--highlight-green-bg); border-left-color: var(--highlight-green); }
+    .highlight-box-purple { background: var(--highlight-purple-bg); border-left-color: var(--highlight-purple); }
+    .highlight-box-gold { background: var(--highlight-gold-bg); border-left-color: var(--highlight-gold); }
+    .highlight-box-orange { background: var(--highlight-orange-bg); border-left-color: var(--highlight-orange); }
+
+    .severity-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .sev-0 { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+    .sev-1 { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+    .sev-2 { background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); }
+    .sev-3 { background: rgba(234, 179, 8, 0.15); color: var(--accent-gold); }
+    .sev-4 { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
+    .sev-5 { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+    .alert-signal {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .signal-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+    .signal-yellow { background: rgba(234, 179, 8, 0.15); color: var(--accent-gold); }
+    .signal-orange { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
+    .signal-red { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+    .flow-steps {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin: 16px 0; padding: 16px; background: var(--bg-card);
+      border-radius: 8px; border: 1px solid var(--border-color);
+    }
+    .flow-step {
+      background: var(--highlight-blue-bg); border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 8px 16px; border-radius: 6px; font-size: 0.85rem;
+      color: var(--accent-blue); font-weight: 500;
+    }
+    .flow-arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+    .data-source-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .data-source-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 20px; transition: all 0.3s;
+    }
+    .data-source-card:hover { border-color: var(--accent-blue); }
+    .ds-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .ds-icon { font-size: 1.5rem; }
+    .ds-title { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+    .ds-badge {
+      margin-left: auto; padding: 2px 8px; border-radius: 4px;
+      font-size: 0.7rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+    }
+    .ds-badge-high { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+    .ds-badge-mid { background: rgba(234, 179, 8, 0.15); color: var(--accent-gold); }
+    .ds-badge-low { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+    .ds-desc { color: var(--text-muted); font-size: 0.82rem; line-height: 1.6; }
+
+    .toc-sidebar { position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; }
+    .toc-container { padding: 16px; }
+    .toc-sidebar-title {
+      font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+    }
+    .toc-nav-list { list-style: none; }
+    .toc-nav-item { margin-bottom: 4px; }
+    .toc-nav-link {
+      display: block; padding: 6px 12px; color: var(--text-secondary);
+      text-decoration: none; font-size: 0.82rem; border-radius: 4px; transition: all 0.2s;
+    }
+    .toc-nav-link:hover { color: var(--accent-blue); background: rgba(59, 130, 246, 0.05); }
+    .toc-nav-link.active { color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); font-weight: 600; }
+    .toc-sub-list { list-style: none; padding-left: 16px; }
+    .toc-sub-item { margin-bottom: 2px; }
+    .toc-sub-link {
+      display: block; padding: 4px 12px; color: var(--text-muted);
+      text-decoration: none; font-size: 0.78rem; border-radius: 4px; transition: all 0.2s;
+    }
+    .toc-sub-link:hover { color: var(--accent-blue); }
+    .toc-sub-link.active { color: var(--accent-blue); font-weight: 500; }
+
+    .back-to-top {
+      position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px;
+      background: var(--accent-blue); color: #fff; border: none; border-radius: 50%;
+      cursor: pointer; font-size: 1.2rem; font-weight: 700;
+      opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 100;
+    }
+    .back-to-top.visible { opacity: 1; transform: translateY(0); }
+    .back-to-top:hover { background: var(--accent-purple); }
+
+    .site-footer {
+      text-align: center; padding: 32px 24px; color: var(--text-muted);
+      font-size: 0.85rem; border-top: 1px solid var(--border-color); margin-top: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+    @media (max-width: 768px) {
+      .article-title { font-size: 1.5rem; }
+      .header-nav .nav-link:not(:first-child) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#ai-section" class="breadcrumb-link">AI</a>
+          <span class="breadcrumb-separator"></span>
+          <span>天气暴雨预警</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">🌧️ AI WEATHER</span>
+          <time class="meta-date" datetime="2026-08-10">2026-08-10</time>
+          <span class="meta-read-time">阅读时长: 45min</span>
+        </div>
+        <h1 class="article-title">🌧️ 智能门锁天气/暴雨预警 — 提示词工程方案</h1>
+        <p class="article-subtitle">基于华为/TCL/萤石/凯迪仕/小米等行业竞品对标，结合气象预警平台智能化趋势与天气API跨界融合实践，设计覆盖"多源数据融合→天气研判分级→气象预警响应→个性化建议→智能家居联动→AI智能体语音播报"全链路的天气守护提示词方案。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <h2 id="overview">方案概述</h2>
+        <p>智能门锁作为家庭入户的第一交互节点，具备"出门必经"的天然触达优势。本方案将门锁从简单的天气播报终端升级为<strong>AI天气守护管家</strong>，融合多源气象数据与用户画像，在用户出门时提供精准的天气提醒与出行建议，在极端天气时主动预警并联动智能家居守护家庭安全。</p>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="mc-icon">📡</div>
+            <div class="mc-title">多源数据融合</div>
+            <div class="mc-desc">天气API+预警信号+门锁传感器+用户画像</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🚨</div>
+            <div class="mc-title">气象预警响应</div>
+            <div class="mc-desc">蓝/黄/橙/红四级精准响应</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🏠</div>
+            <div class="mc-title">智能家居联动</div>
+            <div class="mc-desc">暴雨关窗/收衣/预热/净化</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🤖</div>
+            <div class="mc-title">AI智能体人格化</div>
+            <div class="mc-desc">大模型动态生成个性化语音</div>
+          </div>
+        </div>
+
+        <h2 id="competitor">行业竞品能力对标</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>竞品</th><th>天气功能</th><th>触发机制</th><th>提醒方式</th><th>AI能力</th><th>智能家居联动</th></tr></thead>
+          <tbody>
+            <tr><td><strong>华为智能门锁2 Ultra</strong></td><td>天气提醒(雨/雪/雾霾)</td><td>出门时+周期查询24h天气</td><td>语音播报</td><td>自定义语音留言+天气播报</td><td>华为智慧生活生态</td></tr>
+            <tr><td><strong>TCL K11D Pro</strong></td><td>AI天气预警(雨/大风/降温/台风)</td><td>出门时+恶劣天气主动推送</td><td>3D萌宠动画+语音</td><td>AI智能体小T+接入DeepSeek/豆包</td><td>—</td></tr>
+            <tr><td><strong>萤石 Y31 Ultra</strong></td><td>出门天气提醒</td><td>出门时</td><td>AI生成语音</td><td>萤石蓝海AI智能体(6种形象)</td><td>萤石生态</td></tr>
+            <tr><td><strong>凯迪仕 i60 Ultra</strong></td><td>异常天气播报+天气突变提醒</td><td>出门时+天气突变</td><td>萌宠表情变化+语音播报</td><td>万象AI智能体+大模型API</td><td>—</td></tr>
+            <tr><td><strong>小米 M30 Pro</strong></td><td>离家模式联动</td><td>出门一键离家模式</td><td>语音播报</td><td>米家生态联动</td><td>✅全场景联动</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box">
+          <strong>💡 关键趋势：</strong>
+          <ul style="margin-top:8px;">
+            <li><strong>从"播报"到"预警+联动"</strong>：行业正从简单的出门天气播报，演进为暴雨/台风等极端天气的主动预警+智能家居联动</li>
+            <li><strong>AI智能体人格化</strong>：TCL小T/萤石萤喵喵/凯迪仕小蓝猫NiNi——天气提醒通过萌宠形象传递</li>
+            <li><strong>大模型赋能</strong>：TCL接入DeepSeek/豆包/ChatGPT，凯迪仕接入云端大模型API——从固定模板走向AI动态生成</li>
+            <li><strong>气象数据跨界融合</strong>：天气API+智能家居实现"预警即决策、决策即行动"</li>
+          </ul>
+        </div>
+
+        <h2 id="data-sources">多源数据融合体系</h2>
+
+        <div class="data-source-grid">
+          <div class="data-source-card">
+            <div class="ds-header">
+              <span class="ds-icon">☁️</span>
+              <span class="ds-title">天气API（主源）</span>
+              <span class="ds-badge ds-badge-high">高可信</span>
+            </div>
+            <div class="ds-desc">国家气象局/和风天气等API<br>实时天气、24h预报、预警信号、气温、湿度、风力、降水概率、AQI<br>更新频率：每15分钟</div>
+          </div>
+          <div class="data-source-card">
+            <div class="ds-header">
+              <span class="ds-icon">🚨</span>
+              <span class="ds-title">气象预警信号（权威源）</span>
+              <span class="ds-badge ds-badge-high">极高可信</span>
+            </div>
+            <div class="ds-desc">国家预警信息发布中心<br>暴雨/台风/暴雪/寒潮/高温/大雾/雷电预警<br>蓝→黄→橙→红四级</div>
+          </div>
+          <div class="data-source-card">
+            <div class="ds-header">
+              <span class="ds-icon">🌡️</span>
+              <span class="ds-title">门锁环境传感器（辅助源）</span>
+              <span class="ds-badge ds-badge-mid">中可信</span>
+            </div>
+            <div class="ds-desc">门锁内置温湿度/气压传感器<br>校准API数据、感知局部微气候<br>气压骤降预警降雨</div>
+          </div>
+          <div class="data-source-card">
+            <div class="ds-header">
+              <span class="ds-icon">👤</span>
+              <span class="ds-title">用户画像（个性化源）</span>
+              <span class="ds-badge ds-badge-low">配置驱动</span>
+            </div>
+            <div class="ds-desc">家庭成员、通勤方式、健康关注、工作时段<br>生成个性化建议（老人+寒潮→加衣+减少外出）</div>
+          </div>
+        </div>
+
+        <h2 id="trigger-scenarios">三大触发场景</h2>
+
+        <h3 id="scenario-a">场景A：用户出门时触发（被动提醒）</h3>
+        <div class="flow-steps">
+          <span class="flow-step">门内开门事件</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">拉取天气API+预警信号</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">读取传感器+用户画像</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">综合研判</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">语音播报+屏幕显示</span>
+        </div>
+
+        <h3 id="scenario-b">场景B：极端天气主动预警（主动推送）</h3>
+        <div class="flow-steps">
+          <span class="flow-step">气象预警≥黄色</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">判断是否有人在家</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">APP推送+屏幕轮播</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">建议/自动联动</span>
+        </div>
+
+        <h3 id="scenario-c">场景C：定时天气播报（可选）</h3>
+        <p>用户设定的出门时段（如工作日 07:00-09:00），在出门时段首次开门时播报，避免重复。</p>
+
+        <h2 id="severity">天气研判与分级规则</h2>
+
+        <h3 id="weather-category">天气状况分类</h3>
+        <table class="compare-table">
+          <thead><tr><th>类别</th><th>判定条件</th><th>严重度</th></tr></thead>
+          <tbody>
+            <tr><td>晴好</td><td>晴/多云，无预警，降水概率&lt;20%</td><td><span class="severity-badge sev-0">0</span></td></tr>
+            <tr><td>轻微变化</td><td>降温5-10℃/升温5-10℃/微风增大/轻度雾霾</td><td><span class="severity-badge sev-1">1</span></td></tr>
+            <tr><td>需关注</td><td>小雨/小雪/中雨/雾/降温&gt;10℃/AQI&gt;150</td><td><span class="severity-badge sev-2">2</span></td></tr>
+            <tr><td>需防范</td><td>大雨/大风(6-7级)/高温(≥35℃)/寒潮/雷电</td><td><span class="severity-badge sev-3">3</span></td></tr>
+            <tr><td>需警惕</td><td>暴雨/暴雪/台风/大风(≥8级)/极端高温/强对流</td><td><span class="severity-badge sev-4">4</span></td></tr>
+            <tr><td>危险</td><td>红色预警信号生效中/台风登陆/暴雨红色</td><td><span class="severity-badge sev-5">5</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="alert-signals">气象预警信号研判</h3>
+        <table class="compare-table">
+          <thead><tr><th>预警信号</th><th>等级</th><th>建议行动</th></tr></thead>
+          <tbody>
+            <tr><td><span class="alert-signal signal-blue">暴雨蓝色</span></td><td>一般</td><td>出门带伞，注意路滑</td></tr>
+            <tr><td><span class="alert-signal signal-yellow">暴雨黄色</span></td><td>较重</td><td>带伞，避开低洼路段，关注路况</td></tr>
+            <tr><td><span class="alert-signal signal-orange">暴雨橙色</span></td><td>严重</td><td>非必要不外出，外出避开积水区</td></tr>
+            <tr><td><span class="alert-signal signal-red">暴雨红色</span></td><td>特别严重</td><td>建议不外出，关注转移通知，远离河道</td></tr>
+            <tr><td><span class="alert-signal signal-blue">台风蓝色</span></td><td>一般</td><td>关好门窗，外出注意风坠物</td></tr>
+            <tr><td><span class="alert-signal signal-yellow">台风黄色</span></td><td>较重</td><td>减少外出，固定室外物品</td></tr>
+            <tr><td><span class="alert-signal signal-orange">台风橙色</span></td><td>严重</td><td>避免外出，待在室内安全区域</td></tr>
+            <tr><td><span class="alert-signal signal-red">台风红色</span></td><td>特别严重</td><td>禁止外出，听从政府转移安排</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="personalized">个性化建议生成</h3>
+        <table class="compare-table">
+          <thead><tr><th>用户特征</th><th>天气场景</th><th>个性化建议</th></tr></thead>
+          <tbody>
+            <tr><td>有老人</td><td>寒潮/暴雪/高温</td><td>"家中老人请注意保暖/防滑/防暑，建议减少外出"</td></tr>
+            <tr><td>有儿童</td><td>暴雨/台风/高温</td><td>"孩子上学请注意安全，建议家长接送"</td></tr>
+            <tr><td>步行通勤</td><td>暴雨/大风/高温</td><td>"步行注意路滑/风坠物/防暑，建议改乘交通工具"</td></tr>
+            <tr><td>骑车通勤</td><td>暴雨/大风/寒潮</td><td>"骑行风险较高，强烈建议改乘公交/地铁"</td></tr>
+            <tr><td>呼吸道敏感</td><td>雾霾/AQI&gt;150</td><td>"空气质量较差，外出请佩戴N95口罩"</td></tr>
+            <tr><td>心血管关注</td><td>寒潮/温差&gt;15℃</td><td>"温差较大，注意血压波动"</td></tr>
+            <tr><td>有晾晒衣物</td><td>暴雨/大雨突变</td><td>"即将下雨，建议收回阳台晾晒衣物"</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="smarthome">智能家居联动建议</h3>
+        <table class="compare-table">
+          <thead><tr><th>天气场景</th><th>联动动作</th><th>紧急度</th></tr></thead>
+          <tbody>
+            <tr><td>暴雨/大雨将至</td><td>关闭智能窗户/收起智能晾衣架</td><td><span class="severity-badge sev-4">高</span></td></tr>
+            <tr><td>雾霾/AQI&gt;150</td><td>关窗+开启空气净化器</td><td><span class="severity-badge sev-3">中</span></td></tr>
+            <tr><td>寒潮/降温&gt;10℃</td><td>预热空调/地暖</td><td><span class="severity-badge sev-3">中</span></td></tr>
+            <tr><td>高温≥35℃</td><td>预冷空调/关闭向阳窗帘</td><td><span class="severity-badge sev-3">中</span></td></tr>
+            <tr><td>台风将至</td><td>关窗+固定智能窗帘+断开室外设备电源</td><td><span class="severity-badge sev-4">高</span></td></tr>
+            <tr><td>雷电预警</td><td>拔除敏感设备插头/关闭室外摄像头</td><td><span class="severity-badge sev-4">高</span></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="key-constraints">关键约束</h2>
+
+        <h3 id="accuracy">准确性约束</h3>
+        <div class="highlight-box highlight-box-gold">
+          <strong>⚠️ 天气提醒基于概率性预报：</strong>
+          <ul style="margin-top:8px;">
+            <li>措辞必须体现不确定性（"预计""可能"），不得使用绝对性表述</li>
+            <li>气象预警信号为确定性数据（政府已发布），可使用确定性措辞</li>
+            <li>降水概率&lt;30% → 不主动提醒带伞</li>
+            <li>降水概率30-60% → "可能下雨，建议带伞"</li>
+            <li>降水概率&gt;60% → "预计下雨，请带伞"</li>
+          </ul>
+        </div>
+
+        <h3 id="disturbance">打扰控制</h3>
+        <table class="compare-table">
+          <thead><tr><th>严重度</th><th>播报方式</th><th>推送方式</th></tr></thead>
+          <tbody>
+            <tr><td><span class="severity-badge sev-0">0 晴好</span></td><td>不播报（除非用户主动查询）</td><td>不推送</td></tr>
+            <tr><td><span class="severity-badge sev-1">1 轻微变化</span></td><td>仅屏幕显示</td><td>不推送</td></tr>
+            <tr><td><span class="severity-badge sev-2">2 需关注</span></td><td>屏幕显示+简短语音</td><td>不推送</td></tr>
+            <tr><td><span class="severity-badge sev-3">3 需防范</span></td><td>屏幕显示+完整语音</td><td>APP推送</td></tr>
+            <tr><td><span class="severity-badge sev-4">4 需警惕</span></td><td>屏幕闪烁+完整语音</td><td>APP推送+建议联动</td></tr>
+            <tr><td><span class="severity-badge sev-5">5 危险</span></td><td>屏幕闪烁+紧急语音</td><td>APP推送+短信+自动联动</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="voice-spec">语音生成规范</h3>
+        <div class="highlight-box highlight-box-cyan">
+          <strong>🎤 语音生成规范：</strong>
+          <ul style="margin-top:8px;">
+            <li>语气：亲切关怀，非命令式（"建议带伞"而非"必须带伞"）</li>
+            <li>长度：严重度0-2时≤30字，3-4时≤80字，5时≤120字</li>
+            <li>人格化：可使用温和语气词（"请注意""记得""别忘了"），禁止恐吓性表述</li>
+            <li>同一天气状况30分钟内不重复播报</li>
+          </ul>
+        </div>
+
+        <h3 id="degradation">降级容错</h3>
+        <div class="highlight-box highlight-box-orange">
+          <strong>🔄 降级容错策略：</strong>
+          <ul style="margin-top:8px;">
+            <li>天气API不可用 → 使用门锁传感器数据+最后已知天气数据，标注"数据可能不准确"</li>
+            <li>气象预警信号源不可用 → 仅基于天气API数据研判</li>
+            <li>智能家居Hub不可达 → 仅输出联动建议，不自动执行</li>
+            <li>语音模块故障 → 仅屏幕显示+APP推送</li>
+          </ul>
+        </div>
+
+        <h2 id="output-schema">输出格式（场景A：出门提醒）</h2>
+
+        <pre><code>{
+  "trigger": {
+    "type": "user_exit",
+    "timestamp": "2026-08-10T07:30:00+08:00",
+    "user_identified": "张先生"
+  },
+  "weather_summary": {
+    "current_condition": "中雨",
+    "temperature_c": 22,
+    "feels_like_c": 19,
+    "humidity_pct": 85,
+    "wind_direction": "东南",
+    "wind_level": 5,
+    "precipitation_probability_pct": 90,
+    "aqi": 65
+  },
+  "forecast_highlight": {
+    "next_3h": "中雨转大雨",
+    "temperature_trend": "持续降温",
+    "precipitation_trend": "雨势增强"
+  },
+  "alert_signals": [
+    {
+      "type": "暴雨",
+      "level": "黄色",
+      "title": "暴雨黄色预警信号",
+      "description": "预计未来6小时内降雨量将达50mm以上"
+    }
+  ],
+  "severity_assessment": {
+    "weather_category": "需防范",
+    "severity_level": 3,
+    "primary_risk": "大雨+大风"
+  },
+  "personalized_advice": {
+    "clothing": "建议穿防水外套，内搭长袖",
+    "gear": "必带雨伞/雨衣，建议穿防滑鞋",
+    "commute": "骑行风险较高，强烈建议改乘公交或地铁",
+    "family": "家中老人注意保暖，儿童上学建议接送",
+    "home_action": "出门前请确认窗户已关、阳台衣物已收"
+  },
+  "smart_home_suggestions": [
+    {"action": "close_windows", "urgency": "high"},
+    {"action": "retract_clothesline", "urgency": "high"}
+  ],
+  "voice_message": "早上好！今天中雨转大雨，东南风5级，暴雨黄色预警已发布。出门请带好雨伞，穿防滑鞋。骑行风险较高，建议改乘公交。家中老人注意保暖，孩子上学建议接送。出门前请关好窗户、收回阳台衣物。",
+  "push_decision": {
+    "should_push_app": true,
+    "push_level": "warning",
+    "push_title": "⚠️ 暴雨黄色预警",
+    "push_body": "中雨转大雨，出门带伞，建议改乘公交，关窗收衣"
+  }
+}</code></pre>
+
+        <h2 id="few-shot">Few-Shot 示例</h2>
+
+        <h3 id="example-sunny">示例1：晴好天气出门（不播报）</h3>
+        <div class="highlight-box highlight-box-green">
+          <strong>输入：</strong>晴天，25℃，微风，降水概率5%，无预警<br>
+          <strong>输出：</strong><code>severity_level: 0</code> | <code>voice_message: null</code> | 不推送
+        </div>
+
+        <h3 id="example-rain">示例2：小雨出门（简短提醒）</h3>
+        <div class="highlight-box">
+          <strong>输入：</strong>小雨，18℃，降水概率75%，无预警，用户步行通勤<br>
+          <strong>输出：</strong><code>severity_level: 2</code> | <code>voice_message: "今天小雨，出门请带伞，注意路滑。"</code>
+        </div>
+
+        <h3 id="example-storm-red">示例3：暴雨红色预警主动推送（紧急）</h3>
+        <div class="highlight-box highlight-box-red">
+          <strong>输入：</strong>暴雨红色预警发布，预计3h降雨&gt;200mm，有人在家<br>
+          <strong>输出：</strong><code>severity_level: 5</code> | 自动关窗+收衣+关窗帘 | APP推送+短信+电话 | <code>voice_message: "紧急！暴雨红色预警已发布..."</code>
+        </div>
+
+        <h3 id="example-cold">示例4：寒潮+老人在家（个性化）</h3>
+        <div class="highlight-box highlight-box-purple">
+          <strong>输入：</strong>寒潮蓝色预警，降温12℃，最低-5℃，用户画像有老人<br>
+          <strong>输出：</strong><code>severity_level: 3</code> | 个性化建议："家中老人请注意保暖，减少外出" | 建议预热空调
+        </div>
+
+        <h3 id="example-degradation">示例5：API不可用降级（容错）</h3>
+        <div class="highlight-box highlight-box-orange">
+          <strong>输入：</strong>天气API超时，门锁传感器温度28℃湿度70%<br>
+          <strong>输出：</strong><code>data_source: "sensor_fallback"</code> | <code>note: "天气API不可用，数据基于门锁传感器估算"</code> | <code>voice_message: "天气数据暂时无法获取，门外约28度，湿度较高，出门请留意天气变化。"</code>
+        </div>
+
+        <h2 id="deployment">落地部署建议</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>环节</th><th>建议方案</th><th>参考竞品</th></tr></thead>
+          <tbody>
+            <tr><td><strong>气象数据接入</strong></td><td>和风天气API(商业版)或国家气象局预警信息接口；门锁端每15分钟轮询，预警信号实时推送</td><td>华为周期查询24h天气</td></tr>
+            <tr><td><strong>门锁传感器</strong></td><td>门锁外侧加装温湿度+气压传感器(BME280)，成本&lt;10元</td><td>气压监测预警降雨</td></tr>
+            <tr><td><strong>AI智能体</strong></td><td>端侧轻量TTS(如VITS)生成语音；云端大模型(DeepSeek/Qwen)生成个性化建议文本；屏幕萌宠动画</td><td>TCL小T+DeepSeek；萤石6种AI智能体</td></tr>
+            <tr><td><strong>智能家居联动</strong></td><td>通过Matter/HA/米家/华为智慧生活Hub联动；紧急动作自动执行+事后通知</td><td>小米全场景联动</td></tr>
+            <tr><td><strong>推送渠道</strong></td><td>APP推送(必选) → 短信备用(严重度≥4) → 电话通知(严重度=5)</td><td>华为APP推送</td></tr>
+            <tr><td><strong>用户配置</strong></td><td>守护时段、播报开关、联动授权、通勤方式、家庭成员、健康关注、萌宠形象选择</td><td>萤石6种智能体可选</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="upgrade">与行业现有方案的核心升级点</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>维度</th><th>行业现状</th><th>本方案升级</th></tr></thead>
+          <tbody>
+            <tr><td><strong>覆盖天气类型</strong></td><td>华为仅雨/雪/雾霾；TCL雨/风/降温</td><td><strong>全类型覆盖</strong>：暴雨/台风/暴雪/寒潮/高温/雷电/大雾/强对流</td></tr>
+            <tr><td><strong>气象预警信号</strong></td><td>仅基础天气播报</td><td><strong>接入国家预警信息发布中心</strong>，蓝/黄/橙/红四级精准响应</td></tr>
+            <tr><td><strong>个性化</strong></td><td>统一播报，无用户画像</td><td><strong>多维度个性化</strong>：家庭成员×通勤方式×健康关注</td></tr>
+            <tr><td><strong>智能家居联动</strong></td><td>仅华为/小米有基础联动</td><td><strong>天气驱动自动联动</strong>：关窗/收衣/预热/净化，分级自动/建议/禁止</td></tr>
+            <tr><td><strong>AI智能体</strong></td><td>固定模板语音</td><td><strong>大模型动态生成</strong>：个性化语音+萌宠表情+场景化建议</td></tr>
+            <tr><td><strong>多源数据融合</strong></td><td>单一天气API</td><td><strong>API+预警信号+门锁传感器+用户画像</strong>四源融合</td></tr>
+            <tr><td><strong>降级容错</strong></td><td>API不可用则无提醒</td><td><strong>传感器降级+缓存兜底</strong>，确保始终有输出</td></tr>
+            <tr><td><strong>打扰控制</strong></td><td>出门即播报</td><td><strong>6级严重度分级</strong>：晴好不扰→危险紧急推送</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="conclusion">总结</h2>
+
+        <p>本方案完整覆盖了从<strong>多源气象数据融合→天气研判分级→气象预警信号响应→个性化建议生成→智能家居联动→AI智能体语音播报→分级推送</strong>的全链路，对标华为/TCL/萤石/凯迪仕/小米行业最新能力并实现系统性升级。核心设计理念：</p>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="mc-icon">📡</div>
+            <div class="mc-title">四源数据融合</div>
+            <div class="mc-desc">API+预警+传感器+画像交叉验证</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🚨</div>
+            <div class="mc-title">政府预警信号接入</div>
+            <div class="mc-desc">蓝黄橙红四级精准响应</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🏠</div>
+            <div class="mc-title">天气驱动智能联动</div>
+            <div class="mc-desc">关窗/收衣/预热自动执行</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🔇</div>
+            <div class="mc-title">6级打扰控制</div>
+            <div class="mc-desc">晴好不扰→危险紧急推送</div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">方案概述</a></li>
+          <li class="toc-nav-item"><a href="#competitor" class="toc-nav-link">行业竞品能力对标</a></li>
+          <li class="toc-nav-item"><a href="#data-sources" class="toc-nav-link">多源数据融合体系</a></li>
+          <li class="toc-nav-item"><a href="#trigger-scenarios" class="toc-nav-link">三大触发场景</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#scenario-a" class="toc-sub-link">场景A：出门时触发</a></li>
+              <li class="toc-sub-item"><a href="#scenario-b" class="toc-sub-link">场景B：极端天气主动预警</a></li>
+              <li class="toc-sub-item"><a href="#scenario-c" class="toc-sub-link">场景C：定时天气播报</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#severity" class="toc-nav-link">天气研判与分级规则</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#weather-category" class="toc-sub-link">天气状况分类</a></li>
+              <li class="toc-sub-item"><a href="#alert-signals" class="toc-sub-link">气象预警信号研判</a></li>
+              <li class="toc-sub-item"><a href="#personalized" class="toc-sub-link">个性化建议生成</a></li>
+              <li class="toc-sub-item"><a href="#smarthome" class="toc-sub-link">智能家居联动</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#key-constraints" class="toc-nav-link">关键约束</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#accuracy" class="toc-sub-link">准确性约束</a></li>
+              <li class="toc-sub-item"><a href="#disturbance" class="toc-sub-link">打扰控制</a></li>
+              <li class="toc-sub-item"><a href="#voice-spec" class="toc-sub-link">语音生成规范</a></li>
+              <li class="toc-sub-item"><a href="#degradation" class="toc-sub-link">降级容错</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#output-schema" class="toc-nav-link">输出格式</a></li>
+          <li class="toc-nav-item"><a href="#few-shot" class="toc-nav-link">Few-Shot 示例</a></li>
+          <li class="toc-nav-item"><a href="#deployment" class="toc-nav-link">落地部署建议</a></li>
+          <li class="toc-nav-item"><a href="#upgrade" class="toc-nav-link">与行业方案的核心升级</a></li>
+          <li class="toc-nav-item"><a href="#conclusion" class="toc-nav-link">总结</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.iot-content h2[id], .iot-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link, .toc-sub-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        if (scrollPos >= section.offsetTop) currentSection = section.getAttribute('id');
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) link.classList.add('active');
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.iot-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) window.scrollTo({ top: targetElement.offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => { updateActiveToc(); updateReadingProgress(); toggleBackToTop(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){var t=document.documentElement.getAttribute('data-theme');btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');}
+        updateLabel();
+        btn.addEventListener('click',function(){var cur=document.documentElement.getAttribute('data-theme');var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('portfolio-theme',next);updateLabel();});
+      }
+    })();
+  </script>
+</body>
+</html>

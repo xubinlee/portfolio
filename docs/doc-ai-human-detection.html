@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="智能门锁猫眼AI人形检测提示词工程方案 — 竞品对标+提示词设计+落地部署">
+  <title>门前AI人形检测提示词方案 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-gold: #eab308;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+      --highlight-orange: #f59e0b;
+      --highlight-orange-bg: rgba(245, 158, 11, 0.07);
+      --highlight-cyan: #00d4ff;
+      --highlight-cyan-bg: rgba(0, 212, 255, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-gold: #ca8a04;
+      --accent-red: #dc2626;
+      --accent-orange: #d97706;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+      --highlight-orange: #d97706;
+      --highlight-orange-bg: rgba(217, 119, 6, 0.07);
+      --highlight-cyan: #0099cc;
+      --highlight-cyan-bg: rgba(0, 153, 204, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      transform: scaleX(0); transform-origin: left; z-index: 9999;
+      transition: transform 0.1s linear;
+    }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+    [data-theme="light"] .site-header { background: rgba(245, 245, 250, 0.95); }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+    .brand-bracket { color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; }
+    .brand-text { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 1px; }
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+    .brand-text-accent { color: var(--accent-purple); font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 1px; }
+
+    .header-nav { display: flex; align-items: center; gap: 16px; }
+    .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-link:hover { color: var(--accent-cyan); }
+
+    .theme-toggle {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 4px 12px; cursor: pointer;
+      color: var(--text-secondary); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+      display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px; background: var(--border-color);
+      border-radius: 8px; position: relative; transition: background 0.3s;
+    }
+    .theme-knob {
+      width: 12px; height: 12px; background: var(--accent-cyan);
+      border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.3s;
+    }
+    [data-theme="light"] .theme-knob { transform: translateX(16px); }
+
+    .article-layout {
+      max-width: 1400px; margin: 0 auto; padding: 32px 24px;
+      display: grid; grid-template-columns: 1fr var(--toc-width); gap: 48px;
+    }
+
+    .article-main { min-width: 0; }
+
+    .article-header { margin-bottom: 40px; }
+    .article-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 0.85rem; }
+    .breadcrumb-link { color: var(--accent-cyan); text-decoration: none; }
+    .breadcrumb-link:hover { text-decoration: underline; }
+    .breadcrumb-separator { color: var(--text-muted); }
+    .breadcrumb-separator::before { content: '/'; }
+
+    .article-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .meta-tag {
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+      padding: 4px 12px; border-radius: 4px; font-size: 0.75rem;
+      font-weight: 600; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace;
+    }
+    .meta-date { color: var(--text-muted); font-size: 0.85rem; }
+    .meta-read-time { color: var(--text-muted); font-size: 0.85rem; }
+
+    .article-title {
+      font-size: 2rem; font-weight: 700; line-height: 1.3; margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .article-subtitle { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; }
+
+    .iot-content h2 {
+      font-size: 1.5rem; font-weight: 700; margin: 48px 0 20px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+    .iot-content h3 {
+      font-size: 1.2rem; font-weight: 600; margin: 32px 0 16px;
+      color: var(--text-primary);
+    }
+    .iot-content h4 {
+      font-size: 1.05rem; font-weight: 600; margin: 24px 0 12px;
+      color: var(--accent-purple);
+    }
+    .iot-content p { margin: 12px 0; color: var(--text-secondary); }
+    .iot-content ul, .iot-content ol { margin: 12px 0 12px 24px; color: var(--text-secondary); }
+    .iot-content li { margin: 6px 0; }
+    .iot-content strong { color: var(--text-primary); }
+    .iot-content code {
+      background: var(--code-bg-gray); padding: 2px 6px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9em;
+      color: var(--code-blue);
+    }
+    .iot-content pre {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 20px; margin: 16px 0; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      line-height: 1.6; color: var(--text-primary);
+    }
+    .iot-content pre code { background: none; padding: 0; color: inherit; }
+
+    .compare-table {
+      width: 100%; border-collapse: collapse; margin: 20px 0;
+      font-size: 0.9rem;
+    }
+    .compare-table th {
+      background: var(--bg-card); color: var(--accent-cyan);
+      padding: 12px 16px; text-align: left; font-weight: 600;
+      border-bottom: 2px solid var(--accent-cyan); font-size: 0.85rem;
+    }
+    .compare-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary); vertical-align: top;
+    }
+    .compare-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
+
+    .matrix-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .matrix-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 20px; text-align: center;
+      transition: all 0.3s;
+    }
+    .matrix-card:hover { border-color: var(--accent-cyan); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 212, 255, 0.1); }
+    .mc-icon { font-size: 2rem; margin-bottom: 8px; }
+    .mc-title { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; font-size: 0.95rem; }
+    .mc-desc { color: var(--text-muted); font-size: 0.8rem; }
+
+    .highlight-box {
+      background: var(--highlight-cyan-bg); border-left: 4px solid var(--accent-cyan);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0;
+    }
+    .highlight-box-gold { background: var(--highlight-gold-bg); border-left-color: var(--highlight-gold); }
+    .highlight-box-red { background: var(--highlight-red-bg); border-left-color: var(--highlight-red); }
+    .highlight-box-green { background: var(--highlight-green-bg); border-left-color: var(--highlight-green); }
+    .highlight-box-purple { background: var(--highlight-purple-bg); border-left-color: var(--highlight-purple); }
+
+    .alert-level {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .alert-none { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+    .alert-low { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+    .alert-medium { background: rgba(234, 179, 8, 0.15); color: var(--accent-gold); }
+    .alert-high { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
+    .alert-urgent { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+    .flow-steps {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin: 16px 0; padding: 16px; background: var(--bg-card);
+      border-radius: 8px; border: 1px solid var(--border-color);
+    }
+    .flow-step {
+      background: var(--highlight-cyan-bg); border: 1px solid rgba(0, 212, 255, 0.2);
+      padding: 8px 16px; border-radius: 6px; font-size: 0.85rem;
+      color: var(--accent-cyan); font-weight: 500;
+    }
+    .flow-arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+    .toc-sidebar { position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; }
+    .toc-container { padding: 16px; }
+    .toc-sidebar-title {
+      font-size: 0.85rem; font-weight: 700; color: var(--accent-cyan);
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+    }
+    .toc-nav-list { list-style: none; }
+    .toc-nav-item { margin-bottom: 4px; }
+    .toc-nav-link {
+      display: block; padding: 6px 12px; color: var(--text-secondary);
+      text-decoration: none; font-size: 0.82rem; border-radius: 4px; transition: all 0.2s;
+    }
+    .toc-nav-link:hover { color: var(--accent-cyan); background: rgba(0, 212, 255, 0.05); }
+    .toc-nav-link.active { color: var(--accent-cyan); background: rgba(0, 212, 255, 0.1); font-weight: 600; }
+    .toc-sub-list { list-style: none; padding-left: 16px; }
+    .toc-sub-item { margin-bottom: 2px; }
+    .toc-sub-link {
+      display: block; padding: 4px 12px; color: var(--text-muted);
+      text-decoration: none; font-size: 0.78rem; border-radius: 4px; transition: all 0.2s;
+    }
+    .toc-sub-link:hover { color: var(--accent-cyan); }
+    .toc-sub-link.active { color: var(--accent-cyan); font-weight: 500; }
+
+    .back-to-top {
+      position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px;
+      background: var(--accent-cyan); color: #000; border: none; border-radius: 50%;
+      cursor: pointer; font-size: 1.2rem; font-weight: 700;
+      opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 100;
+    }
+    .back-to-top.visible { opacity: 1; transform: translateY(0); }
+    .back-to-top:hover { background: var(--accent-purple); color: #fff; }
+
+    .site-footer {
+      text-align: center; padding: 32px 24px; color: var(--text-muted);
+      font-size: 0.85rem; border-top: 1px solid var(--border-color); margin-top: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+    @media (max-width: 768px) {
+      .article-title { font-size: 1.5rem; }
+      .header-nav .nav-link:not(:first-child) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#ai-section" class="breadcrumb-link">AI</a>
+          <span class="breadcrumb-separator"></span>
+          <span>门前AI人形检测</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">🤖 AI PROMPT</span>
+          <time class="meta-date" datetime="2026-08-10">2026-08-10</time>
+          <span class="meta-read-time">阅读时长: 35min</span>
+        </div>
+        <h1 class="article-title">👁️ 智能门锁猫眼 AI 人形检测 — 提示词工程方案</h1>
+        <p class="article-subtitle">基于华为/德施曼/小米/萤石/TCL等行业竞品对标，结合OpenAI/Microsoft视觉提示词工程最佳实践，设计覆盖"人形检测→行为分类→告警决策→多帧时序分析"全链路的完整可落地提示词方案。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <h2 id="overview">方案概述</h2>
+        <p>智能门锁猫眼摄像头抓拍门前图像后，需要通过AI视觉模型进行精准的人形检测与行为分类，在保障居家安全的同时严格保护隐私，将误报率降至最低。本方案基于行业竞品能力对标与提示词工程最佳实践，设计了一套完整可落地的提示词体系。</p>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="mc-icon">🎯</div>
+            <div class="mc-title">核心目标</div>
+            <div class="mc-desc">精准人形检测 + 低误报 + 隐私保护</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🔗</div>
+            <div class="mc-title">检测链路</div>
+            <div class="mc-desc">人形检测→行为分类→告警决策→时序分析</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🏆</div>
+            <div class="mc-title">竞品标杆</div>
+            <div class="mc-desc">华为/德施曼/小米/萤石/TCL</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">📐</div>
+            <div class="mc-title">工程方法</div>
+            <div class="mc-desc">OpenAI/MS视觉提示词最佳实践</div>
+          </div>
+        </div>
+
+        <h2 id="competitor">行业竞品能力对标</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>竞品</th><th>核心AI能力</th><th>检测场景</th><th>误报控制</th><th>隐私保护</th></tr></thead>
+          <tbody>
+            <tr><td><strong>华为智能门锁2 Ultra</strong></td><td>AI 3D人脸识别3.0 + 161°广角猫眼 + AI人形监测</td><td>异常抓拍、人形侦测</td><td>高算力芯片+超声波感应</td><td>未明确</td></tr>
+            <tr><td><strong>德施曼 Shotax哨兵猫眼2.0</strong></td><td>AI人形/徘徊/滞留行为识别 + 24G双距雷达</td><td>徘徊检测、逗留预警、分级告警</td><td>感应4.0智控雷达调节角度/距离</td><td>AI智能打码(1.5-3m) + 手动虚化</td></tr>
+            <tr><td><strong>小米M30</strong></td><td>AI双摄全景猫眼 + AI人形检测 + 动态学习引擎</td><td>异常逗留智能抓拍</td><td>动态学习引擎持续优化</td><td>未明确</td></tr>
+            <tr><td><strong>萤石Y5000FVX Ultra</strong></td><td>AI双摄三屏 + AI大脑</td><td>多场景智能侦测</td><td>双摄协同降低误报</td><td>萤石云加密</td></tr>
+            <tr><td><strong>TCL AI哨兵猫眼</strong></td><td>AI人形侦测 + 分级预警</td><td>徘徊、逗留风险触发</td><td>多摄协同+AI融合</td><td>未明确</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box">
+          <strong>💡 共性特征：</strong>行业竞品均围绕 <strong>人形检测 → 行为分类(正常/逗留/徘徊) → 分级告警 → 隐私脱敏</strong> 的链路构建。德施曼在隐私保护（AI智能打码）和误报控制（智控雷达）方面领先。
+        </div>
+
+        <h2 id="prompt-principles">提示词工程最佳实践提炼</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>原则</th><th>来源</th><th>在本场景的应用</th></tr></thead>
+          <tbody>
+            <tr><td><strong>指令前置+分隔符</strong></td><td>OpenAI Prompt Engineering Guide</td><td>用 <code>###</code> 分隔系统角色、任务指令、输入上下文</td></tr>
+            <tr><td><strong>角色锚定</strong></td><td>CSDN零样本安防实践</td><td>开头定义"你是一个门前智能安防分析系统"</td></tr>
+            <tr><td><strong>逐步推理</strong></td><td>Microsoft GPT-4V Prompt Guide</td><td>先描述画面→再判断人形→再分类行为→再输出告警</td></tr>
+            <tr><td><strong>避免敏感推断</strong></td><td>GPT-4V System Card</td><td>不推断身份/年龄/种族，仅描述可见非敏感特征</td></tr>
+            <tr><td><strong>结构化输出</strong></td><td>OpenAI/MS 最佳实践</td><td>强制JSON Schema输出，确保下游系统可解析</td></tr>
+            <tr><td><strong>Few-shot示例</strong></td><td>Prompt Engineering通用</td><td>提供典型正例/负例/边界例，降低误报率</td></tr>
+            <tr><td><strong>负面约束</strong></td><td>行业通用</td><td>明确列出"不应触发的场景"</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="detection-flow">四层检测流程设计</h2>
+
+        <div class="flow-steps">
+          <span class="flow-step">第一层：人形存在性检测</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第二层：人形属性描述</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第三层：行为分类</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第四层：告警决策</span>
+        </div>
+
+        <h3 id="layer1">第一层：人形存在性检测</h3>
+        <ul>
+          <li>判断画面中是否存在人形生物（完整人体或可见躯干/肢体）</li>
+          <li>区分"确定是人形"与"疑似人形"与"非人形"</li>
+          <li>非人形对象包括：宠物、快递包裹、拖把、衣架、门垫、树影晃动、昆虫贴镜头、光线变化、雨滴/雪片</li>
+        </ul>
+
+        <h3 id="layer2">第二层：人形属性描述（仅限可见非敏感特征）</h3>
+        <ul>
+          <li><strong>人数</strong>：画面中的人形数量</li>
+          <li><strong>位置</strong>：相对于门中心的方位（正前方/偏左/偏右/边缘）</li>
+          <li><strong>距离估算</strong>：门前近距离(0-0.5m) / 门前中距离(0.5-2m) / 门前远距离(2-5m) / 远处(5m+)</li>
+          <li><strong>可见部位</strong>：全身可见 / 上半身可见 / 仅头部可见 / 仅肢体局部可见</li>
+          <li><strong>衣着概要</strong>：颜色、是否戴帽子、是否背包/持物</li>
+          <li><strong>⚠️ 严禁推断</strong>：身份、姓名、年龄、种族、性别、情绪、意图</li>
+        </ul>
+
+        <h3 id="layer3">第三层：行为分类</h3>
+        <table class="compare-table">
+          <thead><tr><th>行为类型</th><th>判定条件</th><th>风险等级</th></tr></thead>
+          <tbody>
+            <tr><td>正常经过</td><td>人形处于移动姿态，位于门前远/中距离，无停留迹象</td><td><span class="alert-level alert-none">无异常</span></td></tr>
+            <tr><td>驻足观察</td><td>人形面向门、姿态静止、距离门前中/近距离</td><td><span class="alert-level alert-low">低级提示</span></td></tr>
+            <tr><td>疑似逗留</td><td>人形在门前停留（单帧无法确定时长，标记供多帧模块判定）</td><td><span class="alert-level alert-medium">中级告警</span></td></tr>
+            <tr><td>可疑贴近</td><td>人形极近距离(0-0.5m)、面部朝向猫眼/门锁区域、手部接近门体</td><td><span class="alert-level alert-high">高级告警</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="layer4">第四层：告警决策</h3>
+        <table class="compare-table">
+          <thead><tr><th>告警级别</th><th>触发条件</th><th>推送方式</th></tr></thead>
+          <tbody>
+            <tr><td><span class="alert-level alert-none">⚪ 无告警</span></td><td>无人形 / 正常经过</td><td>—</td></tr>
+            <tr><td><span class="alert-level alert-low">🟢 低级提示</span></td><td>驻足观察</td><td>记录但不推送</td></tr>
+            <tr><td><span class="alert-level alert-medium">🟡 中级告警</span></td><td>疑似逗留</td><td>推送APP消息</td></tr>
+            <tr><td><span class="alert-level alert-high">🔴 高级告警</span></td><td>可疑贴近</td><td>推送APP消息+本地声光提醒</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="key-constraints">关键约束</h2>
+
+        <h3 id="false-positive">误报抑制</h3>
+        <div class="highlight-box highlight-box-red">
+          <strong>⚠️ 以下场景必须判定为"非人形"或"无异常"，不得触发告警：</strong>
+          <ul style="margin-top:8px;">
+            <li>宠物（猫/狗）经过门前</li>
+            <li>快递员放下包裹后迅速离开</li>
+            <li>业主本人回家（配合人脸识别模块联动判定）</li>
+            <li>光线突变导致的画面整体亮度变化</li>
+            <li>树影/窗帘/旗帜等非刚性物体晃动</li>
+            <li>雨雪天气中的雨滴/雪花/水渍</li>
+            <li>昆虫/蜘蛛贴附镜头</li>
+          </ul>
+        </div>
+
+        <h3 id="privacy">隐私保护</h3>
+        <div class="highlight-box highlight-box-purple">
+          <strong>🔐 隐私保护约束：</strong>
+          <ul style="margin-top:8px;">
+            <li>输出中不得包含任何可用于识别个人身份的信息</li>
+            <li>对检测到的人脸区域，输出中标注"需脱敏处理"，由下游模块执行模糊化/打码</li>
+            <li>不输出原始图像的像素级描述</li>
+          </ul>
+        </div>
+
+        <h3 id="confidence">置信度要求</h3>
+        <ul>
+          <li>人形置信度 &lt; 0.65 → 判定为"疑似人形"，不触发告警</li>
+          <li>行为分类置信度 &lt; 0.50 → 降级为"不确定"，输出保守结果</li>
+          <li>夜间红外模式下，降低人形检测下限至0.55</li>
+        </ul>
+
+        <h2 id="output-schema">输出格式（JSON Schema）</h2>
+
+        <pre><code>{
+  "detection_result": {
+    "has_human": true,
+    "human_count": 1,
+    "confidence": 0.92,
+    "persons": [
+      {
+        "id": 1,
+        "position": "正前方",
+        "distance_range": "门前中距离",
+        "visible_body_part": "上半身可见",
+        "clothing_summary": "深色上衣，浅色裤子，背包",
+        "carrying_object": "背包",
+        "human_confidence": 0.92
+      }
+    ]
+  },
+  "behavior_analysis": {
+    "primary_behavior": "驻足观察",
+    "behavior_confidence": 0.78,
+    "is_loitering_suspected": false,
+    "is_suspicious_approach": false
+  },
+  "alert_decision": {
+    "alert_level": "low",
+    "alert_type": "驻足观察",
+    "should_push_notification": false,
+    "should_local_alarm": false,
+    "reason": "人形在门前中距离驻足，但未贴近门体，判定为低风险"
+  },
+  "environment": {
+    "lighting_condition": "日间充足",
+    "weather_factor": null,
+    "is_infrared_mode": false
+  },
+  "privacy": {
+    "face_detected": true,
+    "face_desensitization_required": true,
+    "identity_inference_attempted": false
+  }
+}</code></pre>
+
+        <h2 id="few-shot">Few-Shot 示例</h2>
+
+        <h3 id="example-normal">示例1：正常经过（无告警）</h3>
+        <div class="highlight-box highlight-box-green">
+          <strong>输入：</strong>门前2米处一人形侧身快速经过，方向为从左向右<br>
+          <strong>推理链：</strong>人形侧身快速经过→无停留迹象→正常经过→无告警<br>
+          <strong>输出：</strong><code>behavior_analysis.primary_behavior: "正常经过"</code> | <code>alert_level: "none"</code>
+        </div>
+
+        <h3 id="example-suspicious">示例2：可疑贴近（高级告警）</h3>
+        <div class="highlight-box highlight-box-red">
+          <strong>输入：</strong>一人形极近距离面对门，手部抬起靠近门锁区域<br>
+          <strong>推理链：</strong>极近距离+手部接近门锁→可疑贴近→高级告警<br>
+          <strong>输出：</strong><code>behavior_analysis.primary_behavior: "可疑贴近"</code> | <code>alert_level: "high"</code> | <code>should_local_alarm: true</code>
+        </div>
+
+        <h3 id="example-pet">示例3：非人形误报抑制（无告警）</h3>
+        <div class="highlight-box">
+          <strong>输入：</strong>夜间红外模式下，一只猫经过门前<br>
+          <strong>推理链：</strong>非人形生物(四足,体型不符)→无人形→不触发告警<br>
+          <strong>输出：</strong><code>has_human: false</code> | <code>alert_level: "none"</code>
+        </div>
+
+        <h3 id="example-night">示例4：夜间疑似逗留（中级告警）</h3>
+        <div class="highlight-box highlight-box-gold">
+          <strong>输入：</strong>夜间红外模式，一人形在门前1米处静止站立面向门<br>
+          <strong>推理链：</strong>夜间+静止站立+面向门→疑似逗留→中级告警<br>
+          <strong>输出：</strong><code>primary_behavior: "疑似逗留"</code> | <code>alert_level: "medium"</code> | <code>should_push_notification: true</code>
+        </div>
+
+        <h2 id="temporal">多帧时序分析补充提示词</h2>
+
+        <p>单帧检测模块的连续输出送入时序行为分析模块，进行逗留与徘徊的时序判定：</p>
+
+        <h3 id="loitering">逗留判定</h3>
+        <ul>
+          <li>同一人形在门前中/近距离持续出现 ≥ 30秒 → 确认逗留</li>
+          <li>逗留时长 30-120秒 → 中级告警</li>
+          <li>逗留时长 &gt; 120秒 → 高级告警</li>
+        </ul>
+
+        <h3 id="prowling">徘徊判定</h3>
+        <ul>
+          <li>同一人形在门前区域反复出现且消失 ≥ 3次，总时长 ≥ 60秒 → 确认徘徊</li>
+          <li>徘徊行为 → 高级告警（徘徊通常预示踩点风险）</li>
+        </ul>
+
+        <h3 id="tracking">去重与关联</h3>
+        <ul>
+          <li>使用位置+衣着+距离特征进行跨帧人形关联</li>
+          <li>超过30秒未出现同一特征人形 → 视为不同个体</li>
+        </ul>
+
+        <h2 id="deployment">落地部署建议</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>环节</th><th>建议方案</th></tr></thead>
+          <tbody>
+            <tr><td><strong>模型选型</strong></td><td>端侧YOLOv8-nano/small做人形检测backbone，VLM(如Qwen2-VL-7B/GPT-4o-mini)做行为语义分析</td></tr>
+            <tr><td><strong>推理流水线</strong></td><td>YOLO人形检测 → 裁剪人形区域 → VLM行为语义分析 → 规则引擎告警决策 → 隐私脱敏 → 推送</td></tr>
+            <tr><td><strong>误报优化</strong></td><td>建立门前场景专属测试集(含宠物/快递/雨雪/逆光等负例)，持续微调；参考小米动态学习引擎</td></tr>
+            <tr><td><strong>隐私合规</strong></td><td>参考德施曼方案，人形检测后立即对人脸区域执行模糊化/打码，再上传云端</td></tr>
+            <tr><td><strong>功耗控制</strong></td><td>参考德施曼24G雷达方案，先用低功耗雷达唤醒猫眼，再启动AI推理</td></tr>
+            <tr><td><strong>分级推送</strong></td><td>低级仅本地记录；中级推送APP；高级APP推送+本地声光+可选电话通知</td></tr>
+            <tr><td><strong>多帧模块</strong></td><td>单帧VLM输出送入轻量级时序状态机(非LLM)，用规则引擎完成逗留/徘徊判定</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="conclusion">总结</h2>
+
+        <p>本方案覆盖了从<strong>单帧人形检测→行为分类→告警决策→多帧时序分析</strong>的完整链路，融合了华为/德施曼/小米/萤石/TCL等行业竞品的核心能力，并严格遵循OpenAI/Microsoft的视觉提示词工程最佳实践。核心设计理念：</p>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="mc-icon">🎯</div>
+            <div class="mc-title">四层递进检测</div>
+            <div class="mc-desc">存在性→属性→行为→告警，逐层精确</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🛡️</div>
+            <div class="mc-title">误报优先抑制</div>
+            <div class="mc-desc">7类典型误报场景明确排除</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🔐</div>
+            <div class="mc-title">隐私内置设计</div>
+            <div class="mc-desc">人脸脱敏+禁止身份推断</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">📊</div>
+            <div class="mc-title">置信度分级</div>
+            <div class="mc-desc">阈值控制+环境自适应</div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">方案概述</a></li>
+          <li class="toc-nav-item"><a href="#competitor" class="toc-nav-link">行业竞品能力对标</a></li>
+          <li class="toc-nav-item"><a href="#prompt-principles" class="toc-nav-link">提示词工程最佳实践</a></li>
+          <li class="toc-nav-item"><a href="#detection-flow" class="toc-nav-link">四层检测流程设计</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#layer1" class="toc-sub-link">第一层：人形存在性检测</a></li>
+              <li class="toc-sub-item"><a href="#layer2" class="toc-sub-link">第二层：人形属性描述</a></li>
+              <li class="toc-sub-item"><a href="#layer3" class="toc-sub-link">第三层：行为分类</a></li>
+              <li class="toc-sub-item"><a href="#layer4" class="toc-sub-link">第四层：告警决策</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#key-constraints" class="toc-nav-link">关键约束</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#false-positive" class="toc-sub-link">误报抑制</a></li>
+              <li class="toc-sub-item"><a href="#privacy" class="toc-sub-link">隐私保护</a></li>
+              <li class="toc-sub-item"><a href="#confidence" class="toc-sub-link">置信度要求</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#output-schema" class="toc-nav-link">输出格式</a></li>
+          <li class="toc-nav-item"><a href="#few-shot" class="toc-nav-link">Few-Shot 示例</a></li>
+          <li class="toc-nav-item"><a href="#temporal" class="toc-nav-link">多帧时序分析</a></li>
+          <li class="toc-nav-item"><a href="#deployment" class="toc-nav-link">落地部署建议</a></li>
+          <li class="toc-nav-item"><a href="#conclusion" class="toc-nav-link">总结</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.iot-content h2[id], .iot-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link, .toc-sub-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        if (scrollPos >= section.offsetTop) currentSection = section.getAttribute('id');
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) link.classList.add('active');
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.iot-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) window.scrollTo({ top: targetElement.offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => { updateActiveToc(); updateReadingProgress(); toggleBackToTop(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){var t=document.documentElement.getAttribute('data-theme');btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');}
+        updateLabel();
+        btn.addEventListener('click',function(){var cur=document.documentElement.getAttribute('data-theme');var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('portfolio-theme',next);updateLabel();});
+      }
+    })();
+  </script>
+</body>
+</html>
