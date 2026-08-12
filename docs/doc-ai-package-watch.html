@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="智能门锁快递/外卖看护提示词工程方案 — 双摄检测+配送员识别+全生命周期看护+异常挪动告警+无接触取件联动">
+  <title>快递外卖看护提示词方案 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-gold: #eab308;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --accent-blue: #3b82f6;
+      --accent-pink: #ec4899;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(245, 158, 11, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+      --highlight-orange: #f59e0b;
+      --highlight-orange-bg: rgba(245, 158, 11, 0.07);
+      --highlight-blue: #3b82f6;
+      --highlight-blue-bg: rgba(59, 130, 246, 0.07);
+      --highlight-cyan: #00d4ff;
+      --highlight-cyan-bg: rgba(0, 212, 255, 0.07);
+      --highlight-pink: #ec4899;
+      --highlight-pink-bg: rgba(236, 72, 153, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-gold: #ca8a04;
+      --accent-red: #dc2626;
+      --accent-orange: #d97706;
+      --accent-blue: #2563eb;
+      --accent-pink: #db2777;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(217, 119, 6, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+      --highlight-orange: #d97706;
+      --highlight-orange-bg: rgba(217, 119, 6, 0.07);
+      --highlight-blue: #2563eb;
+      --highlight-blue-bg: rgba(37, 99, 235, 0.07);
+      --highlight-cyan: #0099cc;
+      --highlight-cyan-bg: rgba(0, 153, 204, 0.07);
+      --highlight-pink: #db2777;
+      --highlight-pink-bg: rgba(219, 39, 119, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-orange); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold));
+      transform: scaleX(0); transform-origin: left; z-index: 9999;
+      transition: transform 0.1s linear;
+    }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+    [data-theme="light"] .site-header { background: rgba(245, 245, 250, 0.95); }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+    .brand-bracket { color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; }
+    .brand-text { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 1px; }
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+    .brand-text-accent { color: var(--accent-purple); font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 700; letter-spacing: 1px; }
+
+    .header-nav { display: flex; align-items: center; gap: 16px; }
+    .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-link:hover { color: var(--accent-orange); }
+
+    .theme-toggle {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 4px 12px; cursor: pointer;
+      color: var(--text-secondary); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+      display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+    }
+    .theme-toggle:hover { border-color: var(--accent-orange); }
+    .theme-switch {
+      width: 32px; height: 16px; background: var(--border-color);
+      border-radius: 8px; position: relative; transition: background 0.3s;
+    }
+    .theme-knob {
+      width: 12px; height: 12px; background: var(--accent-orange);
+      border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.3s;
+    }
+    [data-theme="light"] .theme-knob { transform: translateX(16px); }
+
+    .article-layout {
+      max-width: 1400px; margin: 0 auto; padding: 32px 24px;
+      display: grid; grid-template-columns: 1fr var(--toc-width); gap: 48px;
+    }
+
+    .article-main { min-width: 0; }
+
+    .article-header { margin-bottom: 40px; }
+    .article-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 0.85rem; }
+    .breadcrumb-link { color: var(--accent-orange); text-decoration: none; }
+    .breadcrumb-link:hover { text-decoration: underline; }
+    .breadcrumb-separator { color: var(--text-muted); }
+    .breadcrumb-separator::before { content: '/'; }
+
+    .article-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .meta-tag {
+      background: rgba(245, 158, 11, 0.12); color: var(--accent-orange);
+      padding: 4px 12px; border-radius: 4px; font-size: 0.75rem;
+      font-weight: 600; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace;
+    }
+    .meta-date { color: var(--text-muted); font-size: 0.85rem; }
+    .meta-read-time { color: var(--text-muted); font-size: 0.85rem; }
+
+    .article-title {
+      font-size: 2rem; font-weight: 700; line-height: 1.3; margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-orange));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .article-subtitle { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; }
+
+    .iot-content h2 {
+      font-size: 1.5rem; font-weight: 700; margin: 48px 0 20px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--accent-orange);
+      color: var(--accent-orange);
+    }
+    .iot-content h3 {
+      font-size: 1.2rem; font-weight: 600; margin: 32px 0 16px;
+      color: var(--text-primary);
+    }
+    .iot-content h4 {
+      font-size: 1.05rem; font-weight: 600; margin: 24px 0 12px;
+      color: var(--accent-purple);
+    }
+    .iot-content p { margin: 12px 0; color: var(--text-secondary); }
+    .iot-content ul, .iot-content ol { margin: 12px 0 12px 24px; color: var(--text-secondary); }
+    .iot-content li { margin: 6px 0; }
+    .iot-content strong { color: var(--text-primary); }
+    .iot-content code {
+      background: var(--code-bg-gray); padding: 2px 6px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9em;
+      color: var(--code-blue);
+    }
+    .iot-content pre {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 20px; margin: 16px 0; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      line-height: 1.6; color: var(--text-primary);
+    }
+    .iot-content pre code { background: none; padding: 0; color: inherit; }
+
+    .compare-table {
+      width: 100%; border-collapse: collapse; margin: 20px 0;
+      font-size: 0.9rem;
+    }
+    .compare-table th {
+      background: var(--bg-card); color: var(--accent-orange);
+      padding: 12px 16px; text-align: left; font-weight: 600;
+      border-bottom: 2px solid var(--accent-orange); font-size: 0.85rem;
+    }
+    .compare-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary); vertical-align: top;
+    }
+    .compare-table tr:hover td { background: rgba(245, 158, 11, 0.03); }
+
+    .matrix-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .matrix-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 20px; text-align: center;
+      transition: all 0.3s;
+    }
+    .matrix-card:hover { border-color: var(--accent-orange); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245, 158, 11, 0.1); }
+    .mc-icon { font-size: 2rem; margin-bottom: 8px; }
+    .mc-title { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; font-size: 0.95rem; }
+    .mc-desc { color: var(--text-muted); font-size: 0.8rem; }
+
+    .highlight-box {
+      background: var(--highlight-orange-bg); border-left: 4px solid var(--accent-orange);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0;
+    }
+    .highlight-box-cyan { background: var(--highlight-cyan-bg); border-left-color: var(--accent-cyan); }
+    .highlight-box-red { background: var(--highlight-red-bg); border-left-color: var(--accent-red); }
+    .highlight-box-green { background: var(--highlight-green-bg); border-left-color: var(--accent-green); }
+    .highlight-box-purple { background: var(--highlight-purple-bg); border-left-color: var(--accent-purple); }
+    .highlight-box-gold { background: var(--highlight-gold-bg); border-left-color: var(--accent-gold); }
+    .highlight-box-blue { background: var(--highlight-blue-bg); border-left-color: var(--accent-blue); }
+
+    .item-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .badge-watched { background: rgba(245, 158, 11, 0.15); color: var(--accent-orange); }
+    .badge-not-watched { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+
+    .push-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .push-none { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+    .push-info { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+    .push-warning { background: rgba(234, 179, 8, 0.15); color: var(--accent-gold); }
+    .push-urgent { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+    .flow-steps {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin: 16px 0; padding: 16px; background: var(--bg-card);
+      border-radius: 8px; border: 1px solid var(--border-color);
+    }
+    .flow-step {
+      background: var(--highlight-orange-bg); border: 1px solid rgba(245, 158, 11, 0.2);
+      padding: 8px 16px; border-radius: 6px; font-size: 0.85rem;
+      color: var(--accent-orange); font-weight: 500;
+    }
+    .flow-arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+    .state-diagram {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px; margin: 20px 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      line-height: 2; color: var(--text-secondary); overflow-x: auto;
+    }
+    .state-node {
+      display: inline-block; padding: 4px 12px; border-radius: 6px;
+      font-weight: 600; margin: 2px 4px;
+    }
+    .sn-empty { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+    .sn-delivered { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+    .sn-inplace { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+    .sn-anomaly { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+    .sn-collected { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
+    .sn-displaced { background: rgba(234, 179, 8, 0.15); color: var(--accent-gold); }
+    .state-arrow { color: var(--accent-orange); font-weight: 700; margin: 0 4px; }
+    .state-trigger { color: var(--accent-cyan); font-size: 0.78rem; }
+
+    .signal-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .signal-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 20px; transition: all 0.3s;
+    }
+    .signal-card:hover { border-color: var(--accent-orange); }
+    .sig-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .sig-icon { font-size: 1.5rem; }
+    .sig-title { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+    .sig-body { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; }
+    .sig-body dt { color: var(--text-secondary); font-weight: 500; margin-top: 6px; }
+    .sig-body dd { margin-left: 0; margin-bottom: 2px; }
+
+    .toc-sidebar { position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; }
+    .toc-container { padding: 16px; }
+    .toc-sidebar-title {
+      font-size: 0.85rem; font-weight: 700; color: var(--accent-orange);
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+    }
+    .toc-nav-list { list-style: none; }
+    .toc-nav-item { margin-bottom: 4px; }
+    .toc-nav-link {
+      display: block; padding: 6px 12px; color: var(--text-secondary);
+      text-decoration: none; font-size: 0.82rem; border-radius: 4px; transition: all 0.2s;
+    }
+    .toc-nav-link:hover { color: var(--accent-orange); background: rgba(245, 158, 11, 0.05); }
+    .toc-nav-link.active { color: var(--accent-orange); background: rgba(245, 158, 11, 0.1); font-weight: 600; }
+    .toc-sub-list { list-style: none; padding-left: 16px; }
+    .toc-sub-item { margin-bottom: 2px; }
+    .toc-sub-link {
+      display: block; padding: 4px 12px; color: var(--text-muted);
+      text-decoration: none; font-size: 0.78rem; border-radius: 4px; transition: all 0.2s;
+    }
+    .toc-sub-link:hover { color: var(--accent-orange); }
+    .toc-sub-link.active { color: var(--accent-orange); font-weight: 500; }
+
+    .back-to-top {
+      position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px;
+      background: var(--accent-orange); color: #fff; border: none; border-radius: 50%;
+      cursor: pointer; font-size: 1.2rem; font-weight: 700;
+      opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 100;
+    }
+    .back-to-top.visible { opacity: 1; transform: translateY(0); }
+    .back-to-top:hover { background: var(--accent-purple); }
+
+    .site-footer {
+      text-align: center; padding: 32px 24px; color: var(--text-muted);
+      font-size: 0.85rem; border-top: 1px solid var(--border-color); margin-top: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+    @media (max-width: 768px) {
+      .article-title { font-size: 1.5rem; }
+      .header-nav .nav-link:not(:first-child) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#ai-section" class="breadcrumb-link">AI</a>
+          <span class="breadcrumb-separator"></span>
+          <span>快递外卖看护</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">📦 AI PACKAGE</span>
+          <time class="meta-date" datetime="2026-08-10">2026-08-10</time>
+          <span class="meta-read-time">阅读时长: 50min</span>
+        </div>
+        <h1 class="article-title">📦 智能门锁快递/外卖看护 — 提示词工程方案</h1>
+        <p class="article-subtitle">基于萤石/小米/TCL/凯迪仕/德施曼等行业竞品对标，结合双摄硬件架构与VLM多模态融合实践，设计覆盖"物品识别分类→配送员行为意图识别→时序状态机管理→异常挪动告警→无接触取件联动→每日异常集锦"全链路的门前物品看护提示词方案。</p>
+      </header>
+
+      <div class="article-content iot-content">
+
+        <h2 id="overview">方案概述</h2>
+        <p>智能门锁作为家庭入户的第一道防线，具备"门前必经"的天然监控优势。随着电商与外卖的普及，快递/外卖的门前安全看护已成为用户核心痛点——包裹丢失、外卖被偷、生鲜变质等问题频发。本方案将门锁从简单的猫眼监控升级为<strong>AI门前物品看护系统</strong>，利用双摄硬件（上摄看人+下摄看地面），实现对快递/外卖物品的"送达→放置→在位→异常挪动→取走"全生命周期看护。</p>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="mc-icon">📷</div>
+            <div class="mc-title">双摄协同检测</div>
+            <div class="mc-desc">上摄看人脸+下摄看地面物品</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🧠</div>
+            <div class="mc-title">配送员意图识别</div>
+            <div class="mc-desc">工装+头盔+行为+语音多信号融合</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🔄</div>
+            <div class="mc-title">全生命周期状态机</div>
+            <div class="mc-desc">送达→在位→异常→取走全流程追踪</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🚨</div>
+            <div class="mc-title">异常挪动告警</div>
+            <div class="mc-desc">偷外卖/偷快递精准捕获+抓拍取证</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🍔</div>
+            <div class="mc-title">外卖专项看护</div>
+            <div class="mc-desc">15分钟超时提醒+食品变质预警</div>
+          </div>
+          <div class="matrix-card">
+            <div class="mc-icon">🏠</div>
+            <div class="mc-title">无接触取件联动</div>
+            <div class="mc-desc">远程查看+远程开锁+外卖柜联动</div>
+          </div>
+        </div>
+
+        <h2 id="competitor">行业竞品能力对标</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>竞品</th><th>快递/外卖看护能力</th><th>核心技术</th><th>推送机制</th><th>特色功能</th></tr></thead>
+          <tbody>
+            <tr><td><strong>萤石 Y3000FVX / Y31 Ultra</strong></td><td>门前包裹检测，监测包裹出现/消失</td><td>双摄(上摄看人+下摄看地面) + 算法商店"包裹检测"算法</td><td>包裹出现→APP推送；包裹异常挪动→告警推送</td><td>C端算法商店按需下载；包裹出现/消失时间记录</td></tr>
+            <tr><td><strong>小米 M40 Pro</strong></td><td>AI包裹识别，快递包裹能识别</td><td>自研AI识别算法 + 双摄(175°主摄+128°辅摄)</td><td>快递送达→APP推送</td><td>底部盲区摄像头专拍地面；米家生态联动</td></tr>
+            <tr><td><strong>TCL K11D Pro/Ultra</strong></td><td>AI包裹检测防丢，精准识别放置/取走</td><td>伏羲AI大模型 + 双摄(上160°+下摄)</td><td>快递放置→推送；快递取走→推送；异常移动→告警</td><td>过滤猫狗/落叶误报(准确率提升70%)；每日异常短视频集锦</td></tr>
+            <tr><td><strong>凯迪仕 i60 Ultra / P30</strong></td><td>包裹检测+快递异动告警</td><td>Clip AI哨兵猫眼 + 天地双摄(2.5K上+200万下) + DeepSeek大模型</td><td>包裹到达→推送；偷外卖→精准捕获告警</td><td>AI文字摘要("蓝衣男性逗留15秒")；外卖偷窃场景专项优化</td></tr>
+            <tr><td><strong>德施曼 2026新品</strong></td><td>"看懂门口场景"，判断外卖/快递送达</td><td>AI智能管家2.0 + 多模态识别 + 行为意图分析</td><td>外卖/快递送达→智能提醒</td><td>独创"无接触取外卖"：智能监控快递到达+合适时机提醒取件</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box">
+          <strong>💡 关键趋势：</strong>
+          <ul style="margin-top:8px;">
+            <li><strong>双摄成标配</strong>：上摄看人脸、下摄看地面——单摄无法同时覆盖访客面部和门前地面包裹</li>
+            <li><strong>从"检测包裹"到"理解场景"</strong>：德施曼AI智能管家2.0可"看懂门口场景"，判断外卖送达/快递送达/邻居经过/潜在威胁</li>
+            <li><strong>外卖场景独立化</strong>：凯迪仕P30专门优化"偷外卖"检测；德施曼推出"无接触取外卖"功能</li>
+            <li><strong>大模型赋能</strong>：TCL接入伏羲AI+DeepSeek+豆包+ChatGPT；凯迪仕接入DeepSeek+腾讯云TWeSee——从规则检测走向语义理解</li>
+            <li><strong>全生命周期看护</strong>：送达→放置→在位→异常挪动→取走，每个环节独立检测+推送</li>
+          </ul>
+        </div>
+
+        <h2 id="hardware">双摄硬件能力定义</h2>
+
+        <p>本方案运行在配备双摄像头的智能门锁上，双摄协同是物品看护的硬件基础：</p>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">👁️</span>
+              <span class="sig-title">上摄像头（人物视角）</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>视角</dt><dd>160°-175°广角</dd>
+                <dt>像素</dt><dd>300万 / 2.5K</dd>
+                <dt>覆盖范围</dt><dd>门前1-3m</dd>
+                <dt>主要用途</dt><dd>识别人物面部、上半身、行为姿态</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">📦</span>
+              <span class="sig-title">下摄像头（物品视角）</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>视角</dt><dd>128°-130°</dd>
+                <dt>像素</dt><dd>200万</dd>
+                <dt>覆盖范围</dt><dd>门前0-1m地面区域</dd>
+                <dt>主要用途</dt><dd>识别放置在地面的快递包裹、外卖袋等物品</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">🌙</span>
+              <span class="sig-title">红外夜视</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>补光灯</dt><dd>7颗红外补光灯</dd>
+                <dt>能力</dt><dd>全黑环境成像</dd>
+                <dt>限制</dt><dd>物品表面颜色信息丢失，依赖形状+尺寸+上下文综合判定</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">🎙️</span>
+              <span class="sig-title">麦克风+雷达</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>麦克风</dt><dd>采集门前语音（如"您好，外卖放门口了"）</dd>
+                <dt>雷达</dt><dd>5.8GHz/24GHz毫米波雷达，检测门前人员活动</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="detection-flow">五层检测流程</h2>
+
+        <div class="flow-steps">
+          <span class="flow-step">第一层：场景变化检测</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第二层：物品识别与分类</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第三层：人物行为与意图识别</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第四层：时序状态机</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">第五层：推送决策</span>
+        </div>
+
+        <h3 id="layer1">第一层：场景变化检测</h3>
+        <p>比对当前帧与上一帧的门前地面区域。若地面区域无变化则不触发后续分析；若出现新物体/物体消失/物体位置变化，则进入第二层。</p>
+
+        <h3 id="layer2">第二层：物品识别与分类</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>类别</th><th>定义</th><th>典型特征</th><th>是否看护</th></tr></thead>
+          <tbody>
+            <tr><td><strong>快递包裹</strong></td><td>快递公司配送的包裹</td><td>纸箱/快递袋/快递信封，常见快递公司标识(顺丰/中通/圆通/韵达/极兔/京东/菜鸟等)</td><td><span class="item-badge badge-watched">✅ 是</span></td></tr>
+            <tr><td><strong>外卖食品</strong></td><td>外卖平台配送的食品</td><td>保温袋/外卖袋/纸袋，常见平台标识(美团/饿了么/肯德基/麦当劳等)</td><td><span class="item-badge badge-watched">✅ 是</span></td></tr>
+            <tr><td><strong>生鲜配送</strong></td><td>生鲜平台配送的食材</td><td>保温箱/泡沫箱+冰袋，常见平台标识(盒马/叮咚/朴朴等)</td><td><span class="item-badge badge-watched">✅ 是</span></td></tr>
+            <tr><td><strong>报纸/信件</strong></td><td>邮递的报纸信件</td><td>报纸/信封，体积较小</td><td><span class="item-badge badge-watched">✅ 是(轻量级)</span></td></tr>
+            <tr><td><strong>花束/蛋糕</strong></td><td>配送的花束或蛋糕</td><td>花束包装/蛋糕盒</td><td><span class="item-badge badge-watched">✅ 是</span></td></tr>
+            <tr><td>垃圾袋</td><td>住户放置的待丢垃圾</td><td>垃圾袋/垃圾桶旁的袋子</td><td><span class="item-badge badge-not-watched">❌ 否</span></td></tr>
+            <tr><td>鞋子/拖鞋</td><td>住户放置在门外的鞋</td><td>鞋子/鞋架</td><td><span class="item-badge badge-not-watched">❌ 否</span></td></tr>
+            <tr><td>地垫/脚垫</td><td>门口铺设的地垫</td><td>地垫/门垫</td><td><span class="item-badge badge-not-watched">❌ 否</span></td></tr>
+            <tr><td>快递柜/置物架</td><td>固定放置的收纳设施</td><td>门口固定置物架/快递收纳柜</td><td><span class="item-badge badge-not-watched">❌ 否(背景物)</span></td></tr>
+            <tr><td>宠物</td><td>猫/狗等动物</td><td>猫/狗的形态</td><td><span class="item-badge badge-not-watched">❌ 否</span></td></tr>
+            <tr><td>落叶/杂物</td><td>自然掉落或风吹来的杂物</td><td>落叶/纸片/塑料袋</td><td><span class="item-badge badge-not-watched">❌ 否</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="layer3">第三层：人物行为与意图识别</h3>
+
+        <p>当检测到物品变化时，分析画面中人物的行为：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>行为类型</th><th>判定线索</th><th>对应事件</th></tr></thead>
+          <tbody>
+            <tr><td><strong>配送员放置物品</strong></td><td>人物身穿工装/骑手服/快递服 + 手持或弯腰放置物品 + 物品从无到有</td><td>物品送达</td></tr>
+            <tr><td><strong>配送员敲门/按铃后放置</strong></td><td>门铃触发 + 人物放置物品 + 人物离开</td><td>物品送达(已通知)</td></tr>
+            <tr><td><strong>住户取走物品</strong></td><td>人物从门内出来 + 拿起物品 + 物品从有到无</td><td>正常取走</td></tr>
+            <tr><td><strong>陌生人拿走物品</strong></td><td>非住户人物 + 拿起物品 + 物品从有到无 + 快速离开</td><td>异常挪动(偷窃)</td></tr>
+            <tr><td><strong>配送员返回取回</strong></td><td>同一配送员 + 拿起之前放置的物品</td><td>配送员取回(如送错)</td></tr>
+            <tr><td><strong>物品被移动</strong></td><td>物品位置变化但仍在画面中</td><td>物品位移(需关注)</td></tr>
+            <tr><td><strong>无人操作物品变化</strong></td><td>物品出现/消失但画面中无人</td><td>疑似异常(需确认)</td></tr>
+          </tbody>
+        </table>
+
+        <h4 id="courier-identification">配送员身份识别线索（多信号融合）</h4>
+
+        <div class="signal-grid">
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">📮</span>
+              <span class="sig-title">快递员特征</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>工装</dt><dd>快递公司制服(黄/蓝/红等)</dd>
+                <dt>头盔/帽子</dt><dd>快递帽/无</dd>
+                <dt>交通工具</dt><dd>快递三轮车(画面边缘可见)</dd>
+                <dt>手持物品</dt><dd>纸箱/快递袋/扫描仪</dd>
+                <dt>行为</dt><dd>扫描/放置/按门铃</dd>
+                <dt>语音线索</dt><dd>"快递放门口了"</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">🛵</span>
+              <span class="sig-title">外卖骑手特征</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>工装</dt><dd>骑手服(美团黄/饿了么蓝等)</dd>
+                <dt>头盔/帽子</dt><dd>骑手头盔</dd>
+                <dt>交通工具</dt><dd>电动车(画面边缘可见)</dd>
+                <dt>手持物品</dt><dd>保温箱/外卖袋</dd>
+                <dt>行为</dt><dd>放置/按门铃/打电话</dd>
+                <dt>语音线索</dt><dd>"您好，外卖到了"</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="signal-card">
+            <div class="sig-header">
+              <span class="sig-icon">🥬</span>
+              <span class="sig-title">生鲜配送员特征</span>
+            </div>
+            <div class="sig-body">
+              <dl>
+                <dt>工装</dt><dd>平台工装(盒马橙等)</dd>
+                <dt>头盔/帽子</dt><dd>普通帽子/无</dd>
+                <dt>交通工具</dt><dd>电动车/步行</dd>
+                <dt>手持物品</dt><dd>保温箱/泡沫箱</dd>
+                <dt>行为</dt><dd>放置/按门铃</dd>
+                <dt>语音线索</dt><dd>"XX配送到了"</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box-red">
+          <strong>⚠️ 关键约束：</strong>严禁仅凭单一信号判定配送员身份，需至少2个信号一致才判定为配送员。
+        </div>
+
+        <h3 id="layer4">第四层：时序状态机</h3>
+
+        <p>每个被看护物品维护独立的状态机，实现全生命周期追踪：</p>
+
+        <div class="state-diagram">
+          <span class="state-node sn-empty">空地</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">物品出现+配送员放置</span>
+          <span class="state-arrow">→</span>
+          <span class="state-node sn-delivered">物品送达</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">APP推送"物品已送达"</span>
+          <br><br>
+          <span class="state-node sn-delivered">物品送达</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">物品持续在位</span>
+          <span class="state-arrow">→</span>
+          <span class="state-node sn-inplace">物品在位</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">定时提醒(超时未取)</span>
+          <br><br>
+          <span class="state-node sn-inplace">物品在位</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">住户取走</span>
+          <span class="state-arrow">→</span>
+          <span class="state-node sn-collected">正常取走</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">APP推送"物品已取走"</span>
+          <br><br>
+          <span class="state-node sn-inplace">物品在位</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">陌生人拿走</span>
+          <span class="state-arrow">→</span>
+          <span class="state-node sn-anomaly">异常挪动</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">紧急告警"物品被陌生人拿走"</span>
+          <br><br>
+          <span class="state-node sn-inplace">物品在位</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">物品位置变化</span>
+          <span class="state-arrow">→</span>
+          <span class="state-node sn-displaced">物品位移</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">APP推送"物品被移动"</span>
+          <br><br>
+          <span class="state-node sn-inplace">物品在位</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">物品消失+无人</span>
+          <span class="state-arrow">→</span>
+          <span class="state-node sn-anomaly">疑似丢失</span>
+          <span class="state-arrow">→</span>
+          <span class="state-trigger">紧急告警"物品疑似丢失"</span>
+        </div>
+
+        <h4 id="timeout-rules">超时未取提醒规则</h4>
+        <table class="compare-table">
+          <thead><tr><th>物品类型</th><th>首次提醒</th><th>再次提醒</th><th>紧急提醒</th></tr></thead>
+          <tbody>
+            <tr><td>快递包裹</td><td>放置后2小时</td><td>6小时</td><td>12小时(可能遗忘)</td></tr>
+            <tr><td>外卖食品</td><td>放置后15分钟</td><td>30分钟</td><td>—(食品变质风险)</td></tr>
+            <tr><td>生鲜配送</td><td>放置后10分钟</td><td>20分钟</td><td>—(生鲜变质风险)</td></tr>
+            <tr><td>报纸信件</td><td>放置后4小时</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="layer5">第五层：推送决策</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>事件</th><th>推送级别</th><th>推送内容</th><th>推送方式</th></tr></thead>
+          <tbody>
+            <tr><td>快递送达</td><td><span class="push-badge push-info">🟢 知会</span></td><td>"快递已送达，请及时取件"</td><td>APP推送</td></tr>
+            <tr><td>外卖送达</td><td><span class="push-badge push-warning">🟡 提醒</span></td><td>"外卖已送达，请尽快取餐"</td><td>APP推送+本地语音</td></tr>
+            <tr><td>生鲜送达</td><td><span class="push-badge push-warning">🟡 提醒</span></td><td>"生鲜已送达，请尽快取件"</td><td>APP推送+本地语音</td></tr>
+            <tr><td>物品超时未取(普通)</td><td><span class="push-badge push-warning">🟡 提醒</span></td><td>"门前物品已放置X小时，请记得取件"</td><td>APP推送</td></tr>
+            <tr><td>外卖/生鲜超时</td><td><span class="push-badge push-urgent">🔴 紧急</span></td><td>"外卖/生鲜已放置X分钟，请尽快取餐避免变质"</td><td>APP推送+本地语音</td></tr>
+            <tr><td>物品被陌生人拿走</td><td><span class="push-badge push-urgent">🔴 紧急</span></td><td>"门前物品被陌生人拿走！请查看抓拍画面"</td><td>APP推送+本地声光告警</td></tr>
+            <tr><td>物品疑似丢失</td><td><span class="push-badge push-urgent">🔴 紧急</span></td><td>"门前物品疑似丢失！请确认"</td><td>APP推送+本地声光告警</td></tr>
+            <tr><td>物品被移动</td><td><span class="push-badge push-warning">🟡 提醒</span></td><td>"门前物品位置被移动，请确认"</td><td>APP推送</td></tr>
+            <tr><td>正常取走</td><td><span class="push-badge push-info">🟢 知会</span></td><td>"门前物品已被取走"</td><td>APP推送(可配置关闭)</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="key-constraints">关键约束</h2>
+
+        <h3 id="false-positive">误报抑制</h3>
+        <div class="highlight-box-green">
+          <strong>✅ 以下场景不得触发物品看护告警：</strong>
+          <ul style="margin-top:8px;">
+            <li>猫/狗在门前活动（非人形，不触发物品变化分析）</li>
+            <li>落叶/纸片/塑料袋被风吹到门前（非目标物品）</li>
+            <li>住户自己从门内拿出物品放置（如放垃圾袋出门→非看护物品）</li>
+            <li>邻居经过门前（无人触碰物品）</li>
+            <li>门前固定物品(地垫/鞋架/置物架)的位置微调</li>
+            <li>光线变化导致的画面整体亮度变化</li>
+            <li>雨雪天气中的雨滴/积雪覆盖物品表面（物品仍在位）</li>
+            <li>昆虫/蜘蛛贴附镜头导致的画面遮挡</li>
+          </ul>
+        </div>
+
+        <h3 id="false-negative">漏报抑制</h3>
+        <div class="highlight-box-red">
+          <strong>⚠️ 以下场景必须触发告警：</strong>
+          <ul style="margin-top:8px;">
+            <li>夜间配送员放置快递/外卖（红外模式，降低置信度阈值）</li>
+            <li>配送员快速放下物品后立即离开（行为时间&lt;3秒）</li>
+            <li>多个物品同时送达（如多个快递包裹叠放）</li>
+            <li>物品被部分遮挡（如包裹被花盆挡住一部分）</li>
+            <li>陌生人拿走物品后快速离开画面（抓拍+人物特征记录）</li>
+          </ul>
+        </div>
+
+        <h3 id="privacy">隐私保护</h3>
+        <div class="highlight-box-purple">
+          <ul>
+            <li>配送员面部需脱敏处理（推送缩略图中模糊化）</li>
+            <li>不记录/不上传配送员的身份信息</li>
+            <li>住户取走物品的画面仅本地存储，不上传云端</li>
+            <li>推送消息中不包含可识别个人身份的描述</li>
+            <li>异常挪动事件的人物描述仅限：身高范围、衣着颜色、大致体型——严禁推断身份</li>
+          </ul>
+        </div>
+
+        <h3 id="confidence">置信度要求</h3>
+        <table class="compare-table">
+          <thead><tr><th>场景</th><th>置信度范围</th><th>处理策略</th></tr></thead>
+          <tbody>
+            <tr><td>物品分类 &lt; 0.50</td><td>低</td><td>标记为"未识别物品"，按看护物品处理(保守策略)</td></tr>
+            <tr><td>物品分类 0.50-0.70</td><td>中</td><td>标记为"疑似XX"，推送时标注"疑似"</td></tr>
+            <tr><td>物品分类 ≥ 0.70</td><td>高</td><td>正常分类</td></tr>
+            <tr><td>行为识别 &lt; 0.50</td><td>低</td><td>标记为"不确定"，按保守策略处理</td></tr>
+            <tr><td>夜间红外模式</td><td>—</td><td>物品分类置信度下限降至0.40</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="output-schema">输出格式</h2>
+
+        <h3 id="schema-delivery">物品送达事件</h3>
+        <pre><code>{
+  "event": {
+    "type": "item_delivered",
+    "timestamp": "2026-08-10T12:30:00+08:00",
+    "frame_id": "pkg_frame_001",
+    "camera_source": "lower"
+  },
+  "item_detection": {
+    "item_count": 1,
+    "items": [{
+      "item_id": "ITM_001",
+      "item_type": "快递包裹",
+      "item_type_confidence": 0.88,
+      "item_sub_type": "纸箱",
+      "estimated_size": "medium",
+      "position": "门前正中地面",
+      "carrier_hint": "顺丰",
+      "carrier_confidence": 0.75,
+      "item_confidence": 0.88
+    }]
+  },
+  "person_analysis": {
+    "person_detected": true,
+    "person_count": 1,
+    "persons": [{
+      "id": 1,
+      "role": "快递员",
+      "role_confidence": 0.82,
+      "role_signals": {
+        "uniform": "顺丰工装(深色)",
+        "headwear": "快递帽",
+        "carrying": "纸箱+扫描仪",
+        "behavior": "弯腰放置+按门铃",
+        "vehicle": "快递三轮(画面边缘)"
+      },
+      "height_estimate_m": 1.70,
+      "clothing_summary": "深色工装上衣，深色裤子"
+    }]
+  },
+  "behavior_analysis": {
+    "action": "配送员放置物品",
+    "action_confidence": 0.85,
+    "action_detail": "快递员弯腰将纸箱放置在门前地面，随后按门铃离开",
+    "doorbell_rung": true,
+    "verbal_cue": null
+  },
+  "state_transition": {
+    "previous_state": "空地",
+    "current_state": "物品送达",
+    "item_id": "ITM_001",
+    "delivery_time": "2026-08-10T12:30:00+08:00"
+  },
+  "push_decision": {
+    "push_level": "info",
+    "push_type": "快递送达",
+    "should_push_app": true,
+    "should_local_voice": false,
+    "push_title": "📦 快递已送达",
+    "push_body": "顺丰快递已放门口，请及时取件",
+    "push_reason": "快递员放置纸箱在门前，已按门铃"
+  },
+  "timeout_schedule": {
+    "first_remind_at": "2026-08-10T14:30:00+08:00",
+    "second_remind_at": "2026-08-10T18:30:00+08:00",
+    "urgent_remind_at": "2026-08-11T00:30:00+08:00"
+  },
+  "environment": {
+    "lighting_condition": "日间充足",
+    "weather_factor": null,
+    "is_infrared_mode": false
+  },
+  "privacy": {
+    "person_face_desensitized": true,
+    "identity_inference_attempted": false,
+    "raw_image_uploaded": false,
+    "snapshot_retention_hours": 72
+  }
+}</code></pre>
+
+        <h3 id="schema-anomaly">异常挪动事件</h3>
+        <pre><code>{
+  "event": {
+    "type": "item_anomaly",
+    "timestamp": "2026-08-10T15:45:00+08:00",
+    "frame_id": "pkg_frame_anomaly_001",
+    "anomaly_type": "stranger_took_item"
+  },
+  "item_detection": {
+    "item_id": "ITM_001",
+    "item_type": "外卖食品",
+    "previous_state": "物品在位",
+    "current_state": "异常挪动",
+    "item_disappeared": true
+  },
+  "person_analysis": {
+    "person_detected": true,
+    "persons": [{
+      "id": 1,
+      "role": "陌生人",
+      "role_confidence": 0.78,
+      "role_signals": {
+        "uniform": "无工装(便装)",
+        "headwear": "鸭舌帽",
+        "carrying": "拿走外卖袋",
+        "behavior": "快速拿取+转身离开"
+      },
+      "height_estimate_m": 1.75,
+      "clothing_summary": "深色便装上衣，深色裤子，鸭舌帽",
+      "is_household_member": false
+    }]
+  },
+  "behavior_analysis": {
+    "action": "陌生人拿走物品",
+    "action_confidence": 0.78,
+    "action_detail": "非住户人员快速拿走门前外卖袋后离开，行为疑似偷窃",
+    "approach_direction": "从门前右侧接近",
+    "leave_direction": "向左侧快速离开",
+    "time_on_scene_seconds": 5
+  },
+  "push_decision": {
+    "push_level": "urgent",
+    "push_type": "物品被陌生人拿走",
+    "should_push_app": true,
+    "should_local_voice": true,
+    "should_local_alarm": true,
+    "push_title": "🚨 门前物品被拿走！",
+    "push_body": "外卖被陌生人拿走，深色便装男性，鸭舌帽，请查看抓拍画面"
+  },
+  "evidence": {
+    "snapshot_before_url": "local://snap_ITM001_before.jpg",
+    "snapshot_during_url": "local://snap_ITM001_during.jpg",
+    "snapshot_after_url": "local://snap_ITM001_after.jpg",
+    "video_clip_url": "local://clip_ITM001_anomaly.mp4",
+    "person_description": "身高约1.75m，深色便装，鸭舌帽"
+  }
+}</code></pre>
+
+        <h2 id="few-shot">Few-Shot 示例</h2>
+
+        <h3 id="example1">示例1：快递送达（🟢知会推送）</h3>
+        <div class="highlight-box-blue">
+          <strong>场景：</strong>快递员穿顺丰工装，将纸箱放在门前，按门铃后离开<br>
+          <strong>推理链：</strong>地面出现新物体→纸箱+顺丰标识→快递包裹(0.88)→人物穿顺丰工装+手持扫描仪+弯腰放置→快递员(0.82)→放置行为(0.85)→物品送达→知会推送
+        </div>
+        <pre><code>{
+  "event": {"type": "item_delivered", "timestamp": "2026-08-10T10:00:00+08:00"},
+  "item_detection": {"item_count": 1, "items": [{"item_id": "ITM_001",
+    "item_type": "快递包裹", "item_type_confidence": 0.88,
+    "carrier_hint": "顺丰", "position": "门前正中地面"}]},
+  "person_analysis": {"persons": [{"role": "快递员", "role_confidence": 0.82,
+    "role_signals": {"uniform": "顺丰工装", "carrying": "纸箱+扫描仪",
+    "behavior": "弯腰放置+按门铃"}}]},
+  "push_decision": {"push_level": "info", "push_type": "快递送达",
+    "push_title": "📦 快递已送达",
+    "push_body": "顺丰快递已放门口，请及时取件"}
+}</code></pre>
+
+        <h3 id="example2">示例2：外卖送达（🟡提醒推送）</h3>
+        <div class="highlight-box-blue">
+          <strong>场景：</strong>美团骑手穿黄色骑手服，将保温袋放在门前，说"您好外卖放门口了"后离开<br>
+          <strong>推理链：</strong>地面出现新物体→保温袋+美团标识→外卖食品(0.92)→人物穿美团骑手服+头盔+手持保温袋→外卖骑手(0.90)→放置行为+语音线索→外卖送达→提醒推送(食品需尽快取)
+        </div>
+        <pre><code>{
+  "event": {"type": "item_delivered", "timestamp": "2026-08-10T12:15:00+08:00"},
+  "item_detection": {"item_count": 1, "items": [{"item_id": "ITM_002",
+    "item_type": "外卖食品", "item_type_confidence": 0.92,
+    "carrier_hint": "美团", "position": "门前右侧地面"}]},
+  "person_analysis": {"persons": [{"role": "外卖骑手", "role_confidence": 0.90,
+    "role_signals": {"uniform": "美团骑手服(黄色)", "headwear": "骑手头盔",
+    "behavior": "放置+离开"}}]},
+  "behavior_analysis": {"verbal_cue": "您好外卖放门口了"},
+  "push_decision": {"push_level": "warning", "push_type": "外卖送达",
+    "should_local_voice": true,
+    "push_title": "🍔 外卖已送达",
+    "push_body": "美团外卖已放门口，请尽快取餐"},
+  "timeout_schedule": {"first_remind_at": "2026-08-10T12:30:00+08:00",
+    "urgent_remind_at": "2026-08-10T12:45:00+08:00"}
+}</code></pre>
+
+        <h3 id="example3">示例3：陌生人偷外卖（🔴紧急告警）</h3>
+        <div class="highlight-box-red">
+          <strong>场景：</strong>非住户人员快速拿走门前外卖袋后跑开<br>
+          <strong>推理链：</strong>门前物品消失→外卖袋从有到无→人物穿便装+无工装+快速拿取+转身跑开→陌生人(0.78)→异常挪动→紧急告警
+        </div>
+        <pre><code>{
+  "event": {"type": "item_anomaly", "anomaly_type": "stranger_took_item"},
+  "item_detection": {"item_id": "ITM_002", "item_type": "外卖食品",
+    "previous_state": "物品在位", "current_state": "异常挪动",
+    "item_disappeared": true},
+  "person_analysis": {"persons": [{"role": "陌生人", "role_confidence": 0.78,
+    "role_signals": {"uniform": "无工装(便装)", "behavior": "快速拿取+跑开"},
+    "clothing_summary": "深色便装，鸭舌帽",
+    "is_household_member": false}]},
+  "push_decision": {"push_level": "urgent",
+    "push_type": "物品被陌生人拿走",
+    "should_local_alarm": true,
+    "push_title": "🚨 门前物品被拿走！",
+    "push_body": "外卖被陌生人拿走，深色便装男性，鸭舌帽，请查看抓拍"},
+  "evidence": {"video_clip_url": "local://clip_ITM002_anomaly.mp4",
+    "person_description": "身高约1.75m，深色便装，鸭舌帽"}
+}</code></pre>
+
+        <h3 id="example4">示例4：住户正常取走（🟢知会推送）</h3>
+        <div class="highlight-box-green">
+          <strong>场景：</strong>住户从门内出来，拿起快递后关门回去<br>
+          <strong>推理链：</strong>门前物品消失→人物从门内出来+拿起物品+回门内→住户(0.85)→正常取走→知会推送
+        </div>
+        <pre><code>{
+  "event": {"type": "item_collected"},
+  "item_detection": {"item_id": "ITM_001", "previous_state": "物品在位",
+    "current_state": "正常取走", "item_disappeared": true},
+  "person_analysis": {"persons": [{"role": "住户", "role_confidence": 0.85,
+    "is_household_member": true}]},
+  "push_decision": {"push_level": "info", "push_type": "物品已取走",
+    "push_title": "📦 快递已取走",
+    "push_body": "门前快递已被取走"}
+}</code></pre>
+
+        <h3 id="example5">示例5：误报抑制——猫经过（⚪不推送）</h3>
+        <div class="highlight-box">
+          <strong>场景：</strong>一只猫经过门前地面，未触碰物品<br>
+          <strong>推理链：</strong>地面区域有活动→非人形生物(猫)→物品状态无变化→不触发物品看护→不推送
+        </div>
+        <pre><code>{
+  "event": {"type": "no_change"},
+  "item_detection": {"item_count": 1, "items": [{"item_id": "ITM_001",
+    "current_state": "物品在位", "item_disappeared": false}]},
+  "person_analysis": {"person_detected": false,
+    "non_human_activity": "宠物(猫)经过门前，未触碰物品"},
+  "push_decision": {"push_level": "none", "should_push_app": false}
+}</code></pre>
+
+        <h3 id="example6">示例6：夜间外卖送达（🟡提醒推送，红外模式）</h3>
+        <div class="highlight-box-gold">
+          <strong>场景：</strong>夜间，红外画面中外卖骑手放置保温袋在门前<br>
+          <strong>推理链：</strong>红外模式→地面出现新物体→保温袋形状→外卖食品(0.72,红外降低阈值)→人物穿骑手服轮廓+头盔→外卖骑手(0.70)→放置行为→外卖送达→提醒推送
+        </div>
+        <pre><code>{
+  "event": {"type": "item_delivered"},
+  "item_detection": {"items": [{"item_id": "ITM_003",
+    "item_type": "外卖食品", "item_type_confidence": 0.72,
+    "item_sub_type": "保温袋(红外)"}]},
+  "person_analysis": {"persons": [{"role": "外卖骑手",
+    "role_confidence": 0.70,
+    "role_signals": {"uniform": "疑似骑手服(红外细节受限)",
+    "behavior": "弯腰放置+离开"}}]},
+  "push_decision": {"push_level": "warning", "push_type": "外卖送达",
+    "should_local_voice": true,
+    "push_title": "🍔 外卖已送达",
+    "push_body": "疑似外卖已放门口(夜间红外模式)，请尽快取餐"},
+  "environment": {"is_infrared_mode": true}
+}</code></pre>
+
+        <h2 id="linkage">联动能力</h2>
+
+        <h3 id="contactless-pickup">无接触取件联动（德施曼方案升级）</h3>
+        <p>当检测到外卖/快递送达时，根据用户是否在家生成差异化联动建议：</p>
+
+        <table class="compare-table">
+          <thead><tr><th>场景</th><th>用户状态</th><th>联动动作</th></tr></thead>
+          <tbody>
+            <tr><td>外卖送达</td><td>用户在家</td><td>本地语音提醒"外卖已放门口，请尽快取餐"</td></tr>
+            <tr><td>外卖送达</td><td>用户不在家</td><td>APP推送 + 建议远程查看 + 设置临时取件提醒</td></tr>
+            <tr><td>快递送达</td><td>用户在家</td><td>APP推送 + 可选本地语音</td></tr>
+            <tr><td>快递送达</td><td>用户不在家</td><td>APP推送 + 远程查看抓拍 + 可选"远程开锁让家人代取"</td></tr>
+            <tr><td>陌生人拿走物品</td><td>—</td><td>立即APP推送 + 本地声光告警 + 录制10s视频片段</td></tr>
+            <tr><td>外卖超15分钟未取</td><td>—</td><td>APP推送 + 本地语音提醒</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="daily-highlight">每日异常短视频集锦（TCL方案升级）</h3>
+        <p>将当天门前物品相关的异常事件浓缩为短视频集锦，仅包含异常事件（物品送达仅首次、异常挪动、疑似丢失、超时未取），排除正常事件。每个事件截取3-5秒关键片段，总时长≤3分钟，并生成文字摘要供用户快速浏览。</p>
+
+        <h2 id="deployment">落地部署架构建议</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>环节</th><th>建议方案</th><th>参考竞品</th></tr></thead>
+          <tbody>
+            <tr><td><strong>双摄硬件</strong></td><td>上摄160-175°广角300万像素(看人)+下摄128°200万像素(看地面)+7颗红外灯</td><td>萤石/小米/凯迪仕/TCL均采用双摄方案</td></tr>
+            <tr><td><strong>物品检测模型</strong></td><td>端侧YOLOv8-small做物品检测backbone；VLM(Qwen2-VL-7B/GPT-4o-mini)做语义理解</td><td>TCL伏羲AI大模型；凯迪仕Clip AI+DeepSeek</td></tr>
+            <tr><td><strong>推理流水线</strong></td><td>雷达/场景变化触发→双摄抓拍→YOLO物品检测→VLM语义分析→状态机更新→推送决策→联动执行</td><td>萤石全链路；Roboflow porch lockbox方案</td></tr>
+            <tr><td><strong>时序状态机</strong></td><td>轻量级规则引擎(非LLM)，维护每个物品的独立状态机</td><td>Roboflow verify package inside方案</td></tr>
+            <tr><td><strong>配送员识别</strong></td><td>VLM多信号融合(工装+头盔+手持物+行为+语音)，至少2信号一致才判定</td><td>CSDN Qwen3-VL多模态融合实践</td></tr>
+            <tr><td><strong>住户识别</strong></td><td>人脸库匹配(端侧)→判定取走物品者是否为住户</td><td>凯迪仕AI摘要"蓝衣男性逗留15秒"</td></tr>
+            <tr><td><strong>误报优化</strong></td><td>专属测试集(猫狗/落叶/垃圾袋/鞋子/地垫等负例)持续微调</td><td>TCL伏羲AI过滤猫狗落叶(准确率提升70%)</td></tr>
+            <tr><td><strong>隐私合规</strong></td><td>配送员面部脱敏；住户取件画面仅本地存储；异常人物描述仅限身高+衣着颜色</td><td>德施曼AI智能打码</td></tr>
+            <tr><td><strong>功耗控制</strong></td><td>雷达低功耗值守→场景变化唤醒双摄→AI推理；无物品时下摄可降低帧率</td><td>德施曼24G雷达方案</td></tr>
+            <tr><td><strong>推送渠道</strong></td><td>APP推送(必选)→本地语音(外卖/生鲜必选)→本地声光告警(偷窃场景)</td><td>萤石APP推送；凯迪仕偷外卖精准捕获</td></tr>
+            <tr><td><strong>无接触取件</strong></td><td>外卖送达→智能提醒→远程查看→可选远程开锁代取</td><td>德施曼"无接触取外卖"</td></tr>
+            <tr><td><strong>每日集锦</strong></td><td>自动浓缩异常事件为3分钟短视频+文字摘要</td><td>TCL每日门口异常短视频集锦</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="upgrade">与行业现有方案的核心升级</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>维度</th><th>行业现状</th><th>本方案升级</th></tr></thead>
+          <tbody>
+            <tr><td><strong>物品分类</strong></td><td>萤石/小米/TCL仅"包裹检测"</td><td>6类看护物品(快递/外卖/生鲜/信件/花束/蛋糕)+6类排除物品，精细化管理</td></tr>
+            <tr><td><strong>配送员识别</strong></td><td>仅检测物品变化</td><td>多信号融合识别(工装+头盔+手持物+行为+语音)，区分快递员/外卖骑手/生鲜配送员/陌生人</td></tr>
+            <tr><td><strong>全生命周期</strong></td><td>萤石监测出现/消失</td><td>5状态时序状态机(空地→送达→在位→异常挪动→取走)，超时分级提醒</td></tr>
+            <tr><td><strong>外卖专项</strong></td><td>凯迪仕P30偷外卖检测</td><td>外卖全链路：送达→15分钟超时→偷窃告警→无接触取件联动</td></tr>
+            <tr><td><strong>异常判定</strong></td><td>物品消失即告警</td><td>区分4种消失原因：住户取走/陌生人拿走/配送员取回/无人操作消失</td></tr>
+            <tr><td><strong>联动能力</strong></td><td>仅推送</td><td>无接触取件+远程开锁+外卖柜联动+每日集锦</td></tr>
+            <tr><td><strong>误报抑制</strong></td><td>TCL 70%提升</td><td>12项误报排除规则(猫狗/落叶/垃圾袋/鞋子/地垫/光线变化等)</td></tr>
+            <tr><td><strong>夜间能力</strong></td><td>红外成像</td><td>红外模式专项优化：降低置信度阈值+提升行为线索权重+标注环境受限</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="conclusion">总结</h2>
+
+        <p>本方案完整覆盖了从<strong>双摄场景变化检测→物品识别分类→配送员行为意图识别→时序状态机管理→推送决策→无接触取件联动→每日异常集锦</strong>的全链路，对标萤石/小米/TCL/凯迪仕/德施曼行业最新能力并实现系统性升级。</p>
+
+        <div class="highlight-box">
+          <strong>📦 核心价值：</strong>
+          <ul style="margin-top:8px;">
+            <li><strong>双摄协同</strong>：上摄看人+下摄看地面，解决单摄无法同时覆盖的痛点</li>
+            <li><strong>语义理解</strong>：从"检测包裹"升级为"理解门口场景"——判断快递送达/外卖送达/偷窃行为</li>
+            <li><strong>全生命周期</strong>：5状态时序状态机，覆盖送达→在位→异常→取走全流程</li>
+            <li><strong>外卖专项</strong>：15分钟超时提醒+食品变质预警+偷外卖精准捕获</li>
+            <li><strong>无接触取件</strong>：德施曼方案升级，远程查看+远程开锁+外卖柜联动</li>
+            <li><strong>误报抑制</strong>：12项排除规则，TCL方案验证准确率提升70%</li>
+          </ul>
+        </div>
+
+        <p>本方案可直接用于智能门锁产品的快递/外卖看护模块设计与VLM(Qwen2-VL/GPT-4o等)的Prompt配置落地。</p>
+
+      </div>
+    </article>
+
+    <aside class="toc-sidebar" aria-label="目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📦 目录导航</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">方案概述</a></li>
+          <li class="toc-nav-item"><a href="#competitor" class="toc-nav-link">行业竞品能力对标</a></li>
+          <li class="toc-nav-item"><a href="#hardware" class="toc-nav-link">双摄硬件能力定义</a></li>
+          <li class="toc-nav-item"><a href="#detection-flow" class="toc-nav-link">五层检测流程</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#layer1" class="toc-sub-link">场景变化检测</a></li>
+              <li class="toc-sub-item"><a href="#layer2" class="toc-sub-link">物品识别与分类</a></li>
+              <li class="toc-sub-item"><a href="#layer3" class="toc-sub-link">人物行为与意图识别</a></li>
+              <li class="toc-sub-item"><a href="#layer4" class="toc-sub-link">时序状态机</a></li>
+              <li class="toc-sub-item"><a href="#layer5" class="toc-sub-link">推送决策</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#key-constraints" class="toc-nav-link">关键约束</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#false-positive" class="toc-sub-link">误报抑制</a></li>
+              <li class="toc-sub-item"><a href="#false-negative" class="toc-sub-link">漏报抑制</a></li>
+              <li class="toc-sub-item"><a href="#privacy" class="toc-sub-link">隐私保护</a></li>
+              <li class="toc-sub-item"><a href="#confidence" class="toc-sub-link">置信度要求</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#output-schema" class="toc-nav-link">输出格式</a></li>
+          <li class="toc-nav-item"><a href="#few-shot" class="toc-nav-link">Few-Shot 示例</a></li>
+          <li class="toc-nav-item"><a href="#linkage" class="toc-nav-link">联动能力</a></li>
+          <li class="toc-nav-item"><a href="#deployment" class="toc-nav-link">落地部署建议</a></li>
+          <li class="toc-nav-item"><a href="#upgrade" class="toc-nav-link">与行业方案的核心升级</a></li>
+          <li class="toc-nav-item"><a href="#conclusion" class="toc-nav-link">总结</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.iot-content h2[id], .iot-content h3[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link, .toc-sub-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        if (scrollPos >= section.offsetTop) currentSection = section.getAttribute('id');
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) link.classList.add('active');
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.iot-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) window.scrollTo({ top: targetElement.offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => { updateActiveToc(); updateReadingProgress(); toggleBackToTop(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){var t=document.documentElement.getAttribute('data-theme');btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');}
+        updateLabel();
+        btn.addEventListener('click',function(){var cur=document.documentElement.getAttribute('data-theme');var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('portfolio-theme',next);updateLabel();});
+      }
+    })();
+  </script>
+</body>
+</html>

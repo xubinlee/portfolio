@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="跨境电商AI智能选品 — 基于市场数据预测爆款的数据驱动选品系统完整落地指南">
+  <title>AI智能选品 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f; --bg-secondary: #12121a; --bg-card: #16161f;
+      --text-primary: #e8e8f0; --text-secondary: #a0a0b8; --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff; --accent-purple: #8b5cf6; --accent-green: #22c55e;
+      --accent-gold: #eab308; --accent-red: #ef4444;
+      --border-color: rgba(255,255,255,0.08); --shadow-glow: rgba(0,212,255,0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff; --code-green: #34d399; --code-red: #f87171;
+      --code-gold: #fbbf24; --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79,110,247,0.12);
+      --code-bg-gray: rgba(255,255,255,0.06); --code-bg-green: rgba(34,197,94,0.08);
+      --code-bg-purple: rgba(139,92,246,0.12);
+      --code-bg-white: var(--bg-secondary); --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc; --hl-function: #22d3ee; --hl-string: #4ade80; --hl-number: #fb923c;
+    }
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa; --bg-secondary: #ffffff; --bg-card: #ffffff;
+      --text-primary: #1a1a2e; --text-secondary: #4a4a68; --text-muted: #8888a0;
+      --accent-cyan: #0099cc; --accent-purple: #7c3aed; --accent-green: #16a34a;
+      --accent-gold: #ca8a04; --accent-red: #dc2626;
+      --border-color: rgba(0,0,0,0.08); --shadow-glow: rgba(0,153,204,0.12);
+      --code-blue: #4f6ef7; --code-green: #1a8a5a; --code-red: #c0392b;
+      --code-gold: #e8a838; --code-muted: #b0c0d0; --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7; --code-bg-green: #f0f7f0; --code-bg-purple: #f5f0ff;
+      --code-bg-white: #ffffff; --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea; --hl-function: #0891b2; --hl-string: #16a34a; --hl-number: #ea580c;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.8; min-height:100vh; }
+    .skip-link { position:absolute; top:-100%; left:16px; background:var(--accent-cyan); color:#000; padding:8px 16px; border-radius:4px; z-index:10000; text-decoration:none; font-weight:600; }
+    .skip-link:focus { top:16px; }
+    .site-header { position:sticky; top:0; z-index:1000; background:rgba(10,10,15,0.9); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-color); padding:16px 24px; }
+    [data-theme="light"] .site-header { background:rgba(245,245,250,0.95); }
+    .header-content { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
+    .header-brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; }
+    .brand-bracket { color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:700; }
+    .brand-text { font-family:'JetBrains Mono',monospace; font-size:1.25rem; font-weight:700; letter-spacing:1px; }
+    .brand-dot { color:var(--accent-cyan); font-weight:900; }
+    .brand-text-accent { color:var(--accent-purple); font-family:'JetBrains Mono',monospace; font-size:1.25rem; font-weight:700; letter-spacing:1px; }
+    .header-nav { display:flex; align-items:center; gap:24px; }
+    .nav-link { color:var(--text-secondary); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.88rem; transition:color 0.3s; display:flex; align-items:center; gap:8px; }
+    .nav-link:hover,.nav-link:focus-visible { color:var(--accent-cyan); }
+    .reading-progress { position:fixed; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple)); z-index:9999; transform-origin:left; transform:scaleX(0); transition:transform 0.1s linear; }
+    .article-layout { display:flex; max-width:1400px; margin:0 auto; gap:40px; padding:40px 24px 80px; position:relative; }
+    .article-main { flex:1; min-width:0; max-width:900px; }
+    .article-header { margin-bottom:40px; padding-bottom:28px; border-bottom:1px solid var(--border-color); }
+    .article-breadcrumb { display:flex; align-items:center; gap:12px; margin-bottom:22px; font-size:0.85rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+    .breadcrumb-link { color:inherit; text-decoration:none; transition:color 0.3s; }
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible { color:var(--accent-cyan); }
+    .breadcrumb-separator::before { content:'/'; opacity:0.5; }
+    .article-meta { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px; align-items:center; }
+    .meta-tag { display:inline-flex; align-items:center; gap:6px; padding:4px 14px; border-radius:20px; font-size:0.78rem; font-weight:600; font-family:'JetBrains Mono',monospace; background:rgba(139,92,246,0.12); color:var(--accent-purple); }
+    .meta-date { font-size:0.84rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+    .article-title { font-family:'JetBrains Mono',monospace; font-size:clamp(1.65rem,3.5vw,2.35rem); font-weight:700; line-height:1.3; color:var(--text-primary); margin-bottom:14px; }
+    .article-subtitle { font-size:1.08rem; color:var(--text-secondary); line-height:1.6; }
+    .ecommerce-content { font-size:1.01rem; line-height:1.9; }
+    .ecommerce-content h2 { font-family:'JetBrains Mono',monospace; font-size:1.5rem; font-weight:600; color:var(--accent-cyan); margin-top:44px; margin-bottom:18px; padding-bottom:11px; border-bottom:2px solid var(--border-color); scroll-margin-top:20px; }
+    .ecommerce-content h3 { font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:600; color:var(--text-primary); margin-top:32px; margin-bottom:14px; scroll-margin-top:20px; padding-left:0.5rem; border-left:3px solid var(--accent-purple); }
+    .ecommerce-content h4 { font-size:0.95rem; font-weight:600; color:var(--accent-gold); margin-top:1.2rem; margin-bottom:0.4rem; scroll-margin-top:20px; }
+    .ecommerce-content p { margin-bottom:0.7rem; color:var(--text-secondary); }
+    .ecommerce-content strong { color:var(--text-primary); font-weight:600; }
+    .ecommerce-content ul,.ecommerce-content ol { padding-left:1.8rem; margin-bottom:0.7rem; color:var(--text-secondary); }
+    .ecommerce-content li { margin-bottom:0.2rem; }
+    .ecommerce-content code { background:var(--bg-secondary); padding:0.1rem 0.4rem; border-radius:4px; font-size:0.82rem; color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; }
+    .ecommerce-content .card-doc { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:24px; margin-bottom:24px; }
+    .ecommerce-content .card-title { font-family:'JetBrains Mono',monospace; font-size:1.22rem; font-weight:600; color:var(--accent-cyan); margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--border-color); display:flex; align-items:center; gap:10px; }
+    .ecommerce-content .card-title i { color:var(--accent-purple); }
+    .ecommerce-content .domain-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:12px 0; }
+    .ecommerce-content .domain { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:10px; padding:14px; transition:border-color 0.3s; }
+    .ecommerce-content .domain:hover { border-color:var(--accent-cyan); }
+    .ecommerce-content .domain .name { font-weight:600; color:var(--accent-cyan); font-size:0.92rem; margin-bottom:6px; }
+    .ecommerce-content .domain .services { font-size:0.82rem; color:var(--text-muted); line-height:1.5; }
+    .ecommerce-content .domain .special { display:inline-block; background:rgba(139,92,246,0.12); color:var(--accent-purple); padding:1px 8px; border-radius:10px; font-size:0.68rem; font-weight:600; margin-top:4px; }
+    .ecommerce-content .code-block,.ecommerce-content pre[style*="background"] { background:var(--bg-secondary)!important; border:1px solid var(--border-color)!important; border-radius:10px; padding:18px; margin:12px 0; overflow-x:auto; }
+    .ecommerce-content .code-block pre,.ecommerce-content pre[style*="background"] { margin:0; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; color:var(--text-primary); white-space:pre-wrap; word-break:break-all; }
+    .ecommerce-content .kw { color:var(--hl-keyword); }
+    .ecommerce-content .fn { color:var(--hl-function); }
+    .ecommerce-content .str { color:var(--hl-string); }
+    .ecommerce-content .cls { color:var(--code-gold); }
+    .ecommerce-content .num { color:var(--hl-number); }
+    .ecommerce-content .cmt { color:var(--text-muted); }
+    .ecommerce-content .highlight-box { border-radius:8px; padding:1rem 1.2rem; margin:1rem 0; border-left:4px solid var(--accent-cyan); background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(139,92,246,0.07)); }
+    .ecommerce-content .highlight-box .label { font-weight:600; color:var(--accent-cyan); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; }
+    .ecommerce-content .highlight-box .content { margin-top:4px; color:var(--text-secondary); }
+    .ecommerce-content .highlight-box.gold { border-left-color:#e8a838; background:rgba(234,179,8,0.07); }
+    .ecommerce-content .highlight-box.gold .label { color:#eab308; }
+    .ecommerce-content .highlight-box.green { border-left-color:#22c55e; background:rgba(34,197,94,0.07); }
+    .ecommerce-content .highlight-box.green .label { color:#22c55e; }
+    .ecommerce-content .highlight-box.purple { border-left-color:#8b5cf6; background:rgba(139,92,246,0.07); }
+    .ecommerce-content .highlight-box.purple .label { color:#8b5cf6; }
+    .ecommerce-content .highlight-box.red { border-left-color:#ef4444; background:rgba(239,68,68,0.07); }
+    .ecommerce-content .highlight-box.red .label { color:#ef4444; }
+    .ecommerce-content .compare-table { width:100%; border-collapse:collapse; font-size:0.9rem; margin:0.8rem 0; }
+    .ecommerce-content .compare-table th { background:var(--bg-secondary); text-align:left; padding:0.5rem 1rem; font-weight:600; color:var(--accent-purple); border-bottom:2px solid var(--border-color); }
+    .ecommerce-content .compare-table td { padding:0.5rem 1rem; border-bottom:1px solid var(--border-color); color:var(--text-secondary); }
+    .ecommerce-content .compare-table tr:hover td { background:rgba(0,212,255,0.03); }
+    .ecommerce-content .compare-table .badge-good { display:inline-block; background:rgba(34,197,94,0.15); color:#22c55e; padding:0.05rem 0.5rem; border-radius:12px; font-size:0.7rem; }
+    .ecommerce-content .compare-table .badge-bad { display:inline-block; background:rgba(239,68,68,0.15); color:#ef4444; padding:0.05rem 0.5rem; border-radius:12px; font-size:0.7rem; }
+    .ecommerce-content .flow-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; margin:0.8rem 0; }
+    .ecommerce-content .flow-box { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:0.4rem 0.8rem; font-size:0.82rem; color:var(--text-secondary); text-align:center; min-width:80px; }
+    .ecommerce-content .flow-box.highlight { background:rgba(0,212,255,0.08); border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600; }
+    .ecommerce-content .flow-arrow { color:var(--text-muted); font-size:1rem; }
+    .article-footer { margin-top:56px; padding-top:28px; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; }
+    .footer-nav-link { display:flex; align-items:center; gap:10px; padding:13px 20px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; text-decoration:none; color:var(--text-secondary); font-size:0.9rem; transition:all 0.3s; }
+    .footer-nav-link:hover,.footer-nav-link:focus-visible { border-color:var(--accent-cyan); color:var(--accent-cyan); transform:translateY(-2px); box-shadow:0 6px 20px var(--shadow-glow); }
+    .toc-sidebar { width:var(--toc-width); flex-shrink:0; position:sticky; top:90px; height:fit-content; max-height:calc(100vh - 110px); overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border-color) transparent; }
+    .toc-sidebar::-webkit-scrollbar { width:5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background:transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:3px; }
+    .toc-container { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:24px 20px; }
+    .toc-sidebar-title { font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; color:var(--accent-purple); text-transform:uppercase; letter-spacing:1.8px; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--border-color); display:flex; align-items:center; gap:8px; }
+    .toc-nav-list { list-style:none; counter-reset:toc-counter; }
+    .toc-nav-item { position:relative; margin-bottom:6px; counter-increment:toc-counter; }
+    .toc-nav-item::before { content:counter(toc-counter,decimal-leading-zero); position:absolute; left:-22px; top:50%; transform:translateY(-50%); font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:600; color:var(--text-muted); opacity:0.5; }
+    .toc-nav-link { display:block; padding:8px 12px 8px 14px; color:var(--text-secondary); text-decoration:none; font-size:0.86rem; line-height:1.5; border-radius:7px; border-left:2px solid transparent; transition:all 0.25s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .toc-nav-link:hover,.toc-nav-link:focus-visible { color:var(--text-primary); background:rgba(0,212,255,0.05); transform:translateX(3px); }
+    .toc-nav-link.active { color:var(--accent-cyan); font-weight:500; background:rgba(0,212,255,0.06); border-left-color:var(--accent-cyan); }
+    .toc-sub-list { list-style:none; padding-left:14px; margin-top:4px; }
+    .toc-sub-item { margin-bottom:3px; }
+    .toc-sub-link { display:block; padding:5px 10px; color:var(--text-muted); text-decoration:none; font-size:0.78rem; line-height:1.4; border-radius:5px; transition:all 0.2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .toc-sub-link:hover { color:var(--text-secondary); background:rgba(0,212,255,0.03); }
+    .toc-sub-link.active { color:var(--accent-cyan); background:rgba(0,212,255,0.05); }
+    .back-to-top { position:fixed; bottom:30px; right:30px; width:42px; height:42px; border-radius:50%; background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer; z-index:998; opacity:0; visibility:hidden; transition:all 0.3s; display:flex; align-items:center; justify-content:center; font-size:1.15rem; box-shadow:0 4px 16px rgba(0,0,0,0.2); }
+    .back-to-top.visible { opacity:1; visibility:visible; }
+    .back-to-top:hover,.back-to-top:focus-visible { background:var(--accent-cyan); color:#000; transform:translateY(-3px); box-shadow:0 6px 24px var(--shadow-glow); }
+    .site-footer { text-align:center; padding:36px 24px; border-top:1px solid var(--border-color); color:var(--text-muted); font-size:0.87rem; margin-top:60px; }
+    @media (max-width:1024px) { .toc-sidebar { display:none; } .article-layout { padding:32px 20px 70px; gap:0; } .article-main { max-width:100%; } }
+    @media (max-width:768px) { .header-nav { gap:12px; flex-wrap:wrap; } .article-footer { flex-direction:column; } .article-title { font-size:1.55rem; } .ecommerce-content h2 { font-size:1.3rem; } .ecommerce-content .domain-grid { grid-template-columns:1fr; } .ecommerce-content .compare-table { font-size:0.82rem; } .ecommerce-content .compare-table th,.ecommerce-content .compare-table td { padding:10px 8px; } }
+    .theme-toggle { display:flex; align-items:center; gap:6px; background:none; border:1px solid var(--border-color); border-radius:20px; padding:4px 12px; cursor:pointer; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:0.65rem; transition:border-color 0.3s ease; flex-shrink:0; }
+    .theme-toggle:hover { border-color:var(--accent-cyan); }
+    .theme-switch { width:32px; height:16px; background:var(--bg-secondary); border-radius:8px; position:relative; transition:background 0.3s ease; }
+    .theme-knob { position:absolute; top:2px; left:2px; width:12px; height:12px; background:var(--accent-cyan); border-radius:50%; transition:transform 0.3s ease; }
+    [data-theme="light"] .theme-knob { transform:translateX(16px); background:var(--accent-purple); }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand"><span class="brand-bracket">&lt;</span><span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span><span class="brand-bracket">/&gt;</span></a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#tech-section" class="breadcrumb-link">技术文档</a>
+          <span class="breadcrumb-separator"></span>
+          <span>AI智能选品</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">AI · 跨境电商</span>
+          <time class="meta-date" datetime="2026-08-11">2026-08-11</time>
+          <span class="meta-date">阅读时长: 35min</span>
+        </div>
+        <h1 class="article-title">🔍 跨境电商AI智能选品</h1>
+        <p class="article-subtitle">基于市场数据预测爆款 — 数据采集 · 特征工程 · 爆款预测模型 · 选品决策闭环 · 8周落地完整指南。</p>
+      </header>
+      <div class="ecommerce-content">
+
+        <h2 id="overview">全景认知</h2>
+
+        <h3 id="why-ai-selection">为什么需要AI智能选品</h3>
+        <p>传统选品依赖经验、榜单和人工调研，爆款命中率仅约30%。AI智能选品通过整合多平台交易数据、搜索趋势和用户评价，实现从"经验驱动"到"数据驱动"的范式转变，爆款预测成功率可提升93%。</p>
+
+        <div class="highlight-box green">
+          <div class="label">🚀 核心价值</div>
+          <div class="content">AI选品不是替代人的判断，而是<strong>将10万+SKU的市场信号压缩为Top-20推荐列表</strong>，让人的决策聚焦在高价值环节。选品效率提升10x，新品上架到首单时间从30天缩短至7天。</div>
+        </div>
+
+        <h3 id="competitor-landscape">行业竞品对比</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>工具</th><th>核心能力</th><th>数据源</th><th>AI能力</th><th>价格</th><th>适用场景</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Jungle Scout</strong></td><td>产品数据库+销售估算</td><td>Amazon全站</td><td>AI Assist(高阶版)</td><td>$49-209/月</td><td>Amazon北美卖家</td></tr>
+            <tr><td><strong>Helium 10</strong></td><td>关键词+SEO+库存保护</td><td>Amazon</td><td>Black Box+Magnet</td><td>$39-399/月</td><td>高阶美国卖家</td></tr>
+            <tr><td><strong>SellerSprite</strong></td><td>趋势发现+类目AI洞察</td><td>10个站点</td><td>Keepa AI+类目AI</td><td>¥99-599/月</td><td>全球新兴市场</td></tr>
+            <tr><td><strong>1688选品Agent</strong></td><td>供给侧反推需求侧</td><td>1688+跨境平台</td><td>Agent自动分析</td><td>免费/平台内</td><td>供应链选品</td></tr>
+            <tr><td><strong>Amazon商机探测器</strong></td><td>发现未满足需求</td><td>Amazon内部数据</td><td>AI深度分析</td><td>免费(卖家中心)</td><td>Amazon官方</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="data-infrastructure">Phase 1：数据基建（Week 1-2）</h2>
+
+        <h3 id="data-sources">数据源全景</h3>
+
+        <div class="domain-grid">
+          <div class="domain"><div class="name">📊 平台数据</div><div class="services">Amazon SP-API · 1688开放平台 · TikTok API · Shopee API</div><div class="special">BSR排名 · 价格 · 销量估算 · 评价数</div></div>
+          <div class="domain"><div class="name">🔍 搜索趋势</div><div class="services">Google Trends API · SEMrush · Ahrefs</div><div class="special">搜索热度 · 增速 · 地域分布 · 相关查询</div></div>
+          <div class="domain"><div class="name">📱 社交数据</div><div class="services">TikTok · Instagram · Reddit · Twitter</div><div class="special">UGC内容 · KOL提及 · 播放量 · 情感分析</div></div>
+          <div class="domain"><div class="name">💰 成本数据</div><div class="services">1688 API · 供应商报价 · FBA计算器</div><div class="special">采购成本 · FBA费用 · 佣金 · 物流费</div></div>
+          <div class="domain"><div class="name">📈 历史数据</div><div class="services">Keepa API · CamelCamel · 内部ERP</div><div class="special">历史价格曲线 · BSR变化 · 评价增长</div></div>
+          <div class="domain"><div class="name">🌍 合规数据</div><div class="services">海关数据 · 专利数据库 · 认证库</div><div class="special">关税税率 · 专利风险 · 认证需求</div></div>
+        </div>
+
+        <h3 id="data-pipeline">数据采集架构</h3>
+
+        <div class="flow-row">
+          <div class="flow-box highlight">实时流采集<br>Kafka+Flink</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">批量采集<br>Airflow定时</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">爬虫集群<br>Scrapy/Playwright</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">第三方API<br>Keepa/Trends</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">数据清洗&存储<br>PG+ES+MinIO</div>
+        </div>
+
+        <h3 id="quick-start-data">快速启动：最小数据集</h3>
+
+        <div class="highlight-box gold">
+          <div class="label">💡 MVP数据集</div>
+          <div class="content">不要等所有数据源就绪再开始。先接入 <strong>Amazon SP-API + Google Trends</strong> 即可启动选品方向判断+趋势验证。增强数据集再加1688 API + Keepa，完整数据集再加社交+海关数据。</div>
+        </div>
+
+        <h2 id="feature-engineering">Phase 2：特征工程（Week 3-4）</h2>
+
+        <h3 id="feature-system">特征体系全景（200+特征）</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>特征大类</th><th>特征数</th><th>核心特征</th><th>预测力</th></tr></thead>
+          <tbody>
+            <tr><td><strong>F1: 市场需求</strong></td><td>50+</td><td>搜索增速、供需比、BSR速度、社交热度、季节指数</td><td>★★★★★</td></tr>
+            <tr><td><strong>F2: 竞争格局</strong></td><td>50+</td><td>Top3评价占比、新卖家进入率、价格离散度、品牌集中度</td><td>★★★★</td></tr>
+            <tr><td><strong>F3: 产品机会</strong></td><td>40+</td><td>差评痛点密度、改进可行性、差异化空间、专利风险</td><td>★★★★★</td></tr>
+            <tr><td><strong>F4: 利润空间</strong></td><td>30+</td><td>采购成本、FBA费用、预估毛利率、回本周期、ACoS</td><td>★★★★★</td></tr>
+            <tr><td><strong>F5: 供应链</strong></td><td>30+</td><td>供应商数量、起订量、交期、定制能力、拿样</td><td>★★★★</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="key-features">核心特征详解</h3>
+
+        <h4>F1：市场需求特征（预测力最强）</h4>
+        <ul>
+          <li><code>search_volume_growth_30d</code>：近30天搜索量环比增长率 — Google Trends</li>
+          <li><code>search_supply_ratio</code>：搜索量/在售商品数（供需比）— 蓝海核心指标</li>
+          <li><code>bsr_velocity</code>：BSR排名下降速度（排名下降=销量上升）— Keepa</li>
+          <li><code>google_trends_breakout</code>：Google Trends是否出现Breakout — 爆发信号</li>
+          <li><code>new_keyword_emergence</code>：新增相关搜索词数量 — 需求新方向</li>
+          <li><code>seasonal_index</code>：季节性指数（历史同月销量/年均月销量）</li>
+          <li><code>tiktok_hashtag_count</code>：相关标签视频数量 — 社交验证</li>
+        </ul>
+
+        <h4>F3：产品机会特征（差异化关键）</h4>
+        <ul>
+          <li><code>pain_point_density</code>：差评痛点密度（差评中高频问题出现率）— ★★★★★</li>
+          <li><code>top_pain_category</code>：最高频痛点类别（质量/功能/设计/服务）— ★★★★</li>
+          <li><code>improvement_feasibility</code>：痛点改进可行性（供应链能否解决）— ★★★★</li>
+          <li><code>patent_risk_score</code>：专利侵权风险评分 — ★★★</li>
+          <li><code>compliance_risk_score</code>：合规风险（FDA/CE/FCC等认证需求）— ★★★★</li>
+        </ul>
+
+        <h2 id="model-training">Phase 3：模型训练与融合（Week 5-6）</h2>
+
+        <h3 id="model-selection">模型选型策略</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>模型</th><th>用途</th><th>优势</th><th>劣势</th><th>推荐场景</th></tr></thead>
+          <tbody>
+            <tr><td><strong>XGBoost</strong></td><td>爆款分类主模型</td><td>特征重要性可解释、训练快</td><td>需要特征工程</td><td>主力模型</td></tr>
+            <tr><td><strong>LightGBM</strong></td><td>爆款分类备选</td><td>更快、内存更省</td><td>可能过拟合</td><td>大规模SKU</td></tr>
+            <tr><td><strong>Prophet</strong></td><td>趋势+季节性分解</td><td>自动处理节假日/季节</td><td>仅时序</td><td>趋势预测</td></tr>
+            <tr><td><strong>NLP大模型</strong></td><td>差评分析/选品推理</td><td>语义理解强、零样本</td><td>延迟高、成本高</td><td>痛点挖掘</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="model-architecture">爆款预测模型架构</h3>
+
+        <div class="flow-row">
+          <div class="flow-box">Prophet<br>趋势分解</div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-box">XGBoost<br>分类主模型</div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-box">LightGBM<br>分类备选</div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-box">NLP<br>痛点分析</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">Stacking融合层<br>Logistic Regression</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">输出<br>爆款概率+置信区间</div>
+        </div>
+
+        <h3 id="label-definition">标签定义：什么是"爆款"</h3>
+
+        <div class="highlight-box purple">
+          <div class="label">🏷️ 推荐方案C：综合评分</div>
+          <div class="content">
+            <code>score = 0.4×min(销量增速/50,1) + 0.3×min(毛利率/0.4,1) + 0.2×min(评价星级/4.5,1) + 0.1×max(1-退货率/0.05,0)</code><br>
+            score ≥ 0.65 → 爆款（正样本）。综合了销量增速、毛利率、评价星级和退货率四个维度。
+          </div>
+        </div>
+
+        <h2 id="decision-loop">Phase 4：决策闭环与系统上线（Week 7-8）</h2>
+
+        <h3 id="decision-flow">选品决策流程</h3>
+
+        <div class="flow-row">
+          <div class="flow-box highlight">① 市场扫描<br>全品类趋势扫描<br>每日10万+SKU</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">② 机会筛选<br>爆款概率>0.6<br>+蓝海品类识别</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">③ 深度验证<br>差评痛点分析<br>+供应商匹配</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">④ 利润测算<br>成本+FBA+佣金<br>毛利率预估</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">⑤ 风险评估<br>专利+合规风险<br>评分</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">⑥ 采购决策<br>采购单自动生成<br>人机协同审核</div>
+        </div>
+
+        <h3 id="quick-filter">快速筛选规则</h3>
+
+        <div class="card-doc">
+          <div class="card-title">⚡ 排除项（命中任一即淘汰）</div>
+          <ul>
+            <li>评价垄断：单卖家评价数 > 5000且持续更新</li>
+            <li>低毛利：预估毛利率 < 15%</li>
+            <li>高合规风险：FDA Class III / CPSC监管品类</li>
+            <li>重货：重量 > 15kg（不适合FBA）</li>
+            <li>高退货率品类：品类退货率 > 15%</li>
+            <li>专利高风险：专利风险评分 > 0.8</li>
+          </ul>
+        </div>
+
+        <div class="card-doc">
+          <div class="card-title">✅ 加分项（加权到最终评分）</div>
+          <ul>
+            <li>Google Trends近3月增长 > 20%（+15分）</li>
+            <li>Top3卖家无强品牌壁垒（+10分）</li>
+            <li>季节性弱，全年可售（+8分）</li>
+            <li>差评痛点可通过供应链改进（+12分）</li>
+            <li>1688可选供应商 ≥ 5家（+5分）</li>
+          </ul>
+        </div>
+
+        <h3 id="selection-scorecard">选品评分卡输出</h3>
+
+        <div class="highlight-box">
+          <div class="label">📋 评分卡示例</div>
+          <div class="content">
+            <strong>SKU:</strong> B08N5WR1NW (Portable Blender) &nbsp;|&nbsp; <strong>综合评分:</strong> 82 &nbsp;|&nbsp; <strong>爆款概率:</strong> 78%<br>
+            <strong>推荐:</strong> 小批量测试，首批100件<br><br>
+            <strong>维度评分：</strong>市场需求88（搜索供需比3.2供不应求/TikTok 50M+播放）| 竞争格局72（Top3评价占比45%中等集中度）| 产品机会85（差评TOP1电池续航短34%/改进可行性高）| 利润空间75（采购$3.9/FBA$4.2/目标$24.99/毛利率38%）| 风险70（专利风险低/FCC认证已具备）<br><br>
+            <strong>建议动作：</strong>①联系3家1688供应商拿样对比电池容量 ②要求6000mAh电芯版本报价 ③首批100件试销 ④Listing突出长续航差异化卖点
+          </div>
+        </div>
+
+        <h2 id="landing-paths">三种落地路径</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>路径</th><th>耗时</th><th>适合</th><th>工具/技术</th><th>预期效果</th></tr></thead>
+          <tbody>
+            <tr><td><strong>A: 工具组合</strong></td><td>3-4天</td><td>小团队/个人卖家</td><td>SellerSprite + Google Trends + ChatGPT + 1688 AI</td><td>选品效率5x</td></tr>
+            <tr><td><strong>B: 半自建</strong></td><td>6周</td><td>中型团队(1-2开发)</td><td>SP-API + XGBoost + DeepSeek API + Streamlit</td><td>爆款命中率65%+</td></tr>
+            <tr><td><strong>C: 全自建</strong></td><td>8周</td><td>算法+后端+前端团队</td><td>多源融合+Stacking+MCP Server+采购闭环</td><td>全链路闭环</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="kpi">效果评估KPI</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>指标</th><th>定义</th><th>基线(人工)</th><th>目标(AI)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>爆款命中率</strong></td><td>预测爆款/实际上架爆款</td><td>30%</td><td>≥65%</td></tr>
+            <tr><td><strong>选品效率</strong></td><td>人工调研时间/AI分析时间</td><td>1x</td><td>≥10x</td></tr>
+            <tr><td><strong>新品上架周期</strong></td><td>从开始调研到上架天数</td><td>30天</td><td>≤7天</td></tr>
+            <tr><td><strong>首批库存周转</strong></td><td>首批库存售罄天数</td><td>60天</td><td>≤35天</td></tr>
+            <tr><td><strong>模型AUC</strong></td><td>爆款分类AUC</td><td>-</td><td>≥0.85</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="pitfalls">避坑指南</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>坑</th><th>表现</th><th>解决方案</th></tr></thead>
+          <tbody>
+            <tr><td>数据泄露</td><td>模型AUC>0.95但线上效果差</td><td>严格时序CV，不用未来数据训练</td></tr>
+            <tr><td>品类差异</td><td>服装模型直接用于3C效果暴跌</td><td>按品类分组训练，或加入品类embedding</td></tr>
+            <tr><td>冷启动</td><td>新品类/新站点无历史数据</td><td>迁移学习+规则兜底+少样本学习</td></tr>
+            <tr><td>数据源不稳定</td><td>API限流/爬虫被封/数据断供</td><td>多源冗余+本地缓存+降级策略</td></tr>
+            <tr><td>过度依赖模型</td><td>盲目信任模型，忽略合规/专利</td><td>硬规则前置过滤+人工审核高风险项</td></tr>
+            <tr><td>特征漂移</td><td>3个月前训练的模型效果下降</td><td>月度自动重训练+漂移监控告警</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 最重要的一条</div>
+          <div class="content">选品≠赚钱。选对了品但运营跟不上同样失败。AI选品必须与<strong>运营策略（Listing优化/广告投放/库存管理）</strong>联动，形成"选品→上架→运营→反馈"的完整闭环。</div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="index.html" class="footer-nav-link">← 返回文档列表</a>
+        <a href="doc-ai-dynamic-pricing.html" class="footer-nav-link">下一篇: AI智能定价 →</a>
+      </footer>
+    </article>
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">全景认知</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#why-ai-selection" class="toc-sub-link">为什么需要AI智能选品</a></li>
+              <li class="toc-sub-item"><a href="#competitor-landscape" class="toc-sub-link">行业竞品对比</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#data-infrastructure" class="toc-nav-link">数据基建</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#data-sources" class="toc-sub-link">数据源全景</a></li>
+              <li class="toc-sub-item"><a href="#data-pipeline" class="toc-sub-link">数据采集架构</a></li>
+              <li class="toc-sub-item"><a href="#quick-start-data" class="toc-sub-link">快速启动最小数据集</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#feature-engineering" class="toc-nav-link">特征工程</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#feature-system" class="toc-sub-link">特征体系全景</a></li>
+              <li class="toc-sub-item"><a href="#key-features" class="toc-sub-link">核心特征详解</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#model-training" class="toc-nav-link">模型训练与融合</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#model-selection" class="toc-sub-link">模型选型策略</a></li>
+              <li class="toc-sub-item"><a href="#model-architecture" class="toc-sub-link">爆款预测模型架构</a></li>
+              <li class="toc-sub-item"><a href="#label-definition" class="toc-sub-link">标签定义</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#decision-loop" class="toc-nav-link">决策闭环</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#decision-flow" class="toc-sub-link">选品决策流程</a></li>
+              <li class="toc-sub-item"><a href="#quick-filter" class="toc-sub-link">快速筛选规则</a></li>
+              <li class="toc-sub-item"><a href="#selection-scorecard" class="toc-sub-link">选品评分卡</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#landing-paths" class="toc-nav-link">三种落地路径</a></li>
+          <li class="toc-nav-item"><a href="#kpi" class="toc-nav-link">效果评估KPI</a></li>
+          <li class="toc-nav-item"><a href="#pitfalls" class="toc-nav-link">避坑指南</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+  <footer class="site-footer"><p>&copy; 2026 ISNOWSOFT — All rights reserved.</p></footer>
+  <script>
+    const sections=document.querySelectorAll('.ecommerce-content h2[id],.ecommerce-content h3[id]');
+    const tocLinks=document.querySelectorAll('.toc-nav-link,.toc-sub-link');
+    function updateActiveToc(){let c='';const s=window.scrollY+120;sections.forEach(sec=>{if(s>=sec.offsetTop)c=sec.getAttribute('id')});tocLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})}
+    function updateReadingProgress(){const a=document.querySelector('.ecommerce-content');if(!a)return;let p=(window.scrollY-a.offsetTop)/(a.offsetHeight-window.innerHeight);p=Math.min(Math.max(p,0),1);document.getElementById('readingProgress').style.transform='scaleX('+p+')'}
+    function toggleBackToTop(){const b=document.getElementById('backToTop');window.scrollY>400?b.classList.add('visible'):b.classList.remove('visible')}
+    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+    tocLinks.forEach(l=>{l.addEventListener('click',function(e){e.preventDefault();const t=document.getElementById(this.getAttribute('href').substring(1));if(t)window.scrollTo({top:t.offsetTop-20,behavior:'smooth'})})});
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){window.requestAnimationFrame(()=>{updateActiveToc();updateReadingProgress();toggleBackToTop();ticking=false});ticking=true}},{passive:true});updateActiveToc();
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){var t=document.documentElement.getAttribute('data-theme');btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');}
+        updateLabel();
+        btn.addEventListener('click',function(){var cur=document.documentElement.getAttribute('data-theme');var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('portfolio-theme',next);updateLabel();});
+      }
+      window.addEventListener('storage',function(e){if(e.key==='portfolio-theme'&&e.newValue){document.documentElement.setAttribute('data-theme',e.newValue);if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');}});
+    })();
+  </script>
+</body>
+</html>

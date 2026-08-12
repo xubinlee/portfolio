@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="跨境电商AI智能定价 — 基于强化学习与规则引擎的动态定价策略完整落地指南">
+  <title>AI智能定价 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f; --bg-secondary: #12121a; --bg-card: #16161f;
+      --text-primary: #e8e8f0; --text-secondary: #a0a0b8; --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff; --accent-purple: #8b5cf6; --accent-green: #22c55e;
+      --accent-gold: #eab308; --accent-red: #ef4444;
+      --border-color: rgba(255,255,255,0.08); --shadow-glow: rgba(0,212,255,0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff; --code-green: #34d399; --code-red: #f87171;
+      --code-gold: #fbbf24; --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79,110,247,0.12);
+      --code-bg-gray: rgba(255,255,255,0.06); --code-bg-green: rgba(34,197,94,0.08);
+      --code-bg-purple: rgba(139,92,246,0.12);
+      --code-bg-white: var(--bg-secondary); --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc; --hl-function: #22d3ee; --hl-string: #4ade80; --hl-number: #fb923c;
+    }
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa; --bg-secondary: #ffffff; --bg-card: #ffffff;
+      --text-primary: #1a1a2e; --text-secondary: #4a4a68; --text-muted: #8888a0;
+      --accent-cyan: #0099cc; --accent-purple: #7c3aed; --accent-green: #16a34a;
+      --accent-gold: #ca8a04; --accent-red: #dc2626;
+      --border-color: rgba(0,0,0,0.08); --shadow-glow: rgba(0,153,204,0.12);
+      --code-blue: #4f6ef7; --code-green: #1a8a5a; --code-red: #c0392b;
+      --code-gold: #e8a838; --code-muted: #b0c0d0; --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7; --code-bg-green: #f0f7f0; --code-bg-purple: #f5f0ff;
+      --code-bg-white: #ffffff; --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea; --hl-function: #0891b2; --hl-string: #16a34a; --hl-number: #ea580c;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg-primary); color:var(--text-primary); line-height:1.8; min-height:100vh; }
+    .skip-link { position:absolute; top:-100%; left:16px; background:var(--accent-cyan); color:#000; padding:8px 16px; border-radius:4px; z-index:10000; text-decoration:none; font-weight:600; }
+    .skip-link:focus { top:16px; }
+    .site-header { position:sticky; top:0; z-index:1000; background:rgba(10,10,15,0.9); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-color); padding:16px 24px; }
+    [data-theme="light"] .site-header { background:rgba(245,245,250,0.95); }
+    .header-content { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
+    .header-brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; }
+    .brand-bracket { color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:700; }
+    .brand-text { font-family:'JetBrains Mono',monospace; font-size:1.25rem; font-weight:700; letter-spacing:1px; }
+    .brand-dot { color:var(--accent-cyan); font-weight:900; }
+    .brand-text-accent { color:var(--accent-purple); font-family:'JetBrains Mono',monospace; font-size:1.25rem; font-weight:700; letter-spacing:1px; }
+    .header-nav { display:flex; align-items:center; gap:24px; }
+    .nav-link { color:var(--text-secondary); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.88rem; transition:color 0.3s; display:flex; align-items:center; gap:8px; }
+    .nav-link:hover,.nav-link:focus-visible { color:var(--accent-cyan); }
+    .reading-progress { position:fixed; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple)); z-index:9999; transform-origin:left; transform:scaleX(0); transition:transform 0.1s linear; }
+    .article-layout { display:flex; max-width:1400px; margin:0 auto; gap:40px; padding:40px 24px 80px; position:relative; }
+    .article-main { flex:1; min-width:0; max-width:900px; }
+    .article-header { margin-bottom:40px; padding-bottom:28px; border-bottom:1px solid var(--border-color); }
+    .article-breadcrumb { display:flex; align-items:center; gap:12px; margin-bottom:22px; font-size:0.85rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+    .breadcrumb-link { color:inherit; text-decoration:none; transition:color 0.3s; }
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible { color:var(--accent-cyan); }
+    .breadcrumb-separator::before { content:'/'; opacity:0.5; }
+    .article-meta { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px; align-items:center; }
+    .meta-tag { display:inline-flex; align-items:center; gap:6px; padding:4px 14px; border-radius:20px; font-size:0.78rem; font-weight:600; font-family:'JetBrains Mono',monospace; background:rgba(139,92,246,0.12); color:var(--accent-purple); }
+    .meta-date { font-size:0.84rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+    .article-title { font-family:'JetBrains Mono',monospace; font-size:clamp(1.65rem,3.5vw,2.35rem); font-weight:700; line-height:1.3; color:var(--text-primary); margin-bottom:14px; }
+    .article-subtitle { font-size:1.08rem; color:var(--text-secondary); line-height:1.6; }
+    .ecommerce-content { font-size:1.01rem; line-height:1.9; }
+    .ecommerce-content h2 { font-family:'JetBrains Mono',monospace; font-size:1.5rem; font-weight:600; color:var(--accent-cyan); margin-top:44px; margin-bottom:18px; padding-bottom:11px; border-bottom:2px solid var(--border-color); scroll-margin-top:20px; }
+    .ecommerce-content h3 { font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:600; color:var(--text-primary); margin-top:32px; margin-bottom:14px; scroll-margin-top:20px; padding-left:0.5rem; border-left:3px solid var(--accent-purple); }
+    .ecommerce-content h4 { font-size:0.95rem; font-weight:600; color:var(--accent-gold); margin-top:1.2rem; margin-bottom:0.4rem; scroll-margin-top:20px; }
+    .ecommerce-content p { margin-bottom:0.7rem; color:var(--text-secondary); }
+    .ecommerce-content strong { color:var(--text-primary); font-weight:600; }
+    .ecommerce-content ul,.ecommerce-content ol { padding-left:1.8rem; margin-bottom:0.7rem; color:var(--text-secondary); }
+    .ecommerce-content li { margin-bottom:0.2rem; }
+    .ecommerce-content code { background:var(--bg-secondary); padding:0.1rem 0.4rem; border-radius:4px; font-size:0.82rem; color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; }
+    .ecommerce-content .card-doc { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:24px; margin-bottom:24px; }
+    .ecommerce-content .card-title { font-family:'JetBrains Mono',monospace; font-size:1.22rem; font-weight:600; color:var(--accent-cyan); margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--border-color); display:flex; align-items:center; gap:10px; }
+    .ecommerce-content .card-title i { color:var(--accent-purple); }
+    .ecommerce-content .domain-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:12px 0; }
+    .ecommerce-content .domain { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:10px; padding:14px; transition:border-color 0.3s; }
+    .ecommerce-content .domain:hover { border-color:var(--accent-cyan); }
+    .ecommerce-content .domain .name { font-weight:600; color:var(--accent-cyan); font-size:0.92rem; margin-bottom:6px; }
+    .ecommerce-content .domain .services { font-size:0.82rem; color:var(--text-muted); line-height:1.5; }
+    .ecommerce-content .domain .special { display:inline-block; background:rgba(139,92,246,0.12); color:var(--accent-purple); padding:1px 8px; border-radius:10px; font-size:0.68rem; font-weight:600; margin-top:4px; }
+    .ecommerce-content .code-block,.ecommerce-content pre[style*="background"] { background:var(--bg-secondary)!important; border:1px solid var(--border-color)!important; border-radius:10px; padding:18px; margin:12px 0; overflow-x:auto; }
+    .ecommerce-content .code-block pre,.ecommerce-content pre[style*="background"] { margin:0; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; color:var(--text-primary); white-space:pre-wrap; word-break:break-all; }
+    .ecommerce-content .kw { color:var(--hl-keyword); }
+    .ecommerce-content .fn { color:var(--hl-function); }
+    .ecommerce-content .str { color:var(--hl-string); }
+    .ecommerce-content .cls { color:var(--code-gold); }
+    .ecommerce-content .num { color:var(--hl-number); }
+    .ecommerce-content .cmt { color:var(--text-muted); }
+    .ecommerce-content .highlight-box { border-radius:8px; padding:1rem 1.2rem; margin:1rem 0; border-left:4px solid var(--accent-cyan); background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(139,92,246,0.07)); }
+    .ecommerce-content .highlight-box .label { font-weight:600; color:var(--accent-cyan); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; }
+    .ecommerce-content .highlight-box .content { margin-top:4px; color:var(--text-secondary); }
+    .ecommerce-content .highlight-box.gold { border-left-color:#e8a838; background:rgba(234,179,8,0.07); }
+    .ecommerce-content .highlight-box.gold .label { color:#eab308; }
+    .ecommerce-content .highlight-box.green { border-left-color:#22c55e; background:rgba(34,197,94,0.07); }
+    .ecommerce-content .highlight-box.green .label { color:#22c55e; }
+    .ecommerce-content .highlight-box.purple { border-left-color:#8b5cf6; background:rgba(139,92,246,0.07); }
+    .ecommerce-content .highlight-box.purple .label { color:#8b5cf6; }
+    .ecommerce-content .highlight-box.red { border-left-color:#ef4444; background:rgba(239,68,68,0.07); }
+    .ecommerce-content .highlight-box.red .label { color:#ef4444; }
+    .ecommerce-content .compare-table { width:100%; border-collapse:collapse; font-size:0.9rem; margin:0.8rem 0; }
+    .ecommerce-content .compare-table th { background:var(--bg-secondary); text-align:left; padding:0.5rem 1rem; font-weight:600; color:var(--accent-purple); border-bottom:2px solid var(--border-color); }
+    .ecommerce-content .compare-table td { padding:0.5rem 1rem; border-bottom:1px solid var(--border-color); color:var(--text-secondary); }
+    .ecommerce-content .compare-table tr:hover td { background:rgba(0,212,255,0.03); }
+    .ecommerce-content .compare-table .badge-good { display:inline-block; background:rgba(34,197,94,0.15); color:#22c55e; padding:0.05rem 0.5rem; border-radius:12px; font-size:0.7rem; }
+    .ecommerce-content .compare-table .badge-bad { display:inline-block; background:rgba(239,68,68,0.15); color:#ef4444; padding:0.05rem 0.5rem; border-radius:12px; font-size:0.7rem; }
+    .ecommerce-content .flow-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; margin:0.8rem 0; }
+    .ecommerce-content .flow-box { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:0.4rem 0.8rem; font-size:0.82rem; color:var(--text-secondary); text-align:center; min-width:80px; }
+    .ecommerce-content .flow-box.highlight { background:rgba(0,212,255,0.08); border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600; }
+    .ecommerce-content .flow-arrow { color:var(--text-muted); font-size:1rem; }
+    .article-footer { margin-top:56px; padding-top:28px; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; }
+    .footer-nav-link { display:flex; align-items:center; gap:10px; padding:13px 20px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; text-decoration:none; color:var(--text-secondary); font-size:0.9rem; transition:all 0.3s; }
+    .footer-nav-link:hover,.footer-nav-link:focus-visible { border-color:var(--accent-cyan); color:var(--accent-cyan); transform:translateY(-2px); box-shadow:0 6px 20px var(--shadow-glow); }
+    .toc-sidebar { width:var(--toc-width); flex-shrink:0; position:sticky; top:90px; height:fit-content; max-height:calc(100vh - 110px); overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border-color) transparent; }
+    .toc-sidebar::-webkit-scrollbar { width:5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background:transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:3px; }
+    .toc-container { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:24px 20px; }
+    .toc-sidebar-title { font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; color:var(--accent-purple); text-transform:uppercase; letter-spacing:1.8px; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--border-color); display:flex; align-items:center; gap:8px; }
+    .toc-nav-list { list-style:none; counter-reset:toc-counter; }
+    .toc-nav-item { position:relative; margin-bottom:6px; counter-increment:toc-counter; }
+    .toc-nav-item::before { content:counter(toc-counter,decimal-leading-zero); position:absolute; left:-22px; top:50%; transform:translateY(-50%); font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:600; color:var(--text-muted); opacity:0.5; }
+    .toc-nav-link { display:block; padding:8px 12px 8px 14px; color:var(--text-secondary); text-decoration:none; font-size:0.86rem; line-height:1.5; border-radius:7px; border-left:2px solid transparent; transition:all 0.25s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .toc-nav-link:hover,.toc-nav-link:focus-visible { color:var(--text-primary); background:rgba(0,212,255,0.05); transform:translateX(3px); }
+    .toc-nav-link.active { color:var(--accent-cyan); font-weight:500; background:rgba(0,212,255,0.06); border-left-color:var(--accent-cyan); }
+    .toc-sub-list { list-style:none; padding-left:14px; margin-top:4px; }
+    .toc-sub-item { margin-bottom:3px; }
+    .toc-sub-link { display:block; padding:5px 10px; color:var(--text-muted); text-decoration:none; font-size:0.78rem; line-height:1.4; border-radius:5px; transition:all 0.2s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .toc-sub-link:hover { color:var(--text-secondary); background:rgba(0,212,255,0.03); }
+    .toc-sub-link.active { color:var(--accent-cyan); background:rgba(0,212,255,0.05); }
+    .back-to-top { position:fixed; bottom:30px; right:30px; width:42px; height:42px; border-radius:50%; background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer; z-index:998; opacity:0; visibility:hidden; transition:all 0.3s; display:flex; align-items:center; justify-content:center; font-size:1.15rem; box-shadow:0 4px 16px rgba(0,0,0,0.2); }
+    .back-to-top.visible { opacity:1; visibility:visible; }
+    .back-to-top:hover,.back-to-top:focus-visible { background:var(--accent-cyan); color:#000; transform:translateY(-3px); box-shadow:0 6px 24px var(--shadow-glow); }
+    .site-footer { text-align:center; padding:36px 24px; border-top:1px solid var(--border-color); color:var(--text-muted); font-size:0.87rem; margin-top:60px; }
+    @media (max-width:1024px) { .toc-sidebar { display:none; } .article-layout { padding:32px 20px 70px; gap:0; } .article-main { max-width:100%; } }
+    @media (max-width:768px) { .header-nav { gap:12px; flex-wrap:wrap; } .article-footer { flex-direction:column; } .article-title { font-size:1.55rem; } .ecommerce-content h2 { font-size:1.3rem; } .ecommerce-content .domain-grid { grid-template-columns:1fr; } .ecommerce-content .compare-table { font-size:0.82rem; } .ecommerce-content .compare-table th,.ecommerce-content .compare-table td { padding:10px 8px; } }
+    .theme-toggle { display:flex; align-items:center; gap:6px; background:none; border:1px solid var(--border-color); border-radius:20px; padding:4px 12px; cursor:pointer; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:0.65rem; transition:border-color 0.3s ease; flex-shrink:0; }
+    .theme-toggle:hover { border-color:var(--accent-cyan); }
+    .theme-switch { width:32px; height:16px; background:var(--bg-secondary); border-radius:8px; position:relative; transition:background 0.3s ease; }
+    .theme-knob { position:absolute; top:2px; left:2px; width:12px; height:12px; background:var(--accent-cyan); border-radius:50%; transition:transform 0.3s ease; }
+    [data-theme="light"] .theme-knob { transform:translateX(16px); background:var(--accent-purple); }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="readingProgress"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand"><span class="brand-bracket">&lt;</span><span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span><span class="brand-bracket">/&gt;</span></a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content" class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#tech-section" class="breadcrumb-link">技术文档</a>
+          <span class="breadcrumb-separator"></span>
+          <span>AI智能定价</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">AI · 跨境电商</span>
+          <time class="meta-date" datetime="2026-08-11">2026-08-11</time>
+          <span class="meta-date">阅读时长: 40min</span>
+        </div>
+        <h1 class="article-title">💰 跨境电商AI智能定价</h1>
+        <p class="article-subtitle">动态定价策略 — 价格弹性建模 · 规则引擎 · 强化学习PPO/DQN · Buy Box优化 · 跨境因子 · 8周落地完整指南。</p>
+      </header>
+      <div class="ecommerce-content">
+
+        <h2 id="overview">全景认知</h2>
+
+        <h3 id="why-dynamic-pricing">为什么需要AI智能定价</h3>
+        <p>跨境电商定价面临三大挑战：①竞争激烈（Amazon同品类卖家500+，价格每15分钟变动一次）②跨境因子复杂（汇率波动、关税变化、物流成本浮动）③平台规则约束（Buy Box算法、最低价限制、MAP政策）。静态定价导致利润流失20-40%，AI动态定价可提升利润率15-35%。</p>
+
+        <div class="highlight-box green">
+          <div class="label">🚀 核心价值</div>
+          <div class="content">动态定价不是"低价抢市场"，而是<strong>在正确的时间以正确的价格卖给正确的客户</strong>。核心目标：利润最大化而非销量最大化。Amazon平台数据显示，Buy Box获得者的价格通常不是最低价，而是"最优性价比"。</div>
+        </div>
+
+        <h3 id="competitor-landscape">行业竞品对比</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>工具</th><th>核心能力</th><th>AI能力</th><th>平台覆盖</th><th>价格</th><th>局限</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Feedvisor</strong></td><td>AI定价+广告优化</td><td>深度强化学习</td><td>Amazon</td><td>$1000+/月</td><td>仅Amazon、价格高</td></tr>
+            <tr><td><strong>Prisync</strong></td><td>竞品监控+动态定价</td><td>规则引擎</td><td>多平台</td><td>$99-399/月</td><td>AI能力弱</td></tr>
+            <tr><td><strong>SniperAI</strong></td><td>Buy Box抢占</td><td>博弈论</td><td>Amazon</td><td>按效果付费</td><td>仅Buy Box场景</td></tr>
+            <tr><td><strong>BQool</strong></td><td>自动调价</td><td>规则引擎</td><td>Amazon</td><td>$50-200/月</td><td>无弹性建模</td></tr>
+            <tr><td><strong>Amazon Automate Pricing</strong></td><td>官方自动定价</td><td>规则引擎</td><td>Amazon</td><td>免费</td><td>功能极简</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="pricing-framework">Phase 1：定价框架设计（Week 1-2）</h2>
+
+        <h3 id="three-layer-architecture">三层定价架构</h3>
+
+        <div class="flow-row">
+          <div class="flow-box highlight">Layer 1: 规则引擎<br>硬约束&业务规则<br>保底安全网</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">Layer 2: 弹性模型<br>价格弹性系数<br>最优价格区间</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">Layer 3: 强化学习<br>动态调价策略<br>利润最大化</div>
+        </div>
+
+        <div class="highlight-box gold">
+          <div class="label">💡 架构设计原则</div>
+          <div class="content">三层架构的核心是<strong>规则引擎兜底、弹性模型定方向、强化学习做微调</strong>。规则引擎确保不出错（不低于成本、不违反MAP），弹性模型给出最优价格区间，强化学习在区间内寻找最优解。三层决策结果取<strong>交集</strong>，确保安全且最优。</div>
+        </div>
+
+        <h3 id="rule-engine">Layer 1：规则引擎（硬约束）</h3>
+
+        <div class="card-doc">
+          <div class="card-title">🔒 必须遵守的硬规则</div>
+          <ul>
+            <li><strong>最低价规则：</strong>price ≥ cost × (1 + min_margin_pct)，默认min_margin_pct=15%</li>
+            <li><strong>MAP规则：</strong>price ≥ MAP_price（制造商最低广告价）</li>
+            <li><strong>竞品锚定规则：</strong>price ≤ lowest_competitor_price × (1 + premium_pct)，默认premium_pct=5%</li>
+            <li><strong>日调价上限：</strong>|price_today - price_yesterday| / price_yesterday ≤ max_daily_change，默认10%</li>
+            <li><strong>汇率保护规则：</strong>当汇率波动>3%时触发重新定价</li>
+            <li><strong>库存联动规则：</strong>库存<安全库存时涨价X%，库存>3倍安全库存时降价Y%</li>
+            <li><strong>新品保护规则：</strong>新品上架前7天不参与动态调价（给算法学习时间）</li>
+          </ul>
+        </div>
+
+        <h3 id="elasticity-model">Layer 2：价格弹性模型</h3>
+
+        <h4>弹性系数计算</h4>
+        <p>价格弹性系数 ε = (ΔQ/Q) / (ΔP/P)，其中Q为销量、P为价格。</p>
+        <ul>
+          <li><code>|ε| > 1</code>：弹性商品（价格敏感），降价可提升总收入</li>
+          <li><code>|ε| < 1</code>：非弹性商品（价格不敏感），涨价可提升总收入</li>
+          <li><code>|ε| ≈ 1</code>：单位弹性，价格变动对收入影响中性</li>
+        </ul>
+
+        <h4>弹性建模方法</h4>
+
+        <table class="compare-table">
+          <thead><tr><th>方法</th><th>数据需求</th><th>精度</th><th>实现难度</th><th>适用场景</th></tr></thead>
+          <tbody>
+            <tr><td><strong>对数线性回归</strong></td><td>历史价格+销量</td><td>★★★</td><td>低</td><td>快速启动MVP</td></tr>
+            <tr><td><strong>离散选择模型</strong></td><td>竞品价格+市场份额</td><td>★★★★</td><td>中</td><td>多竞品场景</td></tr>
+            <tr><td><strong>因果推断(DiD/IV)</strong></td><td>自然实验数据</td><td>★★★★★</td><td>高</td><td>消除混淆因素</td></tr>
+            <tr><td><strong>ML非线性模型</strong></td><td>多特征数据</td><td>★★★★</td><td>中</td><td>复杂非线性关系</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="cross-border-factors">跨境定价因子</h3>
+
+        <div class="domain-grid">
+          <div class="domain"><div class="name">💱 汇率因子</div><div class="services">实时汇率 · 汇率锁定 · 汇兑损益</div><div class="special">汇率波动>3%触发调价 · 下单锁定汇率30min</div></div>
+          <div class="domain"><div class="name">🏛️ 关税因子</div><div class="services">HS编码 · 税率表 · FBA关税预付</div><div class="special">税率变化实时更新 · 含税价计算</div></div>
+          <div class="domain"><div class="name">🚚 物流因子</div><div class="services">头程运费 · FBA费用 · 尾程配送</div><div class="special">FBA费用变动自动重算 · 体积重vs实重</div></div>
+          <div class="domain"><div class="name">🏷️ 平台佣金</div><div class="services">类目佣金率 · FBA费用 · 仓储费</div><div class="special">佣金率变更自动适配 · 长期仓储费预警</div></div>
+          <div class="domain"><div class="name">🌍 本地化定价</div><div class="services">心理定价 · 竞品参考 · 购买力平价</div><div class="special">$9.99心理锚点 · 各国PPP系数</div></div>
+          <div class="domain"><div class="name">📅 时间因子</div><div class="services">季节性 · 大促日 · 时区</div><div class="special">Prime Day/黑五策略 · 时区感知调价</div></div>
+        </div>
+
+        <h2 id="rl-pricing">Phase 2：强化学习定价（Week 3-5）</h2>
+
+        <h3 id="rl-formulation">MDP建模</h3>
+
+        <div class="card-doc">
+          <div class="card-title">🧠 强化学习MDP定义</div>
+          <ul>
+            <li><strong>状态空间 S：</strong>
+              <ul>
+                <li>当前价格p_t、竞品价格向量comp_t、库存水平inv_t</li>
+                <li>最近7天销量q_{t-7:t}、BSR排名、Buy Box持有状态</li>
+                <li>汇率rate_t、季节性指数season_t、大促标识promo_t</li>
+              </ul>
+            </li>
+            <li><strong>动作空间 A：</strong>
+              <ul>
+                <li>离散：{降价5%, 降价2%, 持平, 涨价2%, 涨价5%}</li>
+                <li>连续：[p_min, p_max]区间内的任意价格（PPO方案）</li>
+              </ul>
+            </li>
+            <li><strong>奖励函数 R：</strong>
+              <ul>
+                <li>R = α × profit_margin + β × sales_volume - γ × price_change_penalty</li>
+                <li>profit_margin = (price - cost) × sales</li>
+                <li>price_change_penalty = |p_t - p_{t-1}| / p_{t-1}（抑制频繁调价）</li>
+                <li>默认α=0.6, β=0.3, γ=0.1（利润优先）</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <h3 id="model-comparison">PPO vs DQN 选型</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>维度</th><th>PPO（连续动作）</th><th>DQN（离散动作）</th></tr></thead>
+          <tbody>
+            <tr><td><strong>动作空间</strong></td><td>连续[0,1]映射到[p_min,p_max]</td><td>5个离散动作</td></tr>
+            <tr><td><strong>价格精度</strong></td><td><span class="badge-good">任意精度（$0.01级）</span></td><td><span class="badge-bad">仅5档调价幅度</span></td></tr>
+            <tr><td><strong>训练稳定性</strong></td><td><span class="badge-bad">需要调超参</span></td><td><span class="badge-good">相对稳定</span></td></tr>
+            <tr><td><strong>探索效率</strong></td><td>高（连续空间探索）</td><td>低（离散空间有限）</td></tr>
+            <tr><td><strong>落地难度</strong></td><td>中高</td><td>中低</td></tr>
+            <tr><td><strong>推荐场景</strong></td><td>精细调价、大SKU量</td><td>快速MVP、规则补充</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box purple">
+          <div class="label">🎯 推荐策略</div>
+          <div class="content">先用<strong>DQN快速验证</strong>（2周），验证有效后再升级<strong>PPO精细调价</strong>。DQN作为Baseline，PPO作为Enhanced版本，A/B测试对比效果。最终选择利润提升更显著的方案上线。</div>
+        </div>
+
+        <h3 id="training-pipeline">训练流水线</h3>
+
+        <div class="flow-row">
+          <div class="flow-box">历史数据<br>回放缓冲区</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">环境模拟器<br>销量响应模型</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">PPO/DQN<br>策略训练</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">规则引擎<br>约束过滤</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">A/B测试<br>效果验证</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">灰度上线<br>逐步放量</div>
+        </div>
+
+        <h2 id="buybox-optimization">Phase 3：Buy Box优化（Week 5-6）</h2>
+
+        <h3 id="buybox-algorithm">Buy Box算法解析</h3>
+
+        <table class="compare-table">
+          <thead><tr><th>因子</th><th>权重</th><th>AI优化策略</th></tr></thead>
+          <tbody>
+            <tr><td><strong>价格（含运费）</strong></td><td>★★★★★</td><td>弹性模型+RL动态调价，目标为"次低价"而非最低价</td></tr>
+            <tr><td><strong>发货速度</strong></td><td>★★★★</td><td>FBA优先，库存分布优化确保2日达覆盖</td></tr>
+            <tr><td><strong>卖家评级</strong></td><td>★★★★</td><td>非定价因素，但需维持≥95%好评率</td></tr>
+            <tr><td><strong>库存可用性</strong></td><td>★★★</td><td>与智能补货联动，确保不断货</td></tr>
+            <tr><td><strong>订单缺陷率</strong></td><td>★★★</td><td>维持ODR<1%，非定价因素</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="buybox-strategy">Buy Box定价策略</h3>
+
+        <div class="card-doc">
+          <div class="card-title">🏆 Buy Box抢占三策略</div>
+          <ul>
+            <li><strong>策略1：次低价策略（推荐）</strong> — 价格比最低竞品高2-5%，但FBA发货+高评分补偿。利润率比最低价高8-15%，Buy Box获得率60-70%</li>
+            <li><strong>策略2：最低价策略</strong> — 仅在清库存/推新品时使用。Buy Box获得率90%+，但利润极薄</li>
+            <li><strong>策略3：差异化策略</strong> — 不拼价格，拼组合（捆绑销售/独家变体/Prime标识）。Buy Box获得率40-50%，但利润率最高</li>
+          </ul>
+        </div>
+
+        <h2 id="system-architecture">Phase 4：系统架构与上线（Week 7-8）</h2>
+
+        <h3 id="tech-architecture">技术架构</h3>
+
+        <div class="flow-row">
+          <div class="flow-box">竞价监控<br>Keepa+SP-API</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">特征计算<br>Flink实时流</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">三层定价引擎<br>规则→弹性→RL</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">价格审批<br>人机协同</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">SP-API执行<br>价格更新</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box highlight">效果监控<br>利润/销量/BSR</div>
+        </div>
+
+        <h3 id="safety-mechanism">安全机制</h3>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 价格安全红线</div>
+          <div class="content">
+            <ul style="margin:4px 0 0 1.2rem;">
+              <li><strong>价格熔断：</strong>单次调价幅度>15% → 自动熔断，需人工审批</li>
+              <li><strong>日调价上限：</strong>同一SKU每日最多调价3次</li>
+              <li><strong>最低价保护：</strong>价格低于成本×1.15 → 立即回滚到上一有效价格</li>
+              <li><strong>异常检测：</strong>竞品价格异常（如$0.01标价）→ 不跟随，标记异常</li>
+              <li><strong>灰度放量：</strong>新策略先在5%SKU上运行48h，无异常再扩大到20%→50%→100%</li>
+              <li><strong>人工兜底：</strong>任何时刻可一键切回规则引擎模式</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 id="ab-testing">A/B测试方案</h3>
+
+        <div class="card-doc">
+          <div class="card-title">📊 定价策略A/B测试</div>
+          <ul>
+            <li><strong>分组：</strong>同品类SKU随机分A/B组（各50%），A组用RL策略，B组用规则策略</li>
+            <li><strong>指标：</strong>主指标=利润率，辅助指标=销量、Buy Box获得率、转化率</li>
+            <li><strong>周期：</strong>至少14天（覆盖2个完整周周期，消除周末效应）</li>
+            <li><strong>显著性：</strong>要求p-value<0.05，效果提升>5%才切换</li>
+            <li><strong>安全：</strong>B组（规则策略）作为对照组始终运行，确保不亏</li>
+          </ul>
+        </div>
+
+        <h2 id="landing-paths">三种落地路径</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>路径</th><th>耗时</th><th>适合</th><th>工具/技术</th><th>预期效果</th></tr></thead>
+          <tbody>
+            <tr><td><strong>A: 规则引擎</strong></td><td>1-2周</td><td>小团队/快速验证</td><td>BQool/Amazon Automate + 自定义规则</td><td>利润提升5-10%</td></tr>
+            <tr><td><strong>B: 弹性+规则</strong></td><td>4-6周</td><td>中型团队(1-2开发)</td><td>对数回归+规则引擎+SP-API+Streamlit</td><td>利润提升10-20%</td></tr>
+            <tr><td><strong>C: 全链路RL</strong></td><td>8周</td><td>算法+后端团队</td><td>PPO/DQN+三层架构+Buy Box优化+监控</td><td>利润提升20-35%</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="kpi">效果评估KPI</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>指标</th><th>定义</th><th>基线(静态定价)</th><th>目标(AI动态定价)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>毛利率</strong></td><td>(售价-成本)/售价</td><td>25%</td><td>≥35%</td></tr>
+            <tr><td><strong>Buy Box获得率</strong></td><td>持有Buy Box时长/总时长</td><td>40%</td><td>≥65%</td></tr>
+            <tr><td><strong>定价响应速度</strong></td><td>竞品变价到本店调价耗时</td><td>4-8小时(人工)</td><td>≤15分钟</td></tr>
+            <tr><td><strong>利润提升率</strong></td><td>(AI利润-静态利润)/静态利润</td><td>0%</td><td>≥20%</td></tr>
+            <tr><td><strong>调价准确率</strong></td><td>调价后利润提升的次数/总调价次数</td><td>-</td><td>≥75%</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="pitfalls">避坑指南</h2>
+
+        <table class="compare-table">
+          <thead><tr><th>坑</th><th>表现</th><th>解决方案</th></tr></thead>
+          <tbody>
+            <tr><td>价格战螺旋</td><td>RL与竞品RL互相降价，利润归零</td><td>设置最低利润率硬约束+次低价策略</td></tr>
+            <tr><td>过度频繁调价</td><td>1天内调价10+次，影响客户信任</td><td>日调价上限3次+调价冷却期2h</td></tr>
+            <tr><td>模拟器偏差</td><td>训练环境与真实环境差异大</td><td>先用历史数据回测，再用5%流量灰度</td></tr>
+            <tr><td>汇率黑天鹅</td><td>汇率单日波动>5%，定价模型失效</td><td>汇率熔断机制+手动接管</td></tr>
+            <tr><td>平台惩罚</td><td>频繁调价触发平台风控</td><td>遵守平台调价频率限制+模拟人类调价节奏</td></tr>
+            <tr><td>数据延迟</td><td>竞品价格数据延迟导致决策滞后</td><td>多源冗余采集+延迟补偿策略</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box red">
+          <div class="label">⚠️ 最重要的一条</div>
+          <div class="content">动态定价的终极目标不是"比竞品便宜"，而是<strong>找到利润与销量的最优平衡点</strong>。一味追求低价只会陷入囚徒困境。好的定价策略是：在Buy Box可获得的价格区间内，选择利润最高的价格。</div>
+        </div>
+
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-ai-smart-product-selection.html" class="footer-nav-link">← 上一篇: AI智能选品</a>
+        <a href="doc-ai-smart-replenishment.html" class="footer-nav-link">下一篇: AI智能补货 →</a>
+      </footer>
+    </article>
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">全景认知</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#why-dynamic-pricing" class="toc-sub-link">为什么需要AI智能定价</a></li>
+              <li class="toc-sub-item"><a href="#competitor-landscape" class="toc-sub-link">行业竞品对比</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#pricing-framework" class="toc-nav-link">定价框架设计</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#three-layer-architecture" class="toc-sub-link">三层定价架构</a></li>
+              <li class="toc-sub-item"><a href="#rule-engine" class="toc-sub-link">规则引擎硬约束</a></li>
+              <li class="toc-sub-item"><a href="#elasticity-model" class="toc-sub-link">价格弹性模型</a></li>
+              <li class="toc-sub-item"><a href="#cross-border-factors" class="toc-sub-link">跨境定价因子</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#rl-pricing" class="toc-nav-link">强化学习定价</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#rl-formulation" class="toc-sub-link">MDP建模</a></li>
+              <li class="toc-sub-item"><a href="#model-comparison" class="toc-sub-link">PPO vs DQN选型</a></li>
+              <li class="toc-sub-item"><a href="#training-pipeline" class="toc-sub-link">训练流水线</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#buybox-optimization" class="toc-nav-link">Buy Box优化</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#buybox-algorithm" class="toc-sub-link">Buy Box算法解析</a></li>
+              <li class="toc-sub-item"><a href="#buybox-strategy" class="toc-sub-link">Buy Box定价策略</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#system-architecture" class="toc-nav-link">系统架构与上线</a>
+            <ul class="toc-sub-list">
+              <li class="toc-sub-item"><a href="#tech-architecture" class="toc-sub-link">技术架构</a></li>
+              <li class="toc-sub-item"><a href="#safety-mechanism" class="toc-sub-link">安全机制</a></li>
+              <li class="toc-sub-item"><a href="#ab-testing" class="toc-sub-link">A/B测试方案</a></li>
+            </ul>
+          </li>
+          <li class="toc-nav-item"><a href="#landing-paths" class="toc-nav-link">三种落地路径</a></li>
+          <li class="toc-nav-item"><a href="#kpi" class="toc-nav-link">效果评估KPI</a></li>
+          <li class="toc-nav-item"><a href="#pitfalls" class="toc-nav-link">避坑指南</a></li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+  <footer class="site-footer"><p>&copy; 2026 ISNOWSOFT — All rights reserved.</p></footer>
+  <script>
+    const sections=document.querySelectorAll('.ecommerce-content h2[id],.ecommerce-content h3[id]');
+    const tocLinks=document.querySelectorAll('.toc-nav-link,.toc-sub-link');
+    function updateActiveToc(){let c='';const s=window.scrollY+120;sections.forEach(sec=>{if(s>=sec.offsetTop)c=sec.getAttribute('id')});tocLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})}
+    function updateReadingProgress(){const a=document.querySelector('.ecommerce-content');if(!a)return;let p=(window.scrollY-a.offsetTop)/(a.offsetHeight-window.innerHeight);p=Math.min(Math.max(p,0),1);document.getElementById('readingProgress').style.transform='scaleX('+p+')'}
+    function toggleBackToTop(){const b=document.getElementById('backToTop');window.scrollY>400?b.classList.add('visible'):b.classList.remove('visible')}
+    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+    tocLinks.forEach(l=>{l.addEventListener('click',function(e){e.preventDefault();const t=document.getElementById(this.getAttribute('href').substring(1));if(t)window.scrollTo({top:t.offsetTop-20,behavior:'smooth'})})});
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){window.requestAnimationFrame(()=>{updateActiveToc();updateReadingProgress();toggleBackToTop();ticking=false});ticking=true}},{passive:true});updateActiveToc();
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){var t=document.documentElement.getAttribute('data-theme');btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');}
+        updateLabel();
+        btn.addEventListener('click',function(){var cur=document.documentElement.getAttribute('data-theme');var next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('portfolio-theme',next);updateLabel();});
+      }
+      window.addEventListener('storage',function(e){if(e.key==='portfolio-theme'&&e.newValue){document.documentElement.setAttribute('data-theme',e.newValue);if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');}});
+    })();
+  </script>
+</body>
+</html>
