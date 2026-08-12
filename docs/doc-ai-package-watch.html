@@ -365,6 +365,10 @@
     .back-to-top.visible { opacity: 1; transform: translateY(0); }
     .back-to-top:hover { background: var(--accent-purple); }
 
+    .article-footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .footer-nav-link { display: flex; align-items: center; gap: 10px; padding: 13px 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; text-decoration: none; color: var(--text-secondary); font-size: 0.9rem; transition: all 0.3s; }
+    .footer-nav-link:hover, .footer-nav-link:focus-visible { border-color: var(--accent-orange); color: var(--accent-orange); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.15); }
+
     .site-footer {
       text-align: center; padding: 32px 24px; color: var(--text-muted);
       font-size: 0.85rem; border-top: 1px solid var(--border-color); margin-top: 64px;
@@ -377,6 +381,7 @@
     @media (max-width: 768px) {
       .article-title { font-size: 1.5rem; }
       .header-nav .nav-link:not(:first-child) { display: none; }
+      .article-footer { flex-direction: column; }
     }
   </style>
 </head>
@@ -1120,6 +1125,11 @@
         <p>本方案可直接用于智能门锁产品的快递/外卖看护模块设计与VLM(Qwen2-VL/GPT-4o等)的Prompt配置落地。</p>
 
       </div>
+
+      <footer class="article-footer">
+        <a href="doc-ai-weather-alert.html" class="footer-nav-link">← 天气暴雨预警</a>
+        <a href="doc-ai-smart-product-selection.html" class="footer-nav-link">AI智能选品 →</a>
+      </footer>
     </article>
 
     <aside class="toc-sidebar" aria-label="目录导航">

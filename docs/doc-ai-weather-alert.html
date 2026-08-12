@@ -349,6 +349,10 @@
     .back-to-top.visible { opacity: 1; transform: translateY(0); }
     .back-to-top:hover { background: var(--accent-purple); }
 
+    .article-footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .footer-nav-link { display: flex; align-items: center; gap: 10px; padding: 13px 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; text-decoration: none; color: var(--text-secondary); font-size: 0.9rem; transition: all 0.3s; }
+    .footer-nav-link:hover, .footer-nav-link:focus-visible { border-color: var(--accent-blue); color: var(--accent-blue); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15); }
+
     .site-footer {
       text-align: center; padding: 32px 24px; color: var(--text-muted);
       font-size: 0.85rem; border-top: 1px solid var(--border-color); margin-top: 64px;
@@ -361,6 +365,7 @@
     @media (max-width: 768px) {
       .article-title { font-size: 1.5rem; }
       .header-nav .nav-link:not(:first-child) { display: none; }
+      .article-footer { flex-direction: column; }
     }
   </style>
 </head>
@@ -776,6 +781,11 @@
         </div>
 
       </div>
+
+      <footer class="article-footer">
+        <a href="doc-ai-child-exit-detection.html" class="footer-nav-link">← 儿童离家守护</a>
+        <a href="doc-ai-package-watch.html" class="footer-nav-link">快递外卖看护 →</a>
+      </footer>
     </article>
 
     <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
