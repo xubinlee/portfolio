@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ISNOWSOFT Portfolio Site 源码级架构设计文档">
+  <title>Portfolio Site 架构设计文档 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:#16161f;--text-primary:#e8e8f0;--text-secondary:#a0a0b8;--text-muted:#6b6b80;--accent-cyan:#00d4ff;--accent-purple:#8b5cf6;--accent-green:#22c55e;--accent-gold:#eab308;--accent-red:#ef4444;--border-color:rgba(255,255,255,0.08);--shadow-glow:rgba(0,212,255,0.15);--toc-width:260px;--hl-keyword:#c084fc;--hl-function:#22d3ee;--hl-string:#4ade80;--hl-number:#fb923c}
+    [data-theme="light"]{--bg-primary:#f5f5fa;--bg-secondary:#ffffff;--bg-card:#ffffff;--text-primary:#1a1a2e;--text-secondary:#4a4a68;--text-muted:#8888a0;--accent-cyan:#0099cc;--accent-purple:#7c3aed;--accent-green:#16a34a;--accent-gold:#ca8a04;--accent-red:#dc2626;--border-color:rgba(0,0,0,0.08);--shadow-glow:rgba(0,153,204,0.12);--hl-keyword:#9333ea;--hl-function:#0891b2;--hl-string:#16a34a;--hl-number:#ea580c}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.8;min-height:100vh}
+    .skip-link{position:absolute;top:-100%;left:16px;background:var(--accent-cyan);color:#000;padding:8px 16px;border-radius:4px;z-index:10000;text-decoration:none;font-weight:600}
+    .skip-link:focus{top:16px}
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);padding:16px 24px}
+    [data-theme="light"] .site-header{background:rgba(245,245,250,0.95)}
+    .header-content{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .header-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand-bracket{color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700}
+    .brand-text{font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .brand-dot{color:var(--accent-cyan);font-weight:900}
+    .brand-text-accent{color:var(--accent-purple);font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:1px}
+    .header-nav{display:flex;align-items:center;gap:24px}
+    .nav-link{color:var(--text-secondary);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:0.88rem;transition:color 0.3s ease;display:flex;align-items:center;gap:8px}
+    .nav-link:hover,.nav-link:focus-visible{color:var(--accent-cyan)}
+    .reading-progress{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));z-index:9999;transform-origin:left;transform:scaleX(0);transition:transform 0.1s linear}
+    .article-layout{display:flex;max-width:1400px;margin:0 auto;gap:40px;padding:40px 24px 80px;position:relative}
+    .article-main{flex:1;min-width:0;max-width:900px}
+    .article-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border-color)}
+    .article-breadcrumb{display:flex;align-items:center;gap:12px;margin-bottom:22px;font-size:0.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .breadcrumb-link{color:inherit;text-decoration:none;transition:color 0.3s}
+    .breadcrumb-link:hover,.breadcrumb-link:focus-visible{color:var(--accent-cyan)}
+    .breadcrumb-separator::before{content:'/';opacity:0.5}
+    .article-meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:18px;align-items:center}
+    .meta-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(139,92,246,0.12);color:var(--accent-purple)}
+    .meta-date{font-size:0.84rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+    .article-title{font-family:'JetBrains Mono',monospace;font-size:clamp(1.65rem,3.5vw,2.35rem);font-weight:700;line-height:1.3;color:var(--text-primary);margin-bottom:14px}
+    .article-subtitle{font-size:1.08rem;color:var(--text-secondary);line-height:1.6}
+    .cb{font-size:1.01rem;line-height:1.9}
+    .cb h2{font-family:'JetBrains Mono',monospace;font-size:1.45rem;font-weight:700;color:var(--text-primary);margin:2.5em 0 0.8em;padding-bottom:0.5em;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:10px}
+    .cb h2 .h2-icon{color:var(--accent-cyan);font-size:0.9em}
+    .cb h3{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--accent-purple);margin:2em 0 0.6em;display:flex;align-items:center;gap:8px}
+    .cb h3::before{content:'▸';color:var(--accent-cyan);font-size:0.85em}
+    .cb h4{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:var(--accent-cyan);margin:1.5em 0 0.5em}
+    .cb p{color:var(--text-secondary);margin-bottom:1em}
+    .cb strong{color:var(--text-primary);font-weight:600}
+    .cb ul,.cb ol{padding-left:1.5em;margin-bottom:1em;color:var(--text-secondary)}
+    .cb li{margin-bottom:0.4em;line-height:1.8}
+    .cb a{color:var(--accent-cyan);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.2s}
+    .cb a:hover{border-bottom-color:var(--accent-cyan)}
+    .code-block{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:10px;padding:20px 24px;margin:1.2em 0;font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.84rem;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+    .code-block .kw{color:var(--hl-keyword)}.code-block .fn{color:var(--hl-function)}.code-block .str{color:var(--hl-string)}.code-block .num{color:var(--hl-number)}.code-block .cmt{color:var(--text-muted);font-style:italic}.code-block .type{color:var(--accent-cyan)}.code-block .prop{color:var(--accent-green)}
+    .hb{background:linear-gradient(135deg,rgba(0,212,255,0.06),rgba(139,92,246,0.06));border-left:3px solid var(--accent-cyan);border-radius:0 10px 10px 0;padding:20px 24px;margin:1.5em 0}
+    .hb.warn{border-left-color:var(--accent-gold);background:linear-gradient(135deg,rgba(234,179,8,0.06),rgba(245,158,11,0.04))}
+    .hb.danger{border-left-color:var(--accent-red);background:linear-gradient(135deg,rgba(239,68,68,0.06),rgba(220,38,38,0.04))}
+    .hb.success{border-left-color:var(--accent-green);background:linear-gradient(135deg,rgba(34,197,94,0.06),rgba(22,163,74,0.04))}
+    .hb-title{font-family:'JetBrains Mono',monospace;font-size:0.92rem;font-weight:600;color:var(--accent-cyan);margin-bottom:8px}
+    .hb.warn .hb-title{color:var(--accent-gold)}.hb.danger .hb-title{color:var(--accent-red)}.hb.success .hb-title{color:var(--accent-green)}
+    .hb-text{font-size:0.92rem;color:var(--text-secondary);line-height:1.7}
+    .dt{width:100%;border-collapse:collapse;margin:1.2em 0;font-size:0.9rem}
+    .dt th{background:var(--bg-secondary);color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;text-align:left;padding:12px 16px;border-bottom:2px solid var(--border-color)}
+    .dt td{padding:10px 16px;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}
+    .dt tr:hover td{background:rgba(0,212,255,0.03)}
+    .dt code{font-family:'JetBrains Mono',monospace;font-size:0.82rem;background:var(--bg-secondary);padding:2px 6px;border-radius:4px;color:var(--accent-purple)}
+    .ad{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px;margin:1.5em 0;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.6;color:var(--accent-green);overflow-x:auto;white-space:pre}
+    .toc-sidebar{width:var(--toc-width);flex-shrink:0;position:sticky;top:90px;height:fit-content;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-color) transparent}
+    .toc-sidebar::-webkit-scrollbar{width:5px}.toc-sidebar::-webkit-scrollbar-track{background:transparent}.toc-sidebar::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+    .toc-container{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px}
+    .toc-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--border-color);display:flex;align-items:center;gap:8px}
+    .toc-nav-list{list-style:none;counter-reset:tc}
+    .toc-nav-item{position:relative;margin-bottom:4px;counter-increment:tc}
+    .toc-nav-item::before{content:counter(tc,decimal-leading-zero);position:absolute;left:-20px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:var(--text-muted);opacity:0.5}
+    .toc-nav-link{display:block;padding:7px 12px 7px 14px;color:var(--text-secondary);text-decoration:none;font-size:0.84rem;line-height:1.5;border-radius:7px;border-left:2px solid transparent;transition:all 0.25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-nav-link:hover,.toc-nav-link:focus-visible{color:var(--text-primary);background:rgba(0,212,255,0.05);transform:translateX(3px)}
+    .toc-nav-link.active{color:var(--accent-cyan);font-weight:500;background:rgba(0,212,255,0.06);border-left-color:var(--accent-cyan)}
+    .btt{position:fixed;bottom:30px;right:30px;width:42px;height:42px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .btt.visible{opacity:1;visibility:visible}
+    .btt:hover,.btt:focus-visible{background:var(--accent-cyan);color:#000;transform:translateY(-3px);box-shadow:0 6px 24px var(--shadow-glow)}
+    .site-footer{text-align:center;padding:36px 24px;border-top:1px solid var(--border-color);color:var(--text-muted);font-size:0.87rem;margin-top:60px}
+    .theme-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border-color);border-radius:20px;padding:4px 12px;cursor:pointer;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:0.65rem;transition:border-color 0.3s ease;flex-shrink:0}
+    .theme-toggle:hover{border-color:var(--accent-cyan)}
+    .theme-switch{width:32px;height:16px;background:var(--bg-secondary);border-radius:8px;position:relative;transition:background 0.3s ease}
+    .theme-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--accent-cyan);border-radius:50%;transition:transform 0.3s ease}
+    [data-theme="light"] .theme-knob{transform:translateX(16px);background:var(--accent-purple)}
+    @media(max-width:1024px){.toc-sidebar{display:none}.article-layout{padding:24px 16px 60px}}
+    @media(max-width:768px){.header-nav{gap:12px;flex-wrap:wrap}.article-title{font-size:1.5rem}.ad{font-size:0.72rem;padding:16px}}
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="header-content">
+      <a href="index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 主站</a>
+        <a href="docs/index.html" class="nav-link">./docs</a>
+        <a href="projects/index.html" class="nav-link">./projects</a>
+        <button class="theme-toggle" aria-label="切换主题" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <div class="article-layout">
+    <article id="main-content" class="article-main">
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">ISNOWSOFT</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="docs/index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <span style="color:var(--accent-cyan)">Architecture Design</span>
+        </div>
+        <div class="article-meta">
+          <span class="meta-tag">Architecture</span>
+          <span class="meta-tag">Source Code</span>
+          <span class="meta-tag">Frontend</span>
+          <span class="meta-date">v1.0 · 2026-08</span>
+        </div>
+        <h1 class="article-title">Portfolio Site 源码级架构设计文档</h1>
+        <p class="article-subtitle">纯静态前端站点的完整技术架构、设计模式、模块体系与工程实践深度解析 — 涵盖目录结构、主题系统、15 个功能模块、CSS 变量体系、响应式策略与无障碍设计</p>
+      </header>
+      <div class="cb">
+
+        <h2 id="sec-overview"><span class="h2-icon">◆</span> 1. 项目全局概览</h2>
+        <p>ISNOWSOFT Portfolio Site 是一个<strong>纯静态前端站点</strong>，零构建依赖，零框架依赖，双主题自适应，涵盖 <strong>12 个项目展示</strong>与 <strong>21 篇深度技术文档</strong>。整个站点由原生 HTML + CSS + JavaScript 构建，不依赖 React/Vue/Angular 等任何前端框架，也不依赖 Webpack/Vite 等任何构建工具。</p>
+
+        <div class="hb">
+          <div class="hb-title">🎯 核心设计哲学</div>
+          <div class="hb-text">
+            <ul>
+              <li><strong>零依赖原则</strong> — 不引入任何 npm 包，不使用任何构建工具，所有代码均为手写原生实现</li>
+              <li><strong>渐进增强</strong> — 基础内容在任何浏览器可访问，高级动效在支持的环境中渐进增强</li>
+              <li><strong>双主题一致性</strong> — 通过 CSS 变量体系实现暗色/亮色主题的无缝切换，杜绝硬编码色值</li>
+              <li><strong>无障碍优先</strong> — ARIA 标签、键盘导航、减弱动画适配，确保所有用户可访问</li>
+              <li><strong>语义化架构</strong> — 使用 header/main/nav/article/section 等语义标签构建信息层次</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="sec-directory"><span class="h2-icon">◆</span> 2. 目录结构与文件组织</h2>
+        <p>站点采用<strong>扁平化目录结构</strong>，按功能域划分三个顶层目录：</p>
+
+        <div class="ad">portfolio-site/
+├── index.html                 # ◈ 主站首页（单页应用入口）
+├── styles.css                 # ◈ 全局样式（1887行 · CSS变量驱动双主题）
+├── script.js                  # ◈ 全局交互（652行 · 15个功能模块 · IIFE封装）
+├── assets/
+│   ├── css/style.css          # ◈ 辅助样式（腾讯文档iframe适配）
+│   └── images/                # ◈ 静态图片资源
+├── docs/                      # ◈ 技术文档中心（21篇）
+│   ├── index.html             #   文档索引页（左侧导航+右侧卡片网格）
+│   ├── doc-microservice-architecture.html
+│   ├── doc-ai-agent-engineering.html
+│   └── ... (19 more docs)
+├── projects/                  # ◈ 项目详情中心（12个项目）
+│   ├── index.html             #   项目索引页（左侧导航+右侧卡片网格）
+│   ├── project-common.css     #   项目页共享样式（@import styles.css）
+│   ├── project-1-saas.html
+│   └── ... (11 more projects)
+└── README.md</div>
+
+        <h3>2.1 文件职责划分</h3>
+        <table class="dt">
+          <thead><tr><th>文件/目录</th><th>职责</th><th>行数</th><th>依赖</th></tr></thead>
+          <tbody>
+            <tr><td><code>index.html</code></td><td>主站首页，Hero/About/Projects/Skills/Contact 五大区块</td><td>472</td><td>styles.css, script.js</td></tr>
+            <tr><td><code>styles.css</code></td><td>全局样式，CSS变量体系+双主题+响应式+组件样式</td><td>1887</td><td>无外部依赖</td></tr>
+            <tr><td><code>script.js</code></td><td>全局交互逻辑，15个功能模块的IIFE封装</td><td>652</td><td>无外部依赖</td></tr>
+            <tr><td><code>docs/index.html</code></td><td>文档中心索引页，左侧分类导航+右侧文档卡片</td><td>~800</td><td>内联样式+脚本</td></tr>
+            <tr><td><code>docs/doc-*.html</code></td><td>单篇技术文档，完整自包含页面</td><td>500-1500</td><td>内联样式+脚本</td></tr>
+            <tr><td><code>projects/index.html</code></td><td>项目中心索引页，左侧分类导航+右侧项目卡片</td><td>936</td><td>内联样式+脚本</td></tr>
+            <tr><td><code>projects/project-common.css</code></td><td>项目详情页共享样式</td><td>405</td><td>styles.css</td></tr>
+            <tr><td><code>projects/project-*.html</code></td><td>单个项目详情页，TOC+内容双栏布局</td><td>400-800</td><td>project-common.css</td></tr>
+          </tbody>
+        </table>
+
+        <h3>2.2 页面自包含策略</h3>
+        <div class="hb warn">
+          <div class="hb-title">⚠️ 设计权衡：内联 vs 外联</div>
+          <div class="hb-text">
+            <p>docs/ 和 projects/ 子页面采用<strong>内联样式+内联脚本</strong>策略：</p>
+            <ul>
+              <li><strong>优势</strong>：每个页面完全自包含，可独立打开、独立部署，不存在跨目录路径问题</li>
+              <li><strong>优势</strong>：避免 CDN 缓存失效问题，每个页面的样式/脚本与内容强绑定</li>
+              <li><strong>代价</strong>：主题切换逻辑、导航栏样式等存在一定程度的代码重复</li>
+              <li><strong>缓解</strong>：通过 README.md 中的开发约定规范，确保重复代码的一致性</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="sec-architecture"><span class="h2-icon">◆</span> 3. 整体架构设计</h2>
+        <p>站点采用<strong>三层架构模型</strong>，从下至上分为：基础层（CSS变量+重置）、组件层（可复用UI组件）、交互层（JavaScript功能模块）。</p>
+
+        <div class="ad">┌──────────────────────────────────────────────────────────┐
+│                  交互层 (Interaction Layer)               │
+│  script.js — 15个功能模块 · IIFE封装 · 事件驱动           │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐     │
+│  │ Neural   │ │ Theme    │ │ Project  │ │ AI Chat  │     │
+│  │ Background│ │ Toggle   │ │ Filters  │ │ Engine   │     │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘     │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐     │
+│  │ Skills   │ │ Scroll   │ │ Contact  │ │ Cursor   │     │
+│  │ Radar    │ │ Reveal   │ │ Form     │ │ Follower │     │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘     │
+├──────────────────────────────────────────────────────────┤
+│                  组件层 (Component Layer)                  │
+│  styles.css — CSS变量体系 · 双主题 · 响应式 · 组件样式    │
+│  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐  │
+│  │ Header │ │ Hero   │ │ Cards  │ │ Modal  │ │ Form   │  │
+│  │ Nav    │ │ Section│ │ Grid   │ │ Dialog │ │ Fields │  │
+│  └────────┘ └────────┘ └────────┘ └────────┘ └────────┘  │
+│  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐  │
+│  │ Skill  │ │ Time-  │ │ AI     │ │ Term-  │ │ Footer │  │
+│  │ Bars   │ │ line   │ │ Chat   │ │ inal   │ │        │  │
+│  └────────┘ └────────┘ └────────┘ └────────┘ └────────┘  │
+├──────────────────────────────────────────────────────────┤
+│                  基础层 (Foundation Layer)                 │
+│  :root CSS变量 · CSS重置 · 字体定义 · 主题切换机制        │
+│  ┌──────────────────────────────────────────────────┐      │
+│  │ 颜色变量 · 间距变量 · 圆角变量 · 过渡变量 · 字体  │      │
+│  │ [data-theme="light"] 亮色覆盖变量集               │      │
+│  │ @media 响应式断点 · prefers-reduced-motion        │      │
+│  └──────────────────────────────────────────────────┘      │
+└──────────────────────────────────────────────────────────┘</div>
+
+        <h2 id="sec-css-variables"><span class="h2-icon">◆</span> 4. CSS 变量体系与双主题系统</h2>
+
+        <h3>4.1 变量分类体系</h3>
+        <p>styles.css 在 <code>:root</code> 中定义了完整的 CSS 变量体系，共分为 <strong>6 大类 30+ 变量</strong>：</p>
+
+        <div class="code-block"><span class="cmt">// ===== 颜色变量（12个） =====</span>
+<span class="prop">--bg-primary</span>: <span class="str">#0a0a0f</span>;       <span class="cmt">// 主背景色</span>
+<span class="prop">--bg-secondary</span>: <span class="str">#12121a</span>;     <span class="cmt">// 次背景色（卡片、侧栏）</span>
+<span class="prop">--bg-tertiary</span>: <span class="str">#1a1a2e</span>;      <span class="cmt">// 三级背景（输入框、代码块）</span>
+<span class="prop">--bg-card</span>: <span class="str">#16162a</span>;          <span class="cmt">// 卡片背景</span>
+<span class="prop">--text-primary</span>: <span class="str">#e8e8f0</span>;     <span class="cmt">// 主文本色</span>
+<span class="prop">--text-secondary</span>: <span class="str">#a0a0b8</span>;   <span class="cmt">// 次文本色</span>
+<span class="prop">--text-muted</span>: <span class="str">#6a6a80</span>;       <span class="cmt">// 弱化文本色</span>
+<span class="prop">--accent-cyan</span>: <span class="str">#00d4ff</span>;      <span class="cmt">// 主强调色</span>
+<span class="prop">--accent-purple</span>: <span class="str">#8b5cf6</span>;    <span class="cmt">// 次强调色</span>
+<span class="prop">--accent-green</span>: <span class="str">#10b981</span>;     <span class="cmt">// 成功/在线状态色</span>
+<span class="prop">--accent-orange</span>: <span class="str">#f59e0b</span>;    <span class="cmt">// 警告色</span>
+<span class="prop">--accent-red</span>: <span class="str">#ef4444</span>;       <span class="cmt">// 错误/危险色</span>
+
+<span class="cmt">// ===== 边框与阴影（3个） =====</span>
+<span class="prop">--border-color</span>: <span class="str">#2a2a40</span>;
+<span class="prop">--border-glow</span>: <span class="fn">rgba</span>(<span class="num">0, 212, 255, 0.3</span>);
+<span class="prop">--shadow-glow</span>: <span class="fn">rgba</span>(<span class="num">0, 212, 255, 0.15</span>);
+
+<span class="cmt">// ===== 字体（2个） =====</span>
+<span class="prop">--font-mono</span>: <span class="str">"JetBrains Mono", "Fira Code", monospace</span>;
+<span class="prop">--font-sans</span>: <span class="str">"Space Grotesk", "Inter", system-ui, sans-serif</span>;
+
+<span class="cmt">// ===== 间距（8个） =====</span>
+<span class="prop">--spacing-xs</span>: <span class="num">0.25rem</span> ~ <span class="prop">--spacing-3xl</span>: <span class="num">4rem</span>;
+
+<span class="cmt">// ===== 布局（3个） =====</span>
+<span class="prop">--header-height</span>: <span class="num">64px</span>; <span class="prop">--max-width</span>: <span class="num">1200px</span>;
+<span class="prop">--radius-sm/md/lg</span>: <span class="num">4px/8px/12px</span>;</div>
+
+        <h3>4.2 双主题切换机制</h3>
+        <p>主题切换涉及 <strong>CSS 变量覆盖 + localStorage 持久化 + storage 事件跨标签页同步</strong> 三层机制：</p>
+
+        <div class="ad">主题切换数据流：
+
+  ┌──────────────┐     click      ┌──────────────────┐
+  │ Theme Toggle │ ─────────────→ │ JS: toggleTheme  │
+  │   Button     │                │                  │
+  └──────────────┘                │ 1. 读取 data-theme│
+                                  │ 2. dark → light   │
+                                  │ 3. setAttribute   │
+                                  │ 4. localStorage   │
+                                  └────────┬─────────┘
+                                           │
+                          ┌────────────────┼────────────────┐
+                          ▼                ▼                ▼
+                   ┌──────────┐     ┌──────────┐    ┌──────────┐
+                   │ :root    │     │ localStorage│  │ storage  │
+                   │ CSS变量  │     │ 持久化存储  │  │ 事件广播 │
+                   │ 自动生效 │     │ portfolio-  │  │ 跨标签页 │
+                   │          │     │ theme      │  │ 自动同步 │
+                   └──────────┘     └──────────┘    └──────────┘</div>
+
+        <div class="code-block"><span class="cmt">// 1. 页面加载时立即恢复主题（内联脚本，避免FOUC）</span>
+&lt;<span class="kw">script</span>&gt;
+  <span class="kw">var</span> t = localStorage.<span class="fn">getItem</span>(<span class="str">'portfolio-theme'</span>);
+  <span class="kw">if</span> (t) document.documentElement.<span class="fn">setAttribute</span>(<span class="str">'data-theme'</span>, t);
+&lt;/<span class="kw">script</span>&gt;
+
+<span class="cmt">// 2. 主题切换逻辑（script.js）</span>
+<span class="kw">function</span> <span class="fn">initThemeToggle</span>() {
+  <span class="kw">var</span> btn = document.<span class="fn">querySelector</span>(<span class="str">'.theme-toggle'</span>);
+  btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, <span class="kw">function</span>() {
+    <span class="kw">var</span> next = document.documentElement.<span class="fn">getAttribute</span>(<span class="str">'data-theme'</span>) === <span class="str">'dark'</span> ? <span class="str">'light'</span> : <span class="str">'dark'</span>;
+    document.documentElement.<span class="fn">setAttribute</span>(<span class="str">'data-theme'</span>, next);
+    localStorage.<span class="fn">setItem</span>(<span class="str">'portfolio-theme'</span>, next);
+  });
+  <span class="cmt">// 3. 跨标签页同步</span>
+  window.<span class="fn">addEventListener</span>(<span class="str">'storage'</span>, <span class="kw">function</span>(e) {
+    <span class="kw">if</span> (e.key === <span class="str">'portfolio-theme'</span> && e.newValue)
+      document.documentElement.<span class="fn">setAttribute</span>(<span class="str">'data-theme'</span>, e.newValue);
+  });
+}</div>
+
+        <div class="hb success">
+          <div class="hb-title">✅ FOUC 防闪烁策略</div>
+          <div class="hb-text">主题恢复脚本放在 <code>&lt;head&gt;</code> 中、<code>&lt;link&gt;</code> 样式表之前执行，确保页面渲染前就已设置正确的 <code>data-theme</code>，完全避免主题闪烁问题。</div>
+        </div>
+
+        <h2 id="sec-js-modules"><span class="h2-icon">◆</span> 5. JavaScript 模块体系</h2>
+
+        <h3>5.1 IIFE 封装架构</h3>
+        <p>script.js 采用<strong>立即执行函数表达式（IIFE）</strong>封装全部逻辑，避免全局命名空间污染：</p>
+
+        <div class="code-block">(<span class="kw">function</span>() {
+  <span class="str">"use strict"</span>;
+  <span class="kw">var</span> prefersReducedMotion = window.<span class="fn">matchMedia</span>(
+    <span class="str">"(prefers-reduced-motion: reduce)"</span>
+  ).matches;
+
+  <span class="cmt">// 15个功能模块定义...</span>
+  <span class="kw">function</span> <span class="fn">initNeuralBackground</span>() { ... }
+  <span class="kw">function</span> <span class="fn">initCursorFollower</span>() { ... }
+  <span class="cmt">// ... 13 more modules</span>
+
+  <span class="kw">function</span> <span class="fn">init</span>() {
+    <span class="fn">initNeuralBackground</span>(); <span class="fn">initCursorFollower</span>();
+    <span class="fn">initNavigation</span>(); <span class="fn">initThemeToggle</span>();
+    <span class="fn">initRoleRotation</span>(); <span class="fn">initProjectFilters</span>();
+    <span class="fn">initTimelineExpand</span>(); <span class="fn">initContactForm</span>();
+    <span class="fn">initAIChat</span>(); <span class="fn">initAIStatus</span>();
+    <span class="fn">initScrollReveal</span>(); <span class="fn">initMeterAnimations</span>();
+    <span class="fn">initSkillsRadar</span>(); <span class="fn">initHeaderScroll</span>();
+    <span class="fn">initProjectModal</span>();
+  }
+
+  <span class="kw">if</span> (document.readyState === <span class="str">"loading"</span>)
+    document.<span class="fn">addEventListener</span>(<span class="str">"DOMContentLoaded"</span>, init);
+  <span class="kw">else</span> <span class="fn">init</span>();
+})();</div>
+
+        <h3>5.2 15 个功能模块详解</h3>
+        <table class="dt">
+          <thead><tr><th>模块</th><th>功能</th><th>核心技术</th><th>性能考量</th></tr></thead>
+          <tbody>
+            <tr><td><code>initNeuralBackground</code></td><td>Canvas 神经网络粒子背景动画，粒子间距离&lt;120px时连线，鼠标靠近排斥</td><td>Canvas 2D API、requestAnimationFrame</td><td>移动端粒子数降至30，reduced-motion时停止</td></tr>
+            <tr><td><code>initCursorFollower</code></td><td>自定义光标跟随效果</td><td>mousemove事件、CSS transform</td><td>移动端/reduced-motion不初始化</td></tr>
+            <tr><td><code>initNavigation</code></td><td>响应式导航：汉堡菜单、点击外部关闭、IO高亮当前section</td><td>IntersectionObserver</td><td>IO替代scroll监听</td></tr>
+            <tr><td><code>initThemeToggle</code></td><td>主题切换：localStorage持久化+跨标签页同步</td><td>localStorage、storage事件</td><td>事件驱动，无性能问题</td></tr>
+            <tr><td><code>initRoleRotation</code></td><td>Hero区域5个角色标签轮播，3秒切换</td><td>setInterval、CSS transition</td><td>reduced-motion时直接替换文本</td></tr>
+            <tr><td><code>initProjectFilters</code></td><td>项目分类筛选：all/web/ai/system</td><td>data-category属性</td><td>纯DOM操作</td></tr>
+            <tr><td><code>initTimelineExpand</code></td><td>经历时间轴展开/折叠</td><td>hidden属性切换</td><td>无动画开销</td></tr>
+            <tr><td><code>initContactForm</code></td><td>联系表单验证+mailto链接生成</td><td>正则校验、mailto协议</td><td>无服务端依赖</td></tr>
+            <tr><td><code>initAIChat</code></td><td>AI对话窗口：关键词匹配响应，XSS防护</td><td>DOM操作、escapeHtml</td><td>600ms模拟延迟</td></tr>
+            <tr><td><code>initAIStatus</code></td><td>左下角AI状态指示器，6条消息5秒轮换</td><td>setInterval</td><td>极低开销</td></tr>
+            <tr><td><code>initScrollReveal</code></td><td>滚动渐显动画</td><td>IntersectionObserver</td><td>触发后unobserve</td></tr>
+            <tr><td><code>initMeterAnimations</code></td><td>技能仪表盘进度条动画</td><td>IntersectionObserver</td><td>CSS transition驱动</td></tr>
+            <tr><td><code>initSkillsRadar</code></td><td>Canvas技能雷达图，6维数据渐进绘制</td><td>Canvas 2D、DPR适配</td><td>IO触发后一次性绘制</td></tr>
+            <tr><td><code>initHeaderScroll</code></td><td>Header滚动阴影效果</td><td>scroll事件(passive:true)</td><td>passive不阻塞滚动</td></tr>
+            <tr><td><code>initProjectModal</code></td><td>项目卡片点击跳转+键盘支持</td><td>data-project-url、keydown</td><td>事件委托模式</td></tr>
+          </tbody>
+        </table>
+
+        <h3>5.3 关键模块深度解析</h3>
+
+        <h4>5.3.1 Neural Background — 粒子网络系统</h4>
+        <p>这是站点的视觉核心，基于 Canvas 2D 实现的神经网络粒子背景：</p>
+        <div class="code-block"><span class="kw">function</span> <span class="fn">Particle</span>() {
+  <span class="kw">this</span>.x = Math.<span class="fn">random</span>() * canvas.width;
+  <span class="kw">this</span>.y = Math.<span class="fn">random</span>() * canvas.height;
+  <span class="kw">this</span>.vx = (Math.<span class="fn">random</span>() - <span class="num">0.5</span>) * <span class="num">0.5</span>;  <span class="cmt">// 速度 [-0.25, 0.25]</span>
+  <span class="kw">this</span>.vy = (Math.<span class="fn">random</span>() - <span class="num">0.5</span>) * <span class="num">0.5</span>;
+  <span class="kw">this</span>.radius = Math.<span class="fn">random</span>() * <span class="num">2</span> + <span class="num">1</span>;      <span class="cmt">// 半径 [1, 3]</span>
+}
+
+<span class="cmt">// 核心渲染循环</span>
+<span class="kw">function</span> <span class="fn">animate</span>() {
+  ctx.<span class="fn">clearRect</span>(<span class="num">0, 0</span>, canvas.width, canvas.height);
+  <span class="kw">for</span> (<span class="kw">var</span> i = <span class="num">0</span>; i &lt; particles.length; i++) {
+    <span class="kw">var</span> p = particles[i];
+    p.x += p.vx; p.y += p.vy;
+    <span class="kw">if</span> (p.x &lt; <span class="num">0</span> || p.x &gt; canvas.width) p.vx *= <span class="num">-1</span>;
+    <span class="kw">if</span> (p.y &lt; <span class="num">0</span> || p.y &gt; canvas.height) p.vy *= <span class="num">-1</span>;
+    <span class="cmt">// 鼠标排斥（150px范围）</span>
+    <span class="kw">var</span> dx = mouseX - p.x, dy = mouseY - p.y;
+    <span class="kw">var</span> dist = Math.<span class="fn">sqrt</span>(dx*dx + dy*dy);
+    <span class="kw">if</span> (dist &lt; <span class="num">150</span>) { p.x -= dx*<span class="num">0.01</span>; p.y -= dy*<span class="num">0.01</span>; }
+    <span class="cmt">// 绘制粒子</span>
+    ctx.<span class="fn">beginPath</span>(); ctx.<span class="fn">arc</span>(p.x, p.y, p.radius, <span class="num">0</span>, Math.PI*<span class="num">2</span>);
+    ctx.fillStyle = <span class="str">"rgba(0, 212, 255, 0.4)"</span>; ctx.<span class="fn">fill</span>();
+    <span class="cmt">// 粒子间连线（距离 &lt; 120px，透明度衰减）</span>
+    <span class="kw">for</span> (<span class="kw">var</span> j = i+<span class="num">1</span>; j &lt; particles.length; j++) {
+      <span class="kw">var</span> ddist = Math.<span class="fn">sqrt</span>(ddx*ddx + ddy*ddy);
+      <span class="kw">if</span> (ddist &lt; <span class="num">120</span>) {
+        ctx.strokeStyle = <span class="str">"rgba(0,212,255,"</span>+(<span class="num">0.15</span>*(<span class="num">1</span>-ddist/<span class="num">120</span>))+<span class="str">")"</span>;
+        ctx.<span class="fn">stroke</span>();
+      }
+    }
+  }
+  <span class="fn">requestAnimationFrame</span>(animate);
+}</div>
+
+        <div class="hb">
+          <div class="hb-title">💡 性能优化策略</div>
+          <div class="hb-text">
+            <ul>
+              <li><strong>粒子数自适应</strong>：<code>window.innerWidth &lt; 768 ? 30 : 60</code></li>
+              <li><strong>连线算法优化</strong>：内循环从 <code>j = i+1</code> 开始，避免重复绘制</li>
+              <li><strong>连线透明度衰减</strong>：<code>0.15 * (1 - dist/120)</code>，距离越远越透明</li>
+              <li><strong>reduced-motion 适配</strong>：检测到用户偏好后直接 <code>return</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <h4>5.3.2 Skills Radar — Canvas 雷达图引擎</h4>
+        <div class="code-block"><span class="cmt">// DPR 高清屏适配</span>
+<span class="kw">var</span> dpr = window.devicePixelRatio || <span class="num">1</span>;
+canvas.width = size * dpr;       <span class="cmt">// 物理像素</span>
+canvas.height = size * dpr;
+canvas.style.width = size + <span class="str">'px'</span>;  <span class="cmt">// CSS像素</span>
+ctx.<span class="fn">scale</span>(dpr, dpr);            <span class="cmt">// 缩放上下文</span>
+
+<span class="cmt">// 六维数据模型</span>
+<span class="kw">var</span> labels = [<span class="str">"分布式架构"</span>, <span class="str">"数据&中间件"</span>, <span class="str">"AI&LLMOps"</span>,
+              <span class="str">"DevOps"</span>, <span class="str">"团队管理"</span>, <span class="str">"项目管理"</span>];
+<span class="kw">var</span> values = [<span class="num">0.93</span>, <span class="num">0.88</span>, <span class="num">0.82</span>, <span class="num">0.90</span>, <span class="num">0.88</span>, <span class="num">0.92</span>];
+
+<span class="cmt">// 渐进动画：progress 从 0 → 1</span>
+<span class="kw">function</span> <span class="fn">animateRadar</span>() {
+  progress += <span class="num">0.02</span>;
+  <span class="kw">if</span> (progress &gt; <span class="num">1</span>) progress = <span class="num">1</span>;
+  <span class="fn">drawRadar</span>(progress);
+  <span class="kw">if</span> (progress &lt; <span class="num">1</span>) <span class="fn">requestAnimationFrame</span>(animateRadar);
+}</div>
+
+        <h4>5.3.3 AI Chat — 本地对话引擎</h4>
+        <p>AI 对话窗口是<strong>纯前端关键词匹配引擎</strong>，不依赖任何后端 API：</p>
+        <div class="code-block"><span class="kw">var</span> responses = {
+  <span class="str">"help"</span>:    <span class="str">"可用命令：about/skills/projects/contact..."</span>,
+  <span class="str">"about"</span>:   <span class="str">"我是LI XUBIN，拥有十多年..."</span>,
+  <span class="str">"skills"</span>:  <span class="str">"核心技能：Java/Spring Cloud..."</span>,
+  <span class="str">"projects"</span>:<span class="str">"代表项目：智慧租住SaaS平台..."</span>,
+  <span class="str">"contact"</span>: <span class="str">"邮箱：bin0754@163.com..."</span>,
+  <span class="str">"default"</span>: <span class="str">"输入 help 查看可用命令..."</span>
+};
+
+<span class="cmt">// XSS 防护：所有用户输入经 escapeHtml 处理</span>
+<span class="kw">function</span> <span class="fn">escapeHtml</span>(str) {
+  <span class="kw">var</span> div = document.<span class="fn">createElement</span>(<span class="str">'div'</span>);
+  div.<span class="fn">appendChild</span>(document.<span class="fn">createTextNode</span>(str));
+  <span class="kw">return</span> div.innerHTML;
+}</div>
+
+        <h2 id="sec-layout"><span class="h2-icon">◆</span> 6. 页面布局体系</h2>
+
+        <h3>6.1 主站首页 — 单页全屏布局</h3>
+        <p>index.html 采用<strong>全屏区块堆叠</strong>布局，5 个语义 section 纵向排列：</p>
+
+        <div class="ad">┌──────────────────────────────────────────────────┐
+│  Header (sticky) — Brand + Nav + Theme Toggle   │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│  Hero Section (100vh)                            │
+│  ┌──────────────────────────────────────────┐    │
+│  │ Boot Sequence: INIT NEURAL CORE_         │    │
+│  │                LOADING IDENTITY MATRIX_   │    │
+│  │                SYSTEM ONLINE_             │    │
+│  │                                          │    │
+│  │  LI XUBIN                                │    │
+│  │  [ Full-Stack Architect ] ← 角色轮播     │    │
+│  │  [ run ./connect.sh ]     ← CTA按钮      │    │
+│  │                                          │    │
+│  │  ↓ 滚动提示                               │    │
+│  └──────────────────────────────────────────┘    │
+│                                                  │
+├──────────────────────────────────────────────────┤
+│  About Section                                   │
+│  ┌────────────────┐ ┌────────────────────────┐   │
+│  │  Avatar        │ │  Bio + Stats           │   │
+│  │  (扫描线动画)  │ │  经历时间轴(可展开)    │   │
+│  └────────────────┘ └────────────────────────┘   │
+├──────────────────────────────────────────────────┤
+│  Projects Section                                │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │Card │ │Card │ │Card │ │Card │  ← 筛选按钮    │
+│  │  1  │ │  2  │ │  3  │ │  4  │               │
+│  └─────┘ └─────┘ └─────┘ └─────┘               │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │Card │ │Card │ │Card │ │Card │               │
+│  │  5  │ │  6  │ │  7  │ │  8  │               │
+│  └─────┘ └─────┘ └─────┘ └─────┘               │
+├──────────────────────────────────────────────────┤
+│  Skills Section                                  │
+│  ┌────────────────┐ ┌────────────────────────┐   │
+│  │  Radar Chart   │ │  Skill Bars + Meters   │   │
+│  │  (Canvas)      │ │  (CSS transition)      │   │
+│  └────────────────┘ └────────────────────────┘   │
+├──────────────────────────────────────────────────┤
+│  Contact Section                                 │
+│  ┌────────────────┐ ┌────────────────────────┐   │
+│  │  Contact Info  │ │  Contact Form          │   │
+│  │  (终端窗口)    │ │  (mailto协议发送)       │   │
+│  └────────────────┘ └────────────────────────┘   │
+├──────────────────────────────────────────────────┤
+│  Footer                                          │
+└──────────────────────────────────────────────────┘</div>
+
+        <h3>6.2 文档/项目索引页 — 双栏布局</h3>
+        <p>docs/index.html 和 projects/index.html 采用<strong>侧栏导航 + 主内容区</strong>的双栏布局：</p>
+
+        <div class="ad">┌──────────────────────────────────────────────────┐
+│  Header (sticky) — Brand + Nav + Theme Toggle   │
+├──────────┬───────────────────────────────────────┤
+│ Sidebar  │  Main Content                         │
+│ 280px    │  flex:1                               │
+│          │                                       │
+│ ┌──────┐ │  ┌─────────────────────────────────┐ │
+│ │分类  │ │  │ Breadcrumb: Docs / Category     │ │
+│ │导航  │ │  │ Meta Tags + Date                │ │
+│ │      │ │  │ Article Title                   │ │
+│ │架构  │ │  │ Article Subtitle                │ │
+│ │ ├ 微 │ │  ├─────────────────────────────────┤ │
+│ │ ├ 全 │ │  │                                 │ │
+│ │ ├ Spr│ │  │  Article Body                   │ │
+│ │ └ ...│ │  │  (代码块+架构图+表格+提示框)    │ │
+│ │      │ │  │                                 │ │
+│ │IoT   │ │  │                                 │ │
+│ │ ├ 架 │ │  │                                 │ │
+│ │ ├ To │ │  │                                 │ │
+│ │ └ ...│ │  │                                 │ │
+│ │      │ │  ├─────────────────────────────────┤ │
+│ │AI    │ │  │ ← 上一篇   下一篇 →             │ │
+│ │DevOps│ │  └─────────────────────────────────┘ │
+│ └──────┘ │                                       │
+│ sticky   │                                       │
+│ top:72px │                                       │
+├──────────┴───────────────────────────────────────┤
+│  Footer — © 2026 ISNOWSOFT                       │
+└──────────────────────────────────────────────────┘</div>
+
+        <h3>6.3 项目详情页 — 三栏布局</h3>
+        <p>project-*.html 采用<strong>TOC侧栏 + 主内容 + 导航</strong>的三栏布局：</p>
+
+        <div class="ad">┌──────────────────────────────────────────────────┐
+│  Header — Brand + Back Link + Theme Toggle       │
+├──────────────────────────────────────────────────┤
+│  Project Hero (渐变背景 + 标题 + 元数据)          │
+├──────────┬───────────────────────┬───────────────┤
+│ TOC      │  Content Area         │               │
+│ 260px    │  flex:1               │               │
+│          │                       │               │
+│ ┌──────┐ │  ┌─────────────────┐ │               │
+│ │ 01.  │ │  │ Section 1       │ │               │
+│ │ 概述 │ │  │ ┌─────────────┐ │ │               │
+│ │ 02.  │ │  │ │代码块       │ │ │               │
+│ │ 架构 │ │  │ └─────────────┘ │ │               │
+│ │ 03.  │ │  │ ┌─────────────┐ │ │               │
+│ │ ...  │ │  │ │高亮提示框   │ │ │               │
+│ └──────┘ │  │ └─────────────┘ │ │               │
+│ sticky   │  │ ┌─────────────┐ │ │               │
+│ top:90px │  │ │技术栈卡片   │ │ │               │
+│          │  │ └─────────────┘ │ │               │
+│          │  └─────────────────┘ │               │
+│          │                       │               │
+│          │  ← 上一篇  下一篇 →   │               │
+├──────────┴───────────────────────┴───────────────┤
+│  Footer                                           │
+└──────────────────────────────────────────────────┘</div>
+
+        <h2 id="sec-responsive"><span class="h2-icon">◆</span> 7. 响应式设计策略</h2>
+
+        <h3>7.1 断点体系</h3>
+        <table class="dt">
+          <thead><tr><th>断点</th><th>适配目标</th><th>关键调整</th></tr></thead>
+          <tbody>
+            <tr><td><code>≤ 1024px</code></td><td>平板竖屏</td><td>隐藏 TOC 侧栏，文章全宽；项目卡片单列</td></tr>
+            <tr><td><code>≤ 900px</code></td><td>平板横屏</td><td>About/Skills/Contact 从双列变单列；隐藏雷达图</td></tr>
+            <tr><td><code>≤ 768px</code></td><td>手机横屏</td><td>导航折叠为汉堡菜单；侧栏变为抽屉式；隐藏光标跟随和AI状态</td></tr>
+            <tr><td><code>≤ 480px</code></td><td>手机竖屏</td><td>字号缩小；按钮间距收紧；社交链接换行</td></tr>
+          </tbody>
+        </table>
+
+        <h3>7.2 移动端导航策略</h3>
+        <div class="code-block"><span class="kw">@media</span> (<span class="str">max-width: 768px</span>) {
+  <span class="kw">.nav-links</span> {
+    <span class="prop">position</span>: <span class="str">fixed</span>;
+    <span class="prop">top</span>: <span class="num">0</span>; <span class="prop">right</span>: <span class="num">-100%</span>;  <span class="cmt">// 默认隐藏在右侧</span>
+    <span class="prop">width</span>: <span class="num">280px</span>;
+    <span class="prop">height</span>: <span class="num">100vh</span>;
+    <span class="prop">background</span>: <span class="fn">var</span>(<span class="prop">--bg-secondary</span>);
+    <span class="prop">transition</span>: <span class="str">right 0.3s ease</span>;
+  }
+  <span class="kw">.nav-links.open</span> {
+    <span class="prop">right</span>: <span class="num">0</span>;  <span class="cmt">// 汉堡菜单点击后滑入</span>
+  }
+}</div>
+
+        <h2 id="sec-a11y"><span class="h2-icon">◆</span> 8. 无障碍设计体系</h2>
+
+        <h3>8.1 ARIA 标注策略</h3>
+        <table class="dt">
+          <thead><tr><th>交互元素</th><th>ARIA 属性</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td>导航菜单</td><td><code>aria-label="主导航"</code></td><td>标识导航区域</td></tr>
+            <tr><td>汉堡按钮</td><td><code>aria-expanded</code> / <code>aria-controls</code></td><td>控制菜单展开状态</td></tr>
+            <tr><td>项目卡片</td><td><code>role="listitem"</code> / <code>aria-labelledby</code></td><td>列表项语义</td></tr>
+            <tr><td>筛选按钮</td><td><code>aria-pressed</code></td><td>切换状态指示</td></tr>
+            <tr><td>进度条</td><td><code>role="progressbar"</code> / <code>aria-valuenow</code></td><td>数值进度指示</td></tr>
+            <tr><td>AI 对话</td><td><code>role="complementary"</code> / <code>aria-live="polite"</code></td><td>辅助区域+实时更新</td></tr>
+            <tr><td>表单字段</td><td><code>aria-required</code> / <code>aria-describedby</code></td><td>必填指示+错误关联</td></tr>
+            <tr><td>弹窗</td><td><code>role="dialog"</code> / <code>aria-modal="true"</code></td><td>模态对话框语义</td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.2 prefers-reduced-motion 适配</h3>
+        <div class="code-block"><span class="kw">@media</span> (<span class="str">prefers-reduced-motion: reduce</span>) {
+  <span class="kw">*</span>, <span class="kw">*::before</span>, <span class="kw">*::after</span> {
+    <span class="prop">animation-duration</span>: <span class="num">0.01ms</span> <span class="str">!important</span>;
+    <span class="prop">animation-iteration-count</span>: <span class="num">1</span> <span class="str">!important</span>;
+    <span class="prop">transition-duration</span>: <span class="num">0.01ms</span> <span class="str">!important</span>;
+  }
+  <span class="cmt">// 以下动画完全停止：</span>
+  <span class="kw">.cursor-blink</span>     { <span class="prop">animation</span>: <span class="str">none</span>; }
+  <span class="kw">.avatar-scan-line</span> { <span class="prop">animation</span>: <span class="str">none</span>; <span class="prop">top</span>: <span class="num">50%</span>; }
+  <span class="kw">.status-dot</span>       { <span class="prop">animation</span>: <span class="str">none</span>; }
+  <span class="kw">.ai-pulse</span>         { <span class="prop">animation</span>: <span class="str">none</span>; <span class="prop">opacity</span>: <span class="num">0</span>; }
+  <span class="kw">.scroll-indicator</span> { <span class="prop">animation</span>: <span class="str">none</span>; }
+  <span class="kw">.reveal-on-scroll</span> { <span class="prop">opacity</span>: <span class="num">1</span>; <span class="prop">transform</span>: <span class="str">none</span>; }
+}</div>
+
+        <h2 id="sec-components"><span class="h2-icon">◆</span> 9. 组件样式体系</h2>
+
+        <h3>9.1 项目卡片组件</h3>
+        <p>项目卡片是站点的核心展示组件，包含全息边框、矩阵覆盖层、悬浮抬升等多层视觉效果：</p>
+
+        <div class="code-block"><span class="cmt">// 卡片结构层次</span>
+<span class="kw">.project-card</span>                    <span class="cmt">// 基础容器</span>
+  <span class="kw">.card-holographic-border</span>        <span class="cmt">// 全息渐变边框（hover时显示）</span>
+  <span class="kw">.card-header</span>                    <span class="cmt">// 图标 + 影响力评分</span>
+  <span class="kw">.card-image</span>                     <span class="cmt">// 图片区</span>
+    <span class="kw">.card-matrix-overlay</span>            <span class="cmt">// 扫描线覆盖层（hover时消失）</span>
+    <span class="kw">.card-image-placeholder</span>         <span class="cmt">// 占位图标</span>
+  <span class="kw">.card-body</span>                      <span class="cmt">// 标题 + 描述 + 标签</span>
+  <span class="kw">.card-footer</span>                    <span class="cmt">// 详情链接</span>
+
+<span class="cmt">// 全息边框实现：CSS mask-composite</span>
+<span class="kw">.card-holographic-border</span> {
+  <span class="prop">background</span>: <span class="fn">linear-gradient</span>(<span class="num">135deg</span>, cyan, purple, pink, cyan);
+  <span class="prop">-webkit-mask</span>: <span class="fn">linear-gradient</span>(#fff <span class="num">0 0</span>) content-box,
+                  <span class="fn">linear-gradient</span>(#fff <span class="num">0 0</span>);
+  <span class="prop">-webkit-mask-composite</span>: <span class="str">xor</span>;  <span class="cmt">// 仅显示边框区域</span>
+  <span class="prop">padding</span>: <span class="num">2px</span>;                 <span class="cmt">// 边框宽度</span>
+}</div>
+
+        <h3>9.2 终端风格组件</h3>
+        <p>站点大量使用终端/代码风格的UI组件，营造技术氛围：</p>
+        <table class="dt">
+          <thead><tr><th>组件</th><th>风格特征</th><th>应用位置</th></tr></thead>
+          <tbody>
+            <tr><td>品牌标识</td><td><code>&lt;ISNOWSOFT.DEV/&gt;</code></td><td>导航栏</td></tr>
+            <tr><td>导航链接</td><td><code>./home</code> <code>./about</code> <code>./docs</code></td><td>导航菜单</td></tr>
+            <tr><td>CTA按钮</td><td><code>[ run ./connect.sh ]</code></td><td>Hero 区域</td></tr>
+            <tr><td>表单标签</td><td><code>&gt; enter_your_name:</code></td><td>联系表单</td></tr>
+            <tr><td>联系信息</td><td>终端窗口样式（三色点+命令行）</td><td>Contact 区域</td></tr>
+            <tr><td>AI助手</td><td>命令行对话界面</td><td>右下角浮动</td></tr>
+            <tr><td>状态指示</td><td><code>neural sync: 98.7%</code></td><td>左下角浮动</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="sec-animation"><span class="h2-icon">◆</span> 10. 动画与视觉效果体系</h2>
+
+        <h3>10.1 动画分类</h3>
+        <table class="dt">
+          <thead><tr><th>动画类型</th><th>实现方式</th><th>应用场景</th></tr></thead>
+          <tbody>
+            <tr><td>启动序列</td><td>CSS @keyframes + animation-delay</td><td>Hero Boot Sequence 三行依次出现</td></tr>
+            <tr><td>Glitch 效果</td><td>CSS ::before/::after + clip-path</td><td>Hero 标题 hover 时的故障风</td></tr>
+            <tr><td>光标闪烁</td><td>CSS @keyframes blink (step-end)</td><td>终端风格文本后的 _ 闪烁</td></tr>
+            <tr><td>扫描线</td><td>CSS @keyframes scanLine (top往返)</td><td>头像区域扫描效果</td></tr>
+            <tr><td>脉冲</td><td>CSS @keyframes pulse (box-shadow扩散)</td><td>在线状态指示灯</td></tr>
+            <tr><td>滚动弹跳</td><td>CSS @keyframes scrollBounce (translateY)</td><td>滚动提示箭头</td></tr>
+            <tr><td>粒子网络</td><td>Canvas 2D + requestAnimationFrame</td><td>全局背景动画</td></tr>
+            <tr><td>雷达图</td><td>Canvas 2D + progress渐进绘制</td><td>技能雷达图</td></tr>
+            <tr><td>滚动渐显</td><td>IntersectionObserver + CSS transition</td><td>各 section 进入视口</td></tr>
+            <tr><td>进度条</td><td>CSS transition (width 1.5s ease)</td><td>技能条/仪表盘</td></tr>
+            <tr><td>AI脉冲</td><td>CSS @keyframes aiPulse (scale+opacity)</td><td>AI助手按钮光环</td></tr>
+          </tbody>
+        </table>
+
+        <h3>10.2 Hero 启动序列时序</h3>
+        <div class="ad">时间轴（秒）：
+0.0s     0.2s        1.0s        1.8s        2.5s
+ │        │           │           │            │
+ ▼        ▼           ▼           ▼            ▼
+ │ INIT   │ LOADING   │ SYSTEM    │            │ HERO
+ │ NEURAL │ IDENTITY  │ ONLINE    │   delay    │ REVEAL
+ │ CORE_  │ MATRIX_   │ _         │            │ (fade in)
+ │        │           │           │            │
+ ├────────┤───────────┤───────────┤────────────┤
+  bootFadeIn  bootFadeIn  bootFadeIn    heroReveal
+  (0.5s)      (0.5s)      (0.5s)        (1s)</div>
+
+        <h2 id="sec-data-flow"><span class="h2-icon">◆</span> 11. 数据流与交互模型</h2>
+
+        <h3>11.1 主题切换数据流</h3>
+        <p>主题切换是站点最核心的跨页面状态同步机制：</p>
+        <div class="code-block"><span class="cmt">// 写入流：用户点击 → DOM更新 → 持久化 → 跨标签广播</span>
+User Click → JS Handler → setAttribute('data-theme', next)
+                        → localStorage.setItem('portfolio-theme', next)
+                        → storage event → 其他标签页自动同步
+
+<span class="cmt">// 读取流：页面加载 → localStorage → DOM设置（FOUC预防）</span>
+Page Load → &lt;script&gt; in &lt;head&gt; → localStorage.getItem('portfolio-theme')
+          → setAttribute('data-theme', saved) → CSS变量自动切换</div>
+
+        <h3>11.2 联系表单数据流</h3>
+        <div class="code-block"><span class="cmt">// 纯前端表单处理：验证 → mailto链接生成</span>
+Form Submit → preventDefault()
+            → Validate: name非空 / email正则 / message非空
+            → Generate: mailto:bin0754@163.com?subject=...&amp;body=...
+            → window.location.href = mailtoLink
+            → Show success message (5s auto-hide)</div>
+
+        <h3>11.3 项目筛选数据流</h3>
+        <div class="code-block"><span class="cmt">// 纯DOM操作筛选</span>
+Filter Click → read data-filter attribute
+             → loop all .project-card
+             → match data-category
+             → classList.add/remove('hidden')
+             → update aria-pressed state</div>
+
+        <h2 id="sec-security"><span class="h2-icon">◆</span> 12. 安全考量</h2>
+
+        <div class="hb danger">
+          <div class="hb-title">🔒 安全设计要点</div>
+          <div class="hb-text">
+            <ul>
+              <li><strong>XSS 防护</strong>：AI Chat 模块中所有用户输入通过 <code>escapeHtml()</code> 函数处理，使用 <code>document.createTextNode()</code> 而非 <code>innerHTML</code> 直接插入</li>
+              <li><strong>无服务端依赖</strong>：联系表单通过 <code>mailto:</code> 协议发送，不暴露任何 API 端点</li>
+              <li><strong>无敏感信息</strong>：电话号码部分掩码（159********），无 API Key 或 Token 泄露</li>
+              <li><strong>Content-Security-Policy</strong>：纯静态站点，所有资源同源，无外部脚本依赖</li>
+              <li><strong>localStorage 安全</strong>：仅存储主题偏好（非敏感数据），无用户隐私信息</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="sec-browser"><span class="h2-icon">◆</span> 13. 浏览器兼容性</h2>
+        <table class="dt">
+          <thead><tr><th>浏览器</th><th>最低版本</th><th>核心依赖 API</th></tr></thead>
+          <tbody>
+            <tr><td>Chrome</td><td>80+</td><td>CSS Custom Properties、CSS Grid、backdrop-filter</td></tr>
+            <tr><td>Firefox</td><td>78+</td><td>Canvas API、localStorage、IntersectionObserver</td></tr>
+            <tr><td>Safari</td><td>14+</td><td>-webkit-backdrop-filter、mask-composite</td></tr>
+            <tr><td>Edge</td><td>80+</td><td>同 Chrome（Chromium 内核）</td></tr>
+          </tbody>
+        </table>
+
+        <div class="hb">
+          <div class="hb-title">💡 降级策略</div>
+          <div class="hb-text">
+            <ul>
+              <li><code>backdrop-filter</code> 不支持时，Header 背景变为半透明纯色</li>
+              <li><code>mask-composite</code> 不支持时，全息边框效果不显示（不影响功能）</li>
+              <li><code>IntersectionObserver</code> 不支持时，滚动动画和进度条直接显示最终状态</li>
+              <li><code>Canvas</code> 不支持时，粒子背景和雷达图不渲染（不影响内容）</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="sec-conventions"><span class="h2-icon">◆</span> 14. 开发约定与规范</h2>
+
+        <h3>14.1 颜色管理规范</h3>
+        <div class="code-block"><span class="cmt">// ✅ 正确：使用 CSS 变量</span>
+<span class="kw">.my-component</span> {
+  <span class="prop">color</span>: <span class="fn">var</span>(<span class="prop">--text-primary</span>);
+  <span class="prop">background</span>: <span class="fn">var</span>(<span class="prop">--bg-secondary</span>);
+  <span class="prop">border</span>: <span class="num">1px</span> solid <span class="fn">var</span>(<span class="prop">--border-color</span>);
+}
+
+<span class="cmt">// ❌ 错误：硬编码色值</span>
+<span class="kw">.my-component</span> {
+  <span class="prop">color</span>: <span class="str">#e8e8f0</span>;          <span class="cmt">// 禁止！亮色主题不会生效</span>
+  <span class="prop">background</span>: <span class="str">#12121a</span>;        <span class="cmt">// 禁止！无法自动切换</span>
+}</div>
+
+        <h3>14.2 代码高亮规范</h3>
+        <table class="dt">
+          <thead><tr><th>语义类</th><th>用途</th><th>暗色值</th><th>亮色值</th></tr></thead>
+          <tbody>
+            <tr><td><code>.kw</code></td><td>关键词</td><td><code>#c084fc</code></td><td><code>#9333ea</code></td></tr>
+            <tr><td><code>.fn</code></td><td>函数名</td><td><code>#22d3ee</code></td><td><code>#0891b2</code></td></tr>
+            <tr><td><code>.str</code></td><td>字符串</td><td><code>#4ade80</code></td><td><code>#16a34a</code></td></tr>
+            <tr><td><code>.num</code></td><td>数字</td><td><code>#fb923c</code></td><td><code>#ea580c</code></td></tr>
+            <tr><td><code>.cmt</code></td><td>注释</td><td><code>var(--text-muted)</code></td><td><code>var(--text-muted)</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>14.3 新增页面检查清单</h3>
+        <div class="hb success">
+          <div class="hb-title">✅ 新增页面必须包含</div>
+          <div class="hb-text">
+            <ul>
+              <li>✅ <code>&lt;head&gt;</code> 中的主题恢复内联脚本（防 FOUC）</li>
+              <li>✅ 主题切换按钮 + localStorage 读写逻辑</li>
+              <li>✅ <code>storage</code> 事件监听（跨标签页同步）</li>
+              <li>✅ 所有颜色使用 CSS 变量，不硬编码色值</li>
+              <li>✅ 亮色主题变量覆盖（<code>[data-theme="light"]</code>）</li>
+              <li>✅ 语义化 HTML 标签（header/main/nav/article/section）</li>
+              <li>✅ ARIA 标签（aria-label / aria-expanded / role）</li>
+              <li>✅ <code>prefers-reduced-motion</code> 适配</li>
+              <li>✅ 响应式断点适配（1024/900/768/480px）</li>
+              <li>✅ Skip Link（跳转到主要内容）</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="sec-metrics"><span class="h2-icon">◆</span> 15. 代码度量与规模</h2>
+        <table class="dt">
+          <thead><tr><th>度量项</th><th>数值</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>HTML 文件总数</td><td>35+</td><td>1主站 + 21文档 + 12项目 + 1索引</td></tr>
+            <tr><td>CSS 总行数</td><td>~2,300行</td><td>styles.css(1887) + project-common.css(405)</td></tr>
+            <tr><td>JavaScript 总行数</td><td>~652行</td><td>script.js（15个功能模块）</td></tr>
+            <tr><td>CSS 变量数</td><td>30+</td><td>颜色/间距/圆角/过渡/字体/布局</td></tr>
+            <tr><td>功能模块数</td><td>15</td><td>IIFE封装，统一init入口</td></tr>
+            <tr><td>Canvas 渲染引擎</td><td>2</td><td>粒子背景 + 技能雷达图</td></tr>
+            <tr><td>动画关键帧</td><td>11</td><td>@keyframes 定义</td></tr>
+            <tr><td>响应式断点</td><td>4</td><td>1024/900/768/480px</td></tr>
+            <tr><td>外部依赖</td><td>0</td><td>零npm包，零框架，零构建工具</td></tr>
+            <tr><td>构建时间</td><td>0s</td><td>纯静态文件，无需构建</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="sec-summary"><span class="h2-icon">◆</span> 16. 架构总结</h2>
+        <p>ISNOWSOFT Portfolio Site 是一个<strong>极致简约但功能完备</strong>的纯静态前端站点。其架构设计的核心价值在于：</p>
+
+        <div class="hb">
+          <div class="hb-title">🏆 架构核心价值</div>
+          <div class="hb-text">
+            <ul>
+              <li><strong>零依赖的工程勇气</strong> — 在框架横行的时代，用原生技术栈构建出具备粒子动画、雷达图、AI对话等复杂交互的站点，证明了原生 Web API 的强大能力</li>
+              <li><strong>CSS 变量驱动的双主题</strong> — 30+ CSS 变量 + <code>data-theme</code> 属性选择器 + localStorage 持久化 + storage 事件跨标签页同步，构成完整的主题基础设施</li>
+              <li><strong>IIFE 模块化</strong> — 15 个功能模块在 IIFE 内独立定义、统一初始化，既避免了全局污染，又保持了代码的可读性和可维护性</li>
+              <li><strong>渐进增强的交互策略</strong> — IntersectionObserver 替代 scroll 监听、Canvas 动画在 reduced-motion 时停止、移动端粒子数减半，处处体现性能意识</li>
+              <li><strong>无障碍优先的设计</strong> — ARIA 标签、键盘导航、Skip Link、减弱动画适配，确保技术文档站对所有用户可访问</li>
+              <li><strong>终端美学的视觉语言</strong> — 从品牌标识 <code>&lt;ISNOWSOFT.DEV/&gt;</code> 到导航 <code>./home</code>，从 CTA <code>[ run ./connect.sh ]</code> 到 AI 对话窗口，统一的终端风格贯穿全站</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>这个站点不仅是一个作品集展示平台，更是一份<strong>用代码书写的架构宣言</strong> — 证明了一个优秀的前端工程不一定要依赖复杂的框架和构建工具，原生 Web 平台本身就足够强大。</p>
+
+      </div>
+    </article>
+
+    <aside class="toc-sidebar" aria-label="文章目录">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录导航</div>
+        <ul class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#sec-overview" class="toc-nav-link">1. 项目全局概览</a></li>
+          <li class="toc-nav-item"><a href="#sec-directory" class="toc-nav-link">2. 目录结构与文件组织</a></li>
+          <li class="toc-nav-item"><a href="#sec-architecture" class="toc-nav-link">3. 整体架构设计</a></li>
+          <li class="toc-nav-item"><a href="#sec-css-variables" class="toc-nav-link">4. CSS 变量体系与双主题</a></li>
+          <li class="toc-nav-item"><a href="#sec-js-modules" class="toc-nav-link">5. JavaScript 模块体系</a></li>
+          <li class="toc-nav-item"><a href="#sec-layout" class="toc-nav-link">6. 页面布局体系</a></li>
+          <li class="toc-nav-item"><a href="#sec-responsive" class="toc-nav-link">7. 响应式设计策略</a></li>
+          <li class="toc-nav-item"><a href="#sec-a11y" class="toc-nav-link">8. 无障碍设计体系</a></li>
+          <li class="toc-nav-item"><a href="#sec-components" class="toc-nav-link">9. 组件样式体系</a></li>
+          <li class="toc-nav-item"><a href="#sec-animation" class="toc-nav-link">10. 动画与视觉效果</a></li>
+          <li class="toc-nav-item"><a href="#sec-data-flow" class="toc-nav-link">11. 数据流与交互模型</a></li>
+          <li class="toc-nav-item"><a href="#sec-security" class="toc-nav-link">12. 安全考量</a></li>
+          <li class="toc-nav-item"><a href="#sec-browser" class="toc-nav-link">13. 浏览器兼容性</a></li>
+          <li class="toc-nav-item"><a href="#sec-conventions" class="toc-nav-link">14. 开发约定与规范</a></li>
+          <li class="toc-nav-item"><a href="#sec-metrics" class="toc-nav-link">15. 代码度量与规模</a></li>
+          <li class="toc-nav-item"><a href="#sec-summary" class="toc-nav-link">16. 架构总结</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <button class="btt" id="back-to-top" aria-label="回到顶部">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    (function() {
+      var saved = localStorage.getItem('portfolio-theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+
+      var btn = document.querySelector('.theme-toggle');
+      if (btn) {
+        function updateLabel() {
+          var t = document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label', '切换主题：当前为' + (t === 'dark' ? '暗色' : '亮色') + '模式');
+        }
+        updateLabel();
+        btn.addEventListener('click', function() {
+          var cur = document.documentElement.getAttribute('data-theme');
+          var next = cur === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('portfolio-theme', next);
+          updateLabel();
+        });
+      }
+
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'portfolio-theme' && e.newValue) {
+          document.documentElement.setAttribute('data-theme', e.newValue);
+          if (btn) btn.setAttribute('aria-label', '切换主题：当前为' + (e.newValue === 'dark' ? '暗色' : '亮色') + '模式');
+        }
+      });
+
+      var progressBar = document.getElementById('reading-progress');
+      var backToTop = document.getElementById('back-to-top');
+
+      window.addEventListener('scroll', function() {
+        var scrollTop = window.pageYOffset;
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var progress = docHeight > 0 ? scrollTop / docHeight : 0;
+
+        if (progressBar) {
+          progressBar.style.transform = 'scaleX(' + progress + ')';
+        }
+
+        if (backToTop) {
+          if (scrollTop > 300) {
+            backToTop.classList.add('visible');
+          } else {
+            backToTop.classList.remove('visible');
+          }
+        }
+      }, { passive: true });
+
+      if (backToTop) {
+        backToTop.addEventListener('click', function() {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      var tocLinks = document.querySelectorAll('.toc-nav-link');
+      var sections = [];
+      tocLinks.forEach(function(link) {
+        var id = link.getAttribute('href').substring(1);
+        var el = document.getElementById(id);
+        if (el) sections.push({ id: id, el: el, link: link });
+      });
+
+      if (sections.length > 0) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              tocLinks.forEach(function(l) { l.classList.remove('active'); });
+              var match = sections.find(function(s) { return s.el === entry.target; });
+              if (match) match.link.classList.add('active');
+            }
+          });
+        }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+        sections.forEach(function(s) { observer.observe(s.el); });
+      }
+    })();
+  </script>
+</body>
+</html>
