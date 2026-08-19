@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AgentScope-Claw 多智能体VL路由架构 — 两阶段分类+直接调用模式，解决Subagent图片传递与自动路由问题">
+  <title>多智能体VL路由架构 | ISNOWSOFT Docs</title>
+  <script>!function(){var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}();</script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #8b5cf6;
+      --accent-green: #22c55e;
+      --accent-gold: #eab308;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow-glow: rgba(0, 212, 255, 0.15);
+      --toc-width: 260px;
+      --code-blue: #6b8cff;
+      --code-green: #34d399;
+      --code-red: #f87171;
+      --code-gold: #fbbf24;
+      --code-muted: #5a5a78;
+      --code-bg-blue: rgba(79, 110, 247, 0.12);
+      --code-bg-gray: rgba(255, 255, 255, 0.06);
+      --code-bg-green: rgba(34, 197, 94, 0.08);
+      --code-bg-white: var(--bg-secondary);
+      --code-border-subtle: var(--border-color);
+      --hl-keyword: #c084fc;
+      --hl-function: #22d3ee;
+      --hl-string: #4ade80;
+      --hl-number: #fb923c;
+      --highlight-gold: #eab308;
+      --highlight-gold-bg: rgba(234, 179, 8, 0.07);
+      --highlight-green: #22c55e;
+      --highlight-green-bg: rgba(34, 197, 94, 0.07);
+      --highlight-purple: #8b5cf6;
+      --highlight-purple-bg: rgba(139, 92, 246, 0.07);
+      --highlight-red: #ef4444;
+      --highlight-red-bg: rgba(239, 68, 68, 0.07);
+      --highlight-orange: #f59e0b;
+      --highlight-orange-bg: rgba(245, 158, 11, 0.07);
+      --highlight-cyan: #00d4ff;
+      --highlight-cyan-bg: rgba(0, 212, 255, 0.07);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --accent-cyan: #0099cc;
+      --accent-purple: #7c3aed;
+      --accent-green: #16a34a;
+      --accent-gold: #ca8a04;
+      --accent-red: #dc2626;
+      --accent-orange: #d97706;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --shadow-glow: rgba(0, 153, 204, 0.12);
+      --code-blue: #4f6ef7;
+      --code-green: #1a8a5a;
+      --code-red: #c0392b;
+      --code-gold: #e8a838;
+      --code-muted: #b0c0d0;
+      --code-bg-blue: #f0f4ff;
+      --code-bg-gray: #eef2f7;
+      --code-bg-green: #f0f7f0;
+      --code-bg-white: #ffffff;
+      --code-border-subtle: #eef0f4;
+      --hl-keyword: #9333ea;
+      --hl-function: #0891b2;
+      --hl-string: #16a34a;
+      --hl-number: #ea580c;
+      --highlight-gold: #ca8a04;
+      --highlight-gold-bg: rgba(202, 138, 4, 0.07);
+      --highlight-green: #16a34a;
+      --highlight-green-bg: rgba(22, 163, 74, 0.07);
+      --highlight-purple: #7c3aed;
+      --highlight-purple-bg: rgba(124, 58, 237, 0.07);
+      --highlight-red: #dc2626;
+      --highlight-red-bg: rgba(220, 38, 38, 0.07);
+      --highlight-orange: #d97706;
+      --highlight-orange-bg: rgba(217, 119, 6, 0.07);
+      --highlight-cyan: #0099cc;
+      --highlight-cyan-bg: rgba(0, 153, 204, 0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary); line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .skip-link {
+      position: absolute; top: -100%; left: 16px;
+      background: var(--accent-cyan); color: #000; padding: 8px 16px; border-radius: 4px;
+      z-index: 10000; text-decoration: none; font-weight: 600;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 24px;
+    }
+
+    [data-theme="light"] .site-header {
+      background: rgba(245, 245, 250, 0.95);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: inherit;
+    }
+
+    .brand-bracket {
+      color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+    }
+
+    .brand-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+
+    .brand-dot { color: var(--accent-cyan); font-weight: 900; }
+
+    .brand-text-accent {
+      color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700; letter-spacing: 1px;
+    }
+
+    .header-nav {
+      display: flex; align-items: center; gap: 24px;
+    }
+
+    .nav-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      transition: color 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-link:hover, .nav-link:focus-visible { color: var(--accent-cyan); }
+
+    .reading-progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      z-index: 9999; transform-origin: left;
+      transform: scaleX(0); transition: transform 0.1s linear;
+    }
+
+    .article-layout {
+      display: flex; max-width: 1400px; margin: 0 auto;
+      gap: 40px; padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    .article-main {
+      flex: 1; min-width: 0; max-width: 900px;
+    }
+
+    .article-header {
+      margin-bottom: 40px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .article-breadcrumb {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+      font-size: 0.85rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .breadcrumb-link { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .breadcrumb-link:hover, .breadcrumb-link:focus-visible { color: var(--accent-cyan); }
+    .breadcrumb-separator::before { content: '/'; opacity: 0.5; }
+
+    .article-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);
+    }
+
+    .meta-date {
+      font-size: 0.84rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.65rem, 3.5vw, 2.35rem); font-weight: 700;
+      line-height: 1.3; color: var(--text-primary); margin-bottom: 14px;
+    }
+
+    .article-subtitle {
+      font-size: 1.08rem; color: var(--text-secondary); line-height: 1.6;
+    }
+
+    .cicd-content {
+      font-size: 1.01rem; line-height: 1.9;
+    }
+
+    .cicd-content .card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px; margin-bottom: 24px;
+    }
+
+    .cicd-content .card-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.22rem;
+      font-weight: 600; color: var(--accent-cyan); margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--border-color);
+      scroll-margin-top: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .cicd-content .card-title i {
+      color: var(--accent-purple); font-size: 1rem;
+    }
+
+    .cicd-content .badge {
+      display: inline-block; background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);
+      padding: 2px 10px; border-radius: 12px; font-size: 0.72rem;
+      font-weight: 600; margin-left: auto;
+    }
+
+    .cicd-content p { margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .cicd-content strong { color: var(--text-primary); font-weight: 600; }
+    .cicd-content ul, .cicd-content ol { padding-left: 1.8rem; margin-bottom: 0.7rem; color: var(--text-secondary); }
+    .cicd-content li { margin-bottom: 0.2rem; }
+    .cicd-content code { background: var(--bg-secondary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+
+    .cicd-content .cap-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin: 12px 0;
+    }
+
+    .cicd-content .cap-item {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 16px; text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .cicd-content .cap-item:hover { border-color: var(--accent-cyan); }
+
+    .cicd-content .cap-item .icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .cicd-content .cap-item .name { font-weight: 600; color: var(--text-primary); font-size: 0.92rem; margin-bottom: 4px; }
+    .cicd-content .cap-item .desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
+
+    .cicd-content .param-table {
+      width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0;
+    }
+
+    .cicd-content .param-table th {
+      background: var(--bg-secondary); text-align: left;
+      padding: 10px 14px; font-weight: 600; color: var(--accent-purple);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .cicd-content .param-table td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .cicd-content .param-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
+
+    .cicd-content .param-name {
+      font-family: 'JetBrains Mono', monospace; font-weight: 600;
+      color: var(--accent-cyan); font-size: 0.82rem;
+    }
+
+    .cicd-content .param-type {
+      display: inline-block; background: rgba(234, 179, 8, 0.12); color: var(--accent-gold);
+      padding: 1px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600;
+    }
+
+    .cicd-content .pipeline-flow {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;
+    }
+
+    .cicd-content .pipeline-step {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: 8px;
+      font-size: 0.85rem; color: var(--text-secondary); flex: 1; min-width: 220px;
+    }
+
+    .cicd-content .pipeline-step .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(0, 212, 255, 0.12); color: var(--accent-cyan);
+      font-weight: 700; font-size: 0.75rem; flex-shrink: 0;
+    }
+
+    .cicd-content .pipeline-step .icon { color: var(--accent-purple); font-size: 0.9rem; }
+    .cicd-content .pipeline-step .desc { flex: 1; }
+
+    .cicd-content .arch-diagram {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 20px; margin: 12px 0;
+      overflow-x: auto; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; line-height: 1.6; color: var(--text-secondary);
+      white-space: pre;
+    }
+
+    .cicd-content .arch-diagram .arch-highlight { color: var(--accent-cyan); font-weight: 600; }
+    .cicd-content .arch-diagram .arch-arrow { color: var(--accent-purple); }
+    .cicd-content .arch-diagram .arch-label { color: var(--accent-gold); }
+
+    .arch-viz { margin: 16px 0; }
+
+    .arch-layer {
+      border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 12px;
+      background: var(--bg-secondary); position: relative;
+    }
+
+    .arch-layer-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-cyan); margin-bottom: 14px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .arch-layer-title .layer-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 6px;
+      background: rgba(0, 212, 255, 0.1); font-size: 0.85rem;
+    }
+
+    .arch-nodes {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+    }
+
+    .arch-node {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 12px 16px; text-align: center;
+      min-width: 160px; transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .arch-node:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+
+    .arch-node-id {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      font-weight: 600; color: var(--accent-cyan); margin-bottom: 4px;
+    }
+
+    .arch-node-desc {
+      font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;
+    }
+
+    .arch-node--highlight {
+      border-color: var(--accent-purple);
+      background: rgba(139, 92, 246, 0.06);
+    }
+
+    .arch-node--highlight .arch-node-id { color: var(--accent-purple); }
+
+    .arch-node--gold {
+      border-color: var(--accent-gold);
+      background: rgba(234, 179, 8, 0.06);
+    }
+
+    .arch-node--gold .arch-node-id { color: var(--accent-gold); }
+
+    .arch-node--green {
+      border-color: var(--accent-green);
+      background: rgba(34, 197, 94, 0.06);
+    }
+
+    .arch-node--green .arch-node-id { color: var(--accent-green); }
+
+    .arch-connector {
+      display: flex; justify-content: center; padding: 4px 0;
+      color: var(--accent-purple); font-size: 1.1rem;
+    }
+
+    .arch-connector span {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .arch-flow {
+      display: flex; flex-direction: column; gap: 0; margin: 16px 0;
+    }
+
+    .arch-flow-step {
+      display: flex; align-items: stretch; gap: 0;
+    }
+
+    .arch-flow-label {
+      width: 120px; flex-shrink: 0; display: flex; align-items: center;
+      gap: 8px; padding: 10px 12px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      font-weight: 600; color: var(--accent-gold);
+      background: rgba(234, 179, 8, 0.06);
+      border: 1px solid var(--border-color); border-radius: 8px 0 0 8px;
+      border-right: none;
+    }
+
+    .arch-flow-body {
+      flex: 1; padding: 10px 16px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 0 8px 8px 0; font-size: 0.82rem; color: var(--text-secondary);
+    }
+
+    .arch-flow-body code {
+      background: rgba(0, 212, 255, 0.08); color: var(--accent-cyan);
+      padding: 1px 6px; border-radius: 4px; font-size: 0.78rem;
+    }
+
+    .arch-flow-branch {
+      display: flex; gap: 12px; margin-top: 8px;
+    }
+
+    .arch-flow-branch-item {
+      flex: 1; padding: 8px 12px; border-radius: 6px;
+      border: 1px solid var(--border-color); font-size: 0.78rem;
+      text-align: center;
+    }
+
+    .arch-flow-branch-item--yes {
+      border-color: var(--accent-green); color: var(--accent-green);
+      background: rgba(34, 197, 94, 0.06);
+    }
+
+    .arch-flow-branch-item--no {
+      border-color: var(--accent-red); color: var(--accent-red);
+      background: rgba(239, 68, 68, 0.06);
+    }
+
+    .arch-tree {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      line-height: 1.8; color: var(--text-secondary);
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 20px; margin: 12px 0;
+    }
+
+    .arch-tree .tree-dir { color: var(--accent-cyan); font-weight: 600; }
+    .arch-tree .tree-file { color: var(--text-primary); }
+    .arch-tree .tree-label { color: var(--accent-gold); font-size: 0.75rem; margin-left: 8px; }
+    .arch-tree .tree-highlight { color: var(--accent-purple); font-weight: 600; }
+
+    .cicd-content .highlight-box {
+      background: var(--highlight-cyan-bg);
+      border-left: 4px solid var(--accent-cyan);
+      padding: 16px 20px; border-radius: 0 8px 8px 0;
+      margin: 16px 0; font-size: 0.95rem; color: var(--text-secondary);
+    }
+
+    .cicd-content .highlight-box-gold {
+      background: var(--highlight-gold-bg);
+      border-left-color: var(--accent-gold);
+    }
+
+    .cicd-content .highlight-box-green {
+      background: var(--highlight-green-bg);
+      border-left-color: var(--accent-green);
+    }
+
+    .cicd-content .highlight-box-red {
+      background: var(--highlight-red-bg);
+      border-left-color: var(--accent-red);
+    }
+
+    .cicd-content .highlight-box-purple {
+      background: var(--highlight-purple-bg);
+      border-left-color: var(--accent-purple);
+    }
+
+    .cicd-content .code-block {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 22px; margin: 12px 0; overflow-x: auto;
+    }
+
+    .cicd-content .code-block pre {
+      margin: 0; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; line-height: 1.7; color: var(--text-primary);
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    .cicd-content .code-block .kw { color: #c084fc; }
+    .cicd-content .code-block .fn { color: #22d3ee; }
+    .cicd-content .code-block .str { color: #4ade80; }
+    .cicd-content .code-block .cls { color: #eab308; }
+    .cicd-content .code-block .num { color: #fb923c; }
+    .cicd-content .code-block .cmt { color: var(--text-muted); }
+
+    .cicd-content .phase-group {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
+      font-weight: 600; color: var(--accent-gold); margin-top: 18px; margin-bottom: 8px;
+      padding: 8px 14px; background: rgba(234, 179, 8, 0.06);
+      border-left: 3px solid var(--accent-gold); border-radius: 0 8px 8px 0;
+    }
+
+    .cicd-content .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--accent-cyan); text-decoration: none;
+      font-size: 0.88rem; margin-bottom: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      transition: opacity 0.3s;
+    }
+
+    .cicd-content .back-link:hover { opacity: 0.7; }
+
+    .article-footer {
+      margin-top: 56px; padding-top: 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; flex-wrap: wrap;
+    }
+
+    .footer-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px; background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 10px;
+      text-decoration: none; color: var(--text-secondary); font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-nav-link:hover, .footer-nav-link:focus-visible {
+      border-color: var(--accent-cyan); color: var(--accent-cyan);
+      transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-glow);
+    }
+
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 90px; height: fit-content;
+      max-height: calc(100vh - 110px); overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 5px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-color); border-radius: 3px;
+    }
+
+    .toc-container {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 24px 20px;
+    }
+
+    .toc-sidebar-title {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      font-weight: 600; color: var(--accent-purple);
+      text-transform: uppercase; letter-spacing: 1.8px;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .toc-nav-list { list-style: none; counter-reset: toc-counter; }
+
+    .toc-nav-item {
+      position: relative; margin-bottom: 6px;
+      counter-increment: toc-counter;
+    }
+
+    .toc-nav-item::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      position: absolute; left: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--text-muted); opacity: 0.5;
+    }
+
+    .toc-nav-link {
+      display: block; padding: 8px 12px 8px 14px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.86rem; line-height: 1.5;
+      border-radius: 7px; border-left: 2px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc-nav-link:hover,
+    .toc-nav-link:focus-visible {
+      color: var(--text-primary); background: rgba(0, 212, 255, 0.05);
+      transform: translateX(3px);
+    }
+
+    .toc-nav-link.active {
+      color: var(--accent-cyan); font-weight: 500;
+      background: rgba(0, 212, 255, 0.06);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .back-to-top {
+      position: fixed; bottom: 30px; right: 30px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.15rem; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--accent-cyan); color: #000;
+      transform: translateY(-3px); box-shadow: 0 6px 24px var(--shadow-glow);
+    }
+
+    .site-footer {
+      text-align: center; padding: 36px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted); font-size: 0.87rem;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-sidebar { display: none; }
+      .article-layout { padding: 32px 20px 70px; gap: 0; }
+      .article-main { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .header-nav { gap: 12px; flex-wrap: wrap; }
+      .article-footer { flex-direction: column; }
+      .article-title { font-size: 1.55rem; }
+      .cicd-content .cap-grid { grid-template-columns: 1fr; }
+      .cicd-content .param-table { font-size: 0.8rem; }
+      .cicd-content .param-table th, .cicd-content .param-table td { padding: 8px 6px; }
+      .cicd-content .pipeline-step { min-width: 100%; }
+      .cicd-content .pipeline-flow { flex-direction: column; }
+    }
+
+    .theme-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 4px 12px; cursor: pointer;
+      color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; transition: border-color 0.3s ease; flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent-cyan); }
+    .theme-switch {
+      width: 32px; height: 16px; background: var(--bg-secondary);
+      border-radius: 8px; position: relative; transition: background 0.3s ease;
+    }
+    .theme-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px; background: var(--accent-cyan);
+      border-radius: 50%; transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-knob {
+      transform: translateX(16px); background: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <header class="site-header">
+    <div class="header-content">
+      <a href="../index.html" class="header-brand">
+        <span class="brand-bracket">&lt;</span>
+        <span class="brand-text">ISNOW</span><span class="brand-dot">.</span><span class="brand-text-accent">SOFT</span>
+        <span class="brand-bracket">/&gt;</span>
+      </a>
+      <nav class="header-nav" aria-label="页面导航">
+        <a href="index.html" class="nav-link">← 返回文档中心</a>
+        <a href="../index.html#projects" class="nav-link">项目展示</a>
+        <button class="theme-toggle" aria-label="切换主题：当前为暗色模式" data-theme-action="toggle">
+          <span aria-hidden="true">REALITY</span>
+          <span class="theme-switch" aria-hidden="true"><span class="theme-knob"></span></span>
+          <span aria-hidden="true">SIM</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="article-layout">
+
+    <article class="article-main">
+
+      <header class="article-header">
+        <div class="article-breadcrumb">
+          <a href="index.html" class="breadcrumb-link">Docs</a>
+          <span class="breadcrumb-separator"></span>
+          <a href="index.html#tech-section" class="breadcrumb-link">技术文档</a>
+          <span class="breadcrumb-separator"></span>
+          <span>当前文章</span>
+        </div>
+
+        <div class="article-meta">
+          <span class="meta-tag">TECH DOC</span>
+          <time class="meta-date" datetime="2026-08-18">2026-08-18</time>
+          <span class="meta-date">阅读时长: 25min</span>
+        </div>
+
+        <h1 class="article-title">🔀 多智能体VL路由架构</h1>
+        <p class="article-subtitle">深入解析 AgentScope-Claw 框架中多智能体视觉语言（VL）路由的工程实现：两阶段分类+直接调用模式，解决 Subagent 图片传递与自动路由的核心难题。</p>
+      </header>
+
+      <div class="cicd-content">
+        <div class="container">
+
+    <a href="index.html" class="back-link">← 返回文档列表</a>
+
+    <section class="card">
+        <div class="card-title" id="overview">
+            🔀 多智能体VL路由概述
+            <span class="badge">核心问题</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 1.05rem;">
+            在智能门锁猫眼场景中，<strong>多个视觉分析 Subagent</strong>（如人形检测、儿童守护）共享同一摄像头输入，但各自拥有不同的系统提示词和分析逻辑。核心挑战在于：<strong>当用户上传图片选择"auto"时，如何让系统自动判断应该调用哪个 Subagent，并确保图片被正确传递？</strong>
+        </p>
+        <div class="cap-grid">
+            <div class="cap-item">
+                <span class="icon">🧩</span>
+                <span class="name">多Subagent共存</span>
+                <span class="desc">vl-human-detect + vl-child-guard 共享同一图片输入</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🎯</span>
+                <span class="name">智能路由</span>
+                <span class="desc">auto模式根据图片内容自动选择最合适的Subagent</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🖼️</span>
+                <span class="name">图片穿透</span>
+                <span class="desc">解决sessions_spawn只能传文本、无法传图片的架构限制</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">⚡</span>
+                <span class="name">直接调用</span>
+                <span class="desc">绕过sessions_spawn，通过SessionAgentManager直接传递多模态消息</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🔄</span>
+                <span class="name">三级查找</span>
+                <span class="desc">AgentFactories → hasAgent → Workspace声明文件逐级发现Subagent</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🛡️</span>
+                <span class="name">降级容错</span>
+                <span class="desc">注册失败自动降级到Gateway路由模式</span>
+            </div>
+        </div>
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 核心洞察：</strong>传统的单阶段路由（顶层Agent看图片→sessions_spawn委托）存在致命缺陷——<code>sessions_spawn</code>工具只接受文本参数，无法将图片转发给Subagent，导致Subagent"看不见"图片，最终顶层Agent只能自己做分析。两阶段路由将"分类决策"与"图片传递"解耦，彻底解决了这个问题。
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="architecture">
+            🗺️ 整体架构设计
+            <span class="badge">分层架构</span>
+        </div>
+        <p style="color: var(--text-secondary);">AgentScope-Claw 采用分层架构，顶层Agent负责路由决策，Subagent负责专业分析。以下为VL路由的完整架构：</p>
+        <div class="arch-viz">
+          <div class="arch-layer">
+            <div class="arch-layer-title"><span class="layer-icon">📨</span>用户请求层 (ChatController)</div>
+            <div class="arch-nodes">
+              <div class="arch-node">
+                <div class="arch-node-id">scenario=vl-child-guard</div>
+                <div class="arch-node-desc">指定儿童守护</div>
+              </div>
+              <div class="arch-node">
+                <div class="arch-node-id">scenario=vl-human-detect</div>
+                <div class="arch-node-desc">指定人形检测</div>
+              </div>
+              <div class="arch-node arch-node--highlight">
+                <div class="arch-node-id">scenario=auto</div>
+                <div class="arch-node-desc">两阶段路由</div>
+              </div>
+            </div>
+          </div>
+          <div class="arch-connector"><span>▼ resolveVlSubagentId ▼</span></div>
+          <div class="arch-layer">
+            <div class="arch-layer-title"><span class="layer-icon">🔀</span>路由决策层 (resolveVlSubagentId)</div>
+            <div class="arch-node-desc" style="text-align:center;margin-bottom:10px;">三级查找: AgentFactories → hasAgent → Workspace声明文件</div>
+            <div class="arch-nodes">
+              <div class="arch-node arch-node--green">
+                <div class="arch-node-id">直接调用路径</div>
+                <div class="arch-node-desc">invokeSubagentViaSession</div>
+              </div>
+              <div class="arch-node arch-node--green">
+                <div class="arch-node-id">直接调用路径</div>
+                <div class="arch-node-desc">invokeSubagentViaSession</div>
+              </div>
+              <div class="arch-node arch-node--gold">
+                <div class="arch-node-id">阶段1: 分类</div>
+                <div class="arch-node-desc">autoRouteVlSubagent<br>顶层Agent看图片<br>只返回Subagent ID</div>
+              </div>
+              <div class="arch-node arch-node--gold">
+                <div class="arch-node-id">阶段2: 直接调用</div>
+                <div class="arch-node-desc">invokeSubagentViaSession<br>图片直接传递</div>
+              </div>
+            </div>
+          </div>
+          <div class="arch-connector"><span>▼ SessionAgentManager ▼</span></div>
+          <div class="arch-layer">
+            <div class="arch-layer-title"><span class="layer-icon">🤖</span>Subagent执行层 (SessionAgentManager)</div>
+            <div class="arch-nodes">
+              <div class="arch-node arch-node--highlight">
+                <div class="arch-node-id">vl-child-guard</div>
+                <div class="arch-node-desc">儿童离家守护 (AGENTS.md)</div>
+              </div>
+              <div class="arch-node arch-node--highlight">
+                <div class="arch-node-id">vl-human-detect</div>
+                <div class="arch-node-desc">人形检测与行为 (AGENTS.md)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="problem-analysis">
+            🔍 问题分析：为什么单阶段路由失败
+            <span class="badge">根因定位</span>
+        </div>
+        <p style="color: var(--text-secondary);">在最初的实现中，auto模式采用单阶段路由：将图片+路由指令一起发给顶层Agent，期望它通过<code>sessions_spawn</code>委托给Subagent。但实际运行中出现了严重问题。</p>
+
+        <div class="phase-group">❌ 单阶段路由的执行流程</div>
+        <div class="pipeline-flow">
+            <div class="pipeline-step">
+                <span class="num">1</span>
+                <span class="icon">👤</span>
+                <span class="desc">用户上传图片，选择auto</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">2</span>
+                <span class="icon">📨</span>
+                <span class="desc">ChatController将图片+文本发给顶层Agent(claw)</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">3</span>
+                <span class="icon">🧠</span>
+                <span class="desc">claw看到图片，决定调用vl-human-detect</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">4</span>
+                <span class="icon">🔧</span>
+                <span class="desc">claw调用sessions_spawn(agent_id="vl-human-detect", task="分析图片...")</span>
+            </div>
+        </div>
+
+        <div class="highlight-box highlight-box-red" style="margin: 1rem 0;">
+            <strong>⚠️ 致命缺陷：</strong><code>sessions_spawn</code>的<code>task</code>参数是纯文本，<strong>无法传递图片</strong>。Subagent收到的是一段文字描述（如"分析这张夜间监控图片"），而非图片本身。这导致：
+            <ul style="margin-top:8px;">
+                <li>Subagent无法看到图片，只能基于文本猜测</li>
+                <li>分析结果质量极差，无法完成专业视觉任务</li>
+                <li>顶层Agent发现Subagent结果不佳，最终<strong>自己做分析</strong>，绕过了Subagent</li>
+            </ul>
+        </div>
+
+        <div class="phase-group">📋 实际日志还原</div>
+        <div class="code-block"><pre><span class="cmt">// 1. auto路由触发</span>
+Auto VL routing: sending image to top-level agent=<span class="str">default</span>, LLM will decide which subagent to spawn
+
+<span class="cmt">// 2. claw确实调用了sessions_spawn</span>
+[claw] POST_REASONING | tool_call: id=call_d819c..., name=<span class="fn">sessions_spawn</span>
+
+<span class="cmt">// 3. 但Subagent收不到图片，结果不理想</span>
+[claw] POST_ACTING | id=call_f0793..., name=<span class="fn">wait_async_results</span>, state=<span class="cls">ERROR</span>
+
+<span class="cmt">// 4. claw最终自己做分析（绕过了Subagent）</span>
+[claw] POST_REASONING | text: <span class="str">根据图像分析，这是一张夜间监控画面，显示：
+检测到的人员特征：一名成年男性站在门前门廊区域...</span></pre></div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="two-phase-routing">
+            ✅ 两阶段路由方案
+            <span class="badge">核心方案</span>
+        </div>
+        <p style="color: var(--text-secondary);">两阶段路由将"分类决策"与"图片传递"解耦为两个独立阶段，彻底解决了图片穿透问题。</p>
+
+        <div class="phase-group">阶段1：分类 — 顶层Agent看图片，只返回Subagent ID</div>
+        <div class="pipeline-flow">
+            <div class="pipeline-step">
+                <span class="num">1</span>
+                <span class="icon">📝</span>
+                <span class="desc">构建分类提示词（可用Subagent列表+分类规则）</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">2</span>
+                <span class="icon">🖼️</span>
+                <span class="desc">将分类提示词+图片合并为多模态消息</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">3</span>
+                <span class="icon">🧠</span>
+                <span class="desc">顶层Agent看图片，判断应使用哪个Subagent</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">4</span>
+                <span class="icon">🏷️</span>
+                <span class="desc">Agent只返回Subagent ID（如"vl-human-detect"）</span>
+            </div>
+        </div>
+
+        <div class="phase-group">阶段2：直接调用 — 绕过sessions_spawn，图片直接传给Subagent</div>
+        <div class="pipeline-flow">
+            <div class="pipeline-step">
+                <span class="num">5</span>
+                <span class="icon">🔍</span>
+                <span class="desc">从响应中解析Subagent ID</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">6</span>
+                <span class="icon">📋</span>
+                <span class="desc">registerSession注册Subagent会话</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">7</span>
+                <span class="icon">🖼️</span>
+                <span class="desc">createAgent + agent.call(多模态消息) 直接传递图片</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">8</span>
+                <span class="icon">✅</span>
+                <span class="desc">Subagent看到真实图片，完成专业分析</span>
+            </div>
+        </div>
+
+        <div class="highlight-box highlight-box-green" style="margin: 1rem 0;">
+            <strong>✅ 关键优势：</strong>阶段1只做分类（轻量级，LLM只需返回一个ID），阶段2通过<code>invokeSubagentViaSession</code>直接调用Subagent并传递多模态消息。Subagent收到的是真实图片，而非文本描述，分析质量得到根本保障。
+        </div>
+
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">核心代码实现</h3>
+        <div class="code-block"><pre><span class="cmt">// ChatController.java — 两阶段自动路由</span>
+<span class="kw">private</span> Mono&lt;Msg&gt; <span class="fn">autoRouteVlSubagent</span>(Msg multimodalMsg, String parentAgentId) {
+    <span class="cmt">// 阶段1：构建分类提示词+图片，让顶层Agent只返回Subagent ID</span>
+    String classificationPrompt = <span class="fn">buildVlClassificationPrompt</span>();
+    List&lt;ContentBlock&gt; classifyContent = <span class="kw">new</span> ArrayList&lt;&gt;();
+    classifyContent.add(TextBlock.builder().text(classificationPrompt).build());
+    <span class="kw">for</span> (<span class="kw">var</span> block : multimodalMsg.getContent()) {
+        <span class="kw">if</span> (block <span class="kw">instanceof</span> ImageBlock ib) {
+            classifyContent.add(ib);  <span class="cmt">// 只提取图片块</span>
+        }
+    }
+    Msg classifyMsg = Msg.builder().role(USER).content(classifyContent).build();
+
+    <span class="cmt">// 发送给顶层Agent进行分类</span>
+    RouteResult route = <span class="fn">resolveRoute</span>(parentAgentId, <span class="str">""</span>);
+    <span class="kw">return</span> gateway.run(route.context(), List.of(classifyMsg), route.outboundAddress())
+        .flatMap(response -> {
+            <span class="cmt">// 从响应中解析Subagent ID</span>
+            String subagentId = <span class="fn">extractVlSubagentId</span>(response.getTextContent());
+            <span class="kw">if</span> (subagentId != <span class="kw">null</span>) {
+                <span class="cmt">// 阶段2：直接调用Subagent，传递完整多模态消息（含图片）</span>
+                <span class="kw">return</span> <span class="fn">invokeSubagentViaSession</span>(subagentId, multimodalMsg, parentAgentId);
+            }
+            <span class="cmt">// 降级：如果无法分类，返回顶层Agent的直接响应</span>
+            <span class="kw">return</span> Mono.just(response);
+        });
+}</pre></div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="classification-prompt">
+            📝 分类提示词工程
+            <span class="badge">提示词设计</span>
+        </div>
+        <p style="color: var(--text-secondary);">分类提示词是两阶段路由的关键。它必须让LLM<strong>只做分类、不做分析、不调用工具</strong>，精确返回Subagent ID。</p>
+
+        <div class="code-block"><pre>[VL图片分类任务]
+请查看这张图片，判断应该使用哪个subagent来分析。
+
+可用的VL subagent：
+- vl-child-guard：儿童离家安全守护系统
+- vl-human-detect：门前AI人形检测与行为分析系统
+
+分类规则：
+1. 图片中有儿童（身高较矮、体型较小）独自出门、离开家门 → vl-child-guard
+2. 其他人员场景（成年人在门前、访客、陌生人徘徊等） → vl-human-detect
+
+<span class="cls">重要：只回复subagent的ID（vl-child-guard 或 vl-human-detect），</span>
+<span class="cls">不要做图片分析，不要使用sessions_spawn或其他工具。</span></pre></div>
+
+        <div class="highlight-box highlight-box-gold" style="margin: 1rem 0;">
+            <strong>🎯 提示词设计要点：</strong>
+            <ul style="margin-top:8px;">
+                <li><strong>约束输出格式</strong>：明确要求"只回复Subagent ID"，避免LLM做完整分析</li>
+                <li><strong>禁止工具调用</strong>：明确禁止使用<code>sessions_spawn</code>，防止LLM走回单阶段路由的老路</li>
+                <li><strong>动态Subagent列表</strong>：从<code>AgentFactories</code>和<code>Workspace声明文件</code>动态获取，支持扩展</li>
+                <li><strong>明确分类规则</strong>：基于图片内容特征（儿童vs成年人）给出清晰的决策边界</li>
+            </ul>
+        </div>
+
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">动态Subagent发现</h3>
+        <p>分类提示词中的Subagent列表是动态构建的，来自两个数据源：</p>
+        <table class="param-table">
+            <thead>
+                <tr><th>数据源</th><th>获取方式</th><th>包含信息</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><span class="param-name">AgentFactories</span></td><td><code>sessionAgentManager.delegate().getAgentFactories()</code></td><td>已注册的Subagent ID</td></tr>
+                <tr><td><span class="param-name">Workspace声明文件</span></td><td><code>AgentSpecLoader.loadFromFilesystem()</code></td><td>Subagent ID + description</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="direct-invocation">
+            ⚡ 直接调用机制
+            <span class="badge">核心实现</span>
+        </div>
+        <p style="color: var(--text-secondary);"><code>invokeSubagentViaSession</code> 是两阶段路由的核心执行路径，它绕过<code>sessions_spawn</code>工具，通过SessionAgentManager直接将多模态消息传递给Subagent。</p>
+
+        <div class="arch-viz">
+          <div class="arch-flow">
+            <div class="arch-flow-step">
+              <div class="arch-flow-label">📋 Step 1: <br>注册会话</div>
+              <div class="arch-flow-body">
+                <code>sessionAgentManager.registerSession(subagentId, null, parentSessionKey, 0)</code>
+                <div class="arch-flow-branch">
+                  <div class="arch-flow-branch-item arch-flow-branch-item--yes">✅ 注册成功 → 继续</div>
+                  <div class="arch-flow-branch-item arch-flow-branch-item--no">❌ 注册失败 → 降级 invokeSubagentViaGateway</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-flow-step">
+              <div class="arch-flow-label">🏭 Step 2: <br>创建Agent</div>
+              <div class="arch-flow-body">
+                <code>RuntimeContext ctx = RuntimeContext.builder().sessionId(reg.sessionId()).build()</code><br>
+                <code>Agent agent = sessionAgentManager.delegate().createAgent(subagentId, ctx)</code>
+              </div>
+            </div>
+            <div class="arch-flow-step">
+              <div class="arch-flow-label">🖼️ Step 3: <br>直接调用</div>
+              <div class="arch-flow-body">
+                <code>agent.call(List.of(multimodalMsg))</code> — 传递多模态消息（含图片）<br>
+                <code>.doOnNext(reply -> log.info(...))</code><br>
+                <code>.doOnError(ex -> log.error(...))</code>
+              </div>
+            </div>
+          </div>
+          <div class="arch-connector"><span>✅ Subagent分析结果</span></div>
+        </div>
+
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">降级机制</h3>
+        <p>当<code>registerSession</code>失败时（如Subagent未注册），系统自动降级到<code>invokeSubagentViaGateway</code>模式，通过Gateway路由让顶层Agent使用<code>sessions_spawn</code>委托任务。虽然此模式下图片无法传递，但保证了系统可用性。</p>
+
+        <div class="code-block"><pre><span class="cmt">// 降级路径：通过Gateway让顶层Agent用sessions_spawn委托</span>
+<span class="kw">private</span> Mono&lt;Msg&gt; <span class="fn">invokeSubagentViaGateway</span>(String subagentId, Msg multimodalMsg, String parentAgentId) {
+    String spawnInstruction = <span class="str">"请使用 sessions_spawn 工具调用 subagent: "</span> + subagentId;
+    Msg spawnMsg = Msg.builder().role(USER).textContent(spawnInstruction).build();
+    Msg imageMsg = Msg.builder().role(USER)
+        .content(TextBlock.builder().text(<span class="str">"以下是用户上传的图片，请转发给 "</span> + subagentId + <span class="str">" 处理："</span>).build())
+        .content(multimodalMsg.getContent().stream()
+            .filter(b -> b <span class="kw">instanceof</span> ImageBlock)
+            .map(b -> (ImageBlock) b)
+            .findFirst().orElse(<span class="kw">null</span>))
+        .build();
+    RouteResult route = <span class="fn">resolveRoute</span>(parentAgentId, spawnInstruction);
+    <span class="kw">return</span> gateway.run(route.context(), List.of(spawnMsg, imageMsg), route.outboundAddress());
+}</pre></div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="subagent-discovery">
+            🔎 三级Subagent发现机制
+            <span class="badge">注册与发现</span>
+        </div>
+        <p style="color: var(--text-secondary);">当用户指定scenario（如<code>vl-child-guard</code>）时，系统通过三级查找机制定位Subagent：</p>
+
+        <table class="param-table">
+            <thead>
+                <tr><th>级别</th><th>查找方式</th><th>数据源</th><th>说明</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Level 1</strong></td>
+                    <td><span class="param-name">AgentFactories</span></td>
+                    <td><code>DefaultAgentManager.getAgentFactories()</code></td>
+                    <td>启动时从subagents/*.md加载并注册的Subagent工厂</td>
+                </tr>
+                <tr>
+                    <td><strong>Level 2</strong></td>
+                    <td><span class="param-name">hasAgent</span></td>
+                    <td><code>DefaultAgentManager.hasAgent()</code></td>
+                    <td>检查AgentManager是否包含指定ID的Agent定义</td>
+                </tr>
+                <tr>
+                    <td><strong>Level 3</strong></td>
+                    <td><span class="param-name">Workspace声明文件</span></td>
+                    <td><code>AgentSpecLoader.loadFromFilesystem()</code></td>
+                    <td>从主Agent工作区的subagents/目录动态加载.md声明文件</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-block"><pre><span class="cmt">// resolveVlSubagentId — 三级查找</span>
+<span class="kw">private</span> String <span class="fn">resolveVlSubagentId</span>(String scenario) {
+    <span class="kw">if</span> (scenario == <span class="kw">null</span> || scenario.isBlank() || <span class="str">"auto"</span>.equalsIgnoreCase(scenario)) {
+        <span class="kw">return null</span>;  <span class="cmt">// auto模式 → 两阶段路由</span>
+    }
+
+    <span class="cmt">// Level 1: AgentFactories精确匹配</span>
+    <span class="kw">var</span> factories = sessionAgentManager.delegate().getAgentFactories();
+    <span class="kw">if</span> (factories.containsKey(scenario)) <span class="kw">return</span> scenario;
+
+    <span class="cmt">// Level 1: AgentFactories前缀匹配（vl- + scenario）</span>
+    String prefixed = <span class="str">"vl-"</span> + scenario;
+    <span class="kw">if</span> (factories.containsKey(prefixed)) <span class="kw">return</span> prefixed;
+
+    <span class="cmt">// Level 2: hasAgent精确匹配</span>
+    <span class="kw">if</span> (sessionAgentManager.delegate().hasAgent(scenario)) <span class="kw">return</span> scenario;
+    <span class="kw">if</span> (sessionAgentManager.delegate().hasAgent(prefixed)) <span class="kw">return</span> prefixed;
+
+    <span class="cmt">// Level 3: Workspace声明文件</span>
+    String fromWorkspace = <span class="fn">resolveVlSubagentFromWorkspace</span>(scenario);
+    <span class="kw">if</span> (fromWorkspace != <span class="kw">null</span>) <span class="kw">return</span> fromWorkspace;
+
+    <span class="cmt">// 未找到 → 降级到auto路由</span>
+    <span class="kw">return null</span>;
+}</pre></div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="subagent-declaration">
+            📄 Subagent声明文件体系
+            <span class="badge">配置管理</span>
+        </div>
+        <p style="color: var(--text-secondary);">每个Subagent由两个文件定义：声明文件（.md）定义元数据，工作区文件（AGENTS.md）定义系统提示词。</p>
+
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">文件结构</h3>
+        <div class="arch-tree">
+<span class="tree-dir">~/.agentscope/claw/</span>
+├── <span class="tree-file">agentscope.json</span>              <span class="tree-label">← 主Agent配置</span>
+├── <span class="tree-dir">workspace/</span>
+│   ├── <span class="tree-file">AGENTS.md</span>                <span class="tree-label">← 主Agent系统提示词</span>
+│   └── <span class="tree-dir">subagents/</span>
+│       ├── <span class="tree-file tree-highlight">vl-child-guard.md</span>    <span class="tree-label">← Subagent声明文件</span>
+│       └── <span class="tree-file tree-highlight">vl-human-detect.md</span>   <span class="tree-label">← Subagent声明文件</span>
+└── <span class="tree-dir">agents/</span>
+    ├── <span class="tree-dir">vl-child-guard/</span>
+    │   └── <span class="tree-dir">workspace/</span>
+    │       └── <span class="tree-file">AGENTS.md</span>        <span class="tree-label">← 儿童守护系统提示词</span>
+    └── <span class="tree-dir">vl-human-detect/</span>
+        └── <span class="tree-dir">workspace/</span>
+            └── <span class="tree-file">AGENTS.md</span>        <span class="tree-label">← 人形检测系统提示词</span>
+        </div>
+
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">声明文件格式</h3>
+        <div class="code-block"><pre><span class="cmt"># vl-child-guard.md</span>
+---
+name: vl-child-guard
+description: 儿童离家安全守护系统
+workspace:
+  mode: isolated
+  path: C:\Users\...\.agentscope\claw\agents\vl-child-guard\workspace
+model: Qwen/Qwen3.5-122B-A10B
+tools: [read_file, glob_files, grep_files, write_file]
+---
+
+<span class="cmt">// 注意：当workspace.mode=isolated且指定了path时，</span>
+<span class="cmt">// body部分会被忽略，系统提示词需放在独立工作区的AGENTS.md中</span></pre></div>
+
+        <div class="highlight-box highlight-box-gold" style="margin: 1rem 0;">
+            <strong>⚠️ 重要约束：</strong>当Subagent声明文件同时指定了<code>workspace.path</code>和inline body时，body会被忽略。系统会输出警告：<code>"Subagent declaration 'vl-child-guard' has both workspace.path and a non-empty body; body will be ignored"</code>。系统提示词必须放在独立工作区的<code>AGENTS.md</code>文件中。
+        </div>
+
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">两套文件的职责对比</h3>
+        <table class="param-table">
+            <thead>
+                <tr><th>文件</th><th>位置</th><th>职责</th><th>何时加载</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="param-name">vl-child-guard.md</span></td>
+                    <td><code>workspace/subagents/</code></td>
+                    <td>Subagent元数据声明（name、description、model、tools、workspace配置）</td>
+                    <td>ClawBootstrap启动时 → 注册到DefaultAgentManager</td>
+                </tr>
+                <tr>
+                    <td><span class="param-name">AGENTS.md</span></td>
+                    <td><code>agents/vl-child-guard/workspace/</code></td>
+                    <td>Subagent的系统提示词（专业分析逻辑、输出格式、约束条件）</td>
+                    <td>Subagent实例化时 → 作为system prompt注入</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="bootstrap-flow">
+            🚀 启动与注册流程
+            <span class="badge">生命周期</span>
+        </div>
+        <p style="color: var(--text-secondary);">Subagent的注册发生在<code>ClawBootstrap.build()</code>阶段，整个流程分为5个阶段：</p>
+
+        <div class="pipeline-flow">
+            <div class="pipeline-step">
+                <span class="num">1</span>
+                <span class="icon">📖</span>
+                <span class="desc">加载agentscope.json配置</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">2</span>
+                <span class="icon">🔧</span>
+                <span class="desc">构建主Agent Builder，提取SubagentEntry</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">3</span>
+                <span class="icon">🏭</span>
+                <span class="desc">创建DefaultAgentManager（含SubagentFactory注册表）</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">4</span>
+                <span class="icon">🔗</span>
+                <span class="desc">创建SessionAgentManager + HarnessGateway</span>
+            </div>
+            <div class="pipeline-step">
+                <span class="num">5</span>
+                <span class="icon">🛠️</span>
+                <span class="desc">构建SessionsTool，注入所有Agent</span>
+            </div>
+        </div>
+
+        <div class="code-block"><pre><span class="cmt">// ClawBootstrap.build() 核心流程</span>
+List&lt;SubagentEntry&gt; entries = mainEntryBuilder.<span class="fn">buildSubagentEntries</span>(mainWorkspace);
+<span class="cmt">// ↑ 从 workspace/subagents/*.md 加载声明文件</span>
+
+WorkspaceManager wsManager = <span class="kw">new</span> WorkspaceManager(mainWorkspace);
+DefaultAgentManager dam = <span class="kw">new</span> DefaultAgentManager(entries, wsManager);
+<span class="cmt">// ↑ DefaultAgentManager 内部为每个entry创建SubagentFactory</span>
+
+SessionAgentManager sessionMgr = <span class="kw">new</span> SessionAgentManager(dam, amCfg, ...);
+HarnessGateway gateway = <span class="kw">new</span> HarnessGateway(sessionMgr, ...);
+<span class="cmt">// ↑ Gateway持有SessionAgentManager，提供路由能力</span>
+
+SessionsTool sessionsTool = <span class="kw">new</span> SessionsTool(sessionMgr, ...);
+<span class="cmt">// ↑ SessionsTool暴露sessions_spawn等工具给Agent使用</span></pre></div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="scenario-routing">
+            🎯 Scenario路由矩阵
+            <span class="badge">路由决策</span>
+        </div>
+        <p style="color: var(--text-secondary);">不同的scenario值触发不同的路由路径，以下是完整的路由决策矩阵：</p>
+
+        <table class="param-table">
+            <thead>
+                <tr><th>scenario值</th><th>路由路径</th><th>图片传递方式</th><th>分析执行者</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="param-name">vl-child-guard</span></td>
+                    <td>直接调用</td>
+                    <td>invokeSubagentViaSession（多模态消息）</td>
+                    <td>vl-child-guard Subagent</td>
+                </tr>
+                <tr>
+                    <td><span class="param-name">vl-human-detect</span></td>
+                    <td>直接调用</td>
+                    <td>invokeSubagentViaSession（多模态消息）</td>
+                    <td>vl-human-detect Subagent</td>
+                </tr>
+                <tr>
+                    <td><span class="param-name">child-guard</span></td>
+                    <td>前缀匹配 → vl-child-guard → 直接调用</td>
+                    <td>invokeSubagentViaSession（多模态消息）</td>
+                    <td>vl-child-guard Subagent</td>
+                </tr>
+                <tr>
+                    <td><span class="param-name">auto / null / blank</span></td>
+                    <td>两阶段路由</td>
+                    <td>阶段1: 分类提示词+图片 → 阶段2: 直接调用（多模态消息）</td>
+                    <td>分类选中的Subagent</td>
+                </tr>
+                <tr>
+                    <td><span class="param-name">未知值</span></td>
+                    <td>降级到auto路由</td>
+                    <td>两阶段路由（同auto）</td>
+                    <td>分类选中的Subagent</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="comparison">
+            📊 方案对比：单阶段 vs 两阶段
+            <span class="badge">方案对比</span>
+        </div>
+
+        <table class="param-table">
+            <thead>
+                <tr><th>维度</th><th>单阶段路由（旧方案）</th><th>两阶段路由（新方案）</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>图片传递</strong></td>
+                    <td>顶层Agent看图片 → sessions_spawn只传文本 → Subagent看不到图片</td>
+                    <td>顶层Agent看图片分类 → <strong>直接把图片传给Subagent</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>分析执行者</strong></td>
+                    <td>顶层Agent自己做分析（绕过Subagent）</td>
+                    <td><strong>正确的Subagent做专业分析</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>LLM调用次数</strong></td>
+                    <td>1次（顶层Agent推理+分析）</td>
+                    <td>2次（分类1次 + Subagent分析1次）</td>
+                </tr>
+                <tr>
+                    <td><strong>分析质量</strong></td>
+                    <td>差（通用Agent做专业分析）</td>
+                    <td><strong>高（专业Subagent + 真实图片）</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>延迟</strong></td>
+                    <td>较低（1次LLM调用）</td>
+                    <td>略高（2次LLM调用，但分类调用很轻量）</td>
+                </tr>
+                <tr>
+                    <td><strong>可扩展性</strong></td>
+                    <td>差（依赖顶层Agent的sysPrompt质量）</td>
+                    <td><strong>好（动态Subagent列表+分类规则）</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>成年男子场景</strong></td>
+                    <td>claw直接返回分析结果</td>
+                    <td>→ 分类为vl-human-detect → 专业人形检测分析</td>
+                </tr>
+                <tr>
+                    <td><strong>儿童离家场景</strong></td>
+                    <td>claw直接返回分析结果</td>
+                    <td>→ 分类为vl-child-guard → 专业儿童守护分析</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="id-extraction">
+            🔍 Subagent ID解析策略
+            <span class="badge">容错设计</span>
+        </div>
+        <p style="color: var(--text-secondary);">LLM的输出不可控，可能返回各种格式的响应。<code>extractVlSubagentId</code>采用多级解析策略，确保从各种格式的响应中正确提取Subagent ID。</p>
+
+        <div class="code-block"><pre><span class="kw">private</span> String <span class="fn">extractVlSubagentId</span>(String text) {
+    <span class="kw">if</span> (text == <span class="kw">null</span> || text.isBlank()) <span class="kw">return null</span>;
+    Set&lt;String&gt; vlIds = <span class="fn">collectVlSubagentIds</span>();  <span class="cmt">// 收集所有vl-开头的ID</span>
+
+    <span class="cmt">// 策略1: 精确匹配（理想情况：LLM只返回ID）</span>
+    String trimmed = text.trim();
+    <span class="kw">if</span> (vlIds.contains(trimmed)) <span class="kw">return</span> trimmed;
+
+    <span class="cmt">// 策略2: 包含匹配（LLM返回了包含ID的文本）</span>
+    <span class="kw">for</span> (String id : vlIds) {
+        <span class="kw">if</span> (text.contains(id)) <span class="kw">return</span> id;
+    }
+    <span class="kw">return null</span>;
+}</pre></div>
+
+        <div class="highlight-box" style="margin: 1rem 0;">
+            <strong>💡 容错示例：</strong>LLM可能返回<code>"vl-human-detect"</code>（精确）、<code>"应该使用 vl-human-detect 来分析"</code>（包含）、甚至<code>"根据图片内容，我建议使用vl-human-detect"</code>（包含）。两种策略都能正确提取ID。
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="best-practices">
+            🛡️ 生产最佳实践
+            <span class="badge">工程经验</span>
+        </div>
+        <ul>
+            <li><strong>分类提示词要简洁明确</strong>：只要求LLM返回ID，避免触发完整分析</li>
+            <li><strong>动态Subagent列表</strong>：不要硬编码Subagent ID，从运行时注册表动态获取</li>
+            <li><strong>降级容错</strong>：registerSession失败时自动降级到Gateway路由</li>
+            <li><strong>ID解析容错</strong>：支持精确匹配和包含匹配两种策略</li>
+            <li><strong>日志可观测</strong>：每个路由决策点都输出INFO级别日志，便于排查</li>
+            <li><strong>Workspace声明与AGENTS.md分离</strong>：声明文件定义元数据，AGENTS.md定义系统提示词，避免body被忽略</li>
+            <li><strong>前缀匹配兼容</strong>：支持<code>child-guard</code>自动匹配<code>vl-child-guard</code></li>
+        </ul>
+    </section>
+
+    <section class="card">
+        <div class="card-title" id="summary">
+            🏁 总结
+            <span class="badge">核心要点</span>
+        </div>
+        <p style="color: var(--text-secondary);">
+            多智能体VL路由架构的核心挑战在于<strong>图片穿透</strong>——如何让Subagent"看到"用户上传的图片。两阶段路由方案通过将"分类决策"与"图片传递"解耦，彻底解决了sessions_spawn无法传递多模态消息的架构限制。同时，三级Subagent发现机制和降级容错策略确保了系统的健壮性。
+        </p>
+        <div class="cap-grid">
+            <div class="cap-item">
+                <span class="icon">🔀</span>
+                <span class="name">两阶段解耦</span>
+                <span class="desc">分类与传递分离，图片直达Subagent</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🔎</span>
+                <span class="name">三级发现</span>
+                <span class="desc">Factories → hasAgent → Workspace逐级查找</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">🛡️</span>
+                <span class="name">降级容错</span>
+                <span class="desc">注册失败自动降级到Gateway路由</span>
+            </div>
+            <div class="cap-item">
+                <span class="icon">📝</span>
+                <span class="name">提示词约束</span>
+                <span class="desc">分类提示词限制LLM只返回ID</span>
+            </div>
+        </div>
+        <h3 style="color:var(--text-primary);margin-top:1.5rem;">技术栈速查</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:10px 20px; font-size:0.95rem; color:var(--text-primary);">
+            <span><strong>框架：</strong>AgentScope-Claw (Spring Boot)</span>
+            <span><strong>模型：</strong>Qwen/Qwen3.5-122B-A10B</span>
+            <span><strong>路由：</strong>两阶段分类 + 直接调用</span>
+            <span><strong>会话：</strong>SessionAgentManager + HarnessGateway</span>
+            <span><strong>工具：</strong>sessions_spawn / sessions_send</span>
+            <span><strong>语言：</strong>Java 17+ / React + TypeScript</span>
+        </div>
+      </div>
+
+      <footer class="article-footer">
+        <a href="doc-ai-agent-engineering.html" class="footer-nav-link">← AI Agent 工程化指南</a>
+        <a href="doc-ai-human-detection.html" class="footer-nav-link">门前AI人形检测 →</a>
+      </footer>
+
+    </article>
+
+    <aside class="toc-sidebar" role="navigation" aria-label="文章目录导航">
+      <div class="toc-container">
+        <div class="toc-sidebar-title">📑 目录索引</div>
+        <ol class="toc-nav-list">
+          <li class="toc-nav-item"><a href="#overview" class="toc-nav-link">多智能体VL路由概述</a></li>
+          <li class="toc-nav-item"><a href="#architecture" class="toc-nav-link">整体架构设计</a></li>
+          <li class="toc-nav-item"><a href="#problem-analysis" class="toc-nav-link">问题分析：单阶段路由失败</a></li>
+          <li class="toc-nav-item"><a href="#two-phase-routing" class="toc-nav-link">两阶段路由方案</a></li>
+          <li class="toc-nav-item"><a href="#classification-prompt" class="toc-nav-link">分类提示词工程</a></li>
+          <li class="toc-nav-item"><a href="#direct-invocation" class="toc-nav-link">直接调用机制</a></li>
+          <li class="toc-nav-item"><a href="#subagent-discovery" class="toc-nav-link">三级Subagent发现机制</a></li>
+          <li class="toc-nav-item"><a href="#subagent-declaration" class="toc-nav-link">Subagent声明文件体系</a></li>
+          <li class="toc-nav-item"><a href="#bootstrap-flow" class="toc-nav-link">启动与注册流程</a></li>
+          <li class="toc-nav-item"><a href="#scenario-routing" class="toc-nav-link">Scenario路由矩阵</a></li>
+          <li class="toc-nav-item"><a href="#comparison" class="toc-nav-link">方案对比</a></li>
+          <li class="toc-nav-item"><a href="#id-extraction" class="toc-nav-link">Subagent ID解析策略</a></li>
+          <li class="toc-nav-item"><a href="#best-practices" class="toc-nav-link">生产最佳实践</a></li>
+          <li class="toc-nav-item"><a href="#summary" class="toc-nav-link">总结</a></li>
+        </ol>
+      </div>
+    </aside>
+
+  </main>
+
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" onclick="scrollToTop()">↑</button>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 ISNOWSOFT — All rights reserved.</p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.cicd-content .card-title[id]');
+    const tocLinks = document.querySelectorAll('.toc-nav-link');
+
+    function updateActiveToc() {
+      let currentSection = '';
+      const scrollPos = window.scrollY + 120;
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPos >= sectionTop) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    function updateReadingProgress() {
+      const articleContent = document.querySelector('.cicd-content');
+      if (!articleContent) return;
+      const contentTop = articleContent.offsetTop;
+      const contentHeight = articleContent.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      let progress = (scrollTop - contentTop) / (contentHeight - windowHeight);
+      progress = Math.min(Math.max(progress, 0), 1);
+      document.getElementById('readingProgress').style.transform = 'scaleX(' + progress + ')';
+    }
+
+    function toggleBackToTop() {
+      const btn = document.getElementById('backToTop');
+      if (window.scrollY > 400) { btn.classList.add('visible'); }
+      else { btn.classList.remove('visible'); }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const offsetTop = targetElement.offsetTop - 20;
+          window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+        }
+      });
+    });
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveToc();
+          updateReadingProgress();
+          toggleBackToTop();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateActiveToc();
+
+    (function(){
+      var saved=localStorage.getItem('portfolio-theme');
+      if(saved)document.documentElement.setAttribute('data-theme',saved);
+      var btn=document.querySelector('.theme-toggle');
+      if(btn){
+        function updateLabel(){
+          var t=document.documentElement.getAttribute('data-theme');
+          btn.setAttribute('aria-label','切换主题：当前为'+(t==='dark'?'暗色':'亮色')+'模式');
+        }
+        updateLabel();
+        btn.addEventListener('click',function(){
+          var cur=document.documentElement.getAttribute('data-theme');
+          var next=cur==='dark'?'light':'dark';
+          document.documentElement.setAttribute('data-theme',next);
+          localStorage.setItem('portfolio-theme',next);
+          updateLabel();
+        });
+      }
+      window.addEventListener('storage',function(e){
+        if(e.key==='portfolio-theme'&&e.newValue){
+          document.documentElement.setAttribute('data-theme',e.newValue);
+          if(btn)btn.setAttribute('aria-label','切换主题：当前为'+(e.newValue==='dark'?'暗色':'亮色')+'模式');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
